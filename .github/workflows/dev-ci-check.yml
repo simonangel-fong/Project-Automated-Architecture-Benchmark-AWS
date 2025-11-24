@@ -143,21 +143,11 @@ jobs:
           tflint --init
           tflint -f compact
 
-      - name: Run tfsec
+      - name: TFSec
         uses: aquasecurity/tfsec-sarif-action@v0.1.0
         with:
           working_directory: ${{ matrix.path }}
-          tfsec_args: --concise-output
-            --format json
-            --out tfsec.json
-
-      - name: Save plan artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfsec-bundle
-          path: |
-            ${{ matrix.path }}/tfplan.json
-          retention-days: 3
+          # tfsec_args: --concise-output
 
       - name: Send email notification
         if: failure()
