@@ -1,7 +1,6 @@
 # app/main.py
 from __future__ import annotations
 import os
-import redis
 from fastapi import FastAPI
 # cors
 from fastapi.middleware.cors import CORSMiddleware
@@ -77,12 +76,6 @@ async def home() -> dict:
             "port": settings.postgres.port,
             "db_name": settings.postgres.db,
             "user": settings.postgres.user,
-        }
-
-        response["redis"] = {
-            "host": settings.redis.host,
-            "port": settings.redis.port,
-            "db_name": settings.redis.db,
         }
 
         response["cors"] = settings.cors_list

@@ -6,7 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import get_settings
-from ..db import get_db, redis_client
+from ..db import get_db
 
 router = APIRouter(prefix="/health", tags=["health"])
 
@@ -43,28 +43,6 @@ async def health_db(
             status_code=503,
             content={
                 "database": "unreachable",
-                "detail": detail,
-            },
-        )
-
-
-@router.get("/redis", summary="Redis health check")
-async def health_redis(
-    db: AsyncSession = Depends(get_db),
-) -> JSONResponse:
-    """
-    Check if Redis is reachable by sending a PING.
-    """
-    try:
-        pong = await redis_client.ping()
-        return JSONResponse({"redis": "reachable","pong": pong})
-    except Exception as exc:
-        logger.exception("Database health check failed")
-        detail: str | None = str(exc) if settings.debug else None
-        return JSONResponse(
-            status_code=503,
-            content={
-                "redis": "unreachable",
                 "detail": detail,
             },
         )

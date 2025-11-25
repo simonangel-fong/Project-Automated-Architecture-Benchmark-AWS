@@ -10,4 +10,3 @@
 
 - [App](./doc/app/app.md)
 - [Sol-Baseline](./doc/baseline/baseline.md)
-

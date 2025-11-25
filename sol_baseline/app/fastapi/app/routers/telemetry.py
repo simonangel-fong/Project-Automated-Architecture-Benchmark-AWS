@@ -22,7 +22,7 @@ from sqlalchemy import select, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..db import get_db, redis_client
+from ..db import get_db
 from ..models import DeviceRegistry, TelemetryEvent, TelemetryLatest
 from ..schemas import (
     TelemetryCreate,
@@ -257,28 +257,6 @@ async def list_telemetry_for_device(
         f"{limit}"
     )
 
-    # Try Redis cache
-    try:
-        cached = await redis_client.get(cache_key)
-    except Exception:
-        cached = None 
-
-    if cached:
-        logger.debug(
-            "Telemetry cache hit",
-            extra={"device_uuid": str(device.device_uuid), "cache_key": cache_key},
-        )
-        try:
-            payload = json.loads(cached)
-            items = [TelemetryItem.model_validate(obj) for obj in payload]
-            return items
-        except Exception:
-            # If cache is corrupted or incompatible, ignore and fall back to DB
-            logger.warning(
-                "Failed to deserialize telemetry cache payload, falling back to DB",
-                extra={"device_uuid": str(device.device_uuid), "cache_key": cache_key},
-            )
-
     # Cache miss: query PostgreSQL
     stmt = (
         select(TelemetryEvent)
@@ -316,27 +294,6 @@ async def list_telemetry_for_device(
             "returned_count": len(items),
         },
     )
-
-    # Store in Redis cache
-    try:
-        await redis_client.set(
-            cache_key,
-            json.dumps([item.model_dump(mode="json") for item in items]),
-            ex=TELEMETRY_CACHE_TTL_SECONDS,
-        )
-        logger.debug(
-            "Telemetry cached",
-            extra={
-                "device_uuid": str(device.device_uuid),
-                "cache_key": cache_key,
-                "ttl": TELEMETRY_CACHE_TTL_SECONDS,
-            },
-        )
-    except Exception:
-        logger.warning(
-            "Failed to write telemetry to Redis cache",
-            extra={"device_uuid": str(device.device_uuid), "cache_key": cache_key},
-        )
 
     return items
 
@@ -410,27 +367,6 @@ async def create_telemetry_for_device(
     # Convert ORM
     item = TelemetryItem.model_validate(telemetry)
 
-    # Cache in Redis
-    latest_key = f"telemetry:latest:{device.device_uuid}"
-    recent_list_key = f"telemetry:recent:{device.device_uuid}"
-
-    try:
-        # Store latest telemetry
-        await redis_client.set(
-            latest_key,
-            item.model_dump_json(),
-            ex=TELEMETRY_CACHE_TTL_SECONDS,  # TTL
-        )
-
-        # rolling list of recent events
-        await redis_client.lpush(recent_list_key, item.model_dump_json())
-        await redis_client.ltrim(recent_list_key, 0, 99)  # keep most recent 100
-    except Exception:
-        logger.warning(
-            "Failed to write telemetry to Redis cache",
-            extra={"device_uuid": str(device.device_uuid)},
-        )
-
     return item
 
 
@@ -469,31 +405,6 @@ async def get_latest_telemetry_for_device(
         },
     )
     
-    # Try Redis cache
-    try:
-        cached = await redis_client.get(cache_key)
-    except Exception:
-        cached = None
-
-    if cached:
-        try:
-            data = json.loads(cached)
-            item = TelemetryLatestItem.model_validate(data)
-            logger.debug(
-                "Latest telemetry snapshot cache hit",
-                extra={
-                    "device_uuid": device_uuid_str,
-                    "system_time_utc": item.system_time_utc.isoformat(),
-                },
-            )
-
-            return item
-        except Exception:
-            logger.warning(
-                "Failed to deserialize latest telemetry cache payload, falling back to DB",
-                extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
-            )
-
     # Cache miss: query PostgreSQL
     stmt = select(TelemetryLatest).where(
         TelemetryLatest.device_uuid == device.device_uuid
@@ -532,27 +443,6 @@ async def get_latest_telemetry_for_device(
             "system_time_utc": item.system_time_utc.isoformat(),
         },
     )
-
-    # Write-back to Redis
-    try:
-        await redis_client.set(
-            cache_key,
-            item.model_dump_json(),
-            ex=TELEMETRY_CACHE_TTL_SECONDS,  # TTL in seconds; tune as needed
-        )
-        logger.debug(
-            "Latest telemetry snapshot cached",
-            extra={
-                "device_uuid": device_uuid_str,
-                "cache_key": cache_key,
-                "ttl": TELEMETRY_CACHE_TTL_SECONDS,
-            },
-        )
-    except Exception:
-        logger.warning(
-            "Failed to write latest telemetry snapshot to Redis cache",
-            extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
-        )
 
     return item
 
