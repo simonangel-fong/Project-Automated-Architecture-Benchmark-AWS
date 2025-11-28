@@ -1,10 +1,14 @@
-resource "aws_cloudwatch_log_group" "db_init" {
-  name              = "/ecs/task/${var.project}-${var.env}-db-init"
+locals {
+  svc_init_db_log_group_name = "/ecs/task/${var.project}-${var.env}-init-db"
+}
+
+resource "aws_cloudwatch_log_group" "init_db" {
+  name              = local.svc_init_db_log_group_name
   retention_in_days = 7
 
   kms_key_id = aws_kms_key.cloudwatch_log.arn
 
   tags = {
-    Name = "${var.project}-${var.env}-log-group-db-init"
+    Name = local.svc_init_db_log_group_name
   }
 }

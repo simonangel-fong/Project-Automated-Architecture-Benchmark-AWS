@@ -2,11 +2,14 @@
 \echo
 \echo '######## Creating database ########'
 \echo
-     
-CREATE DATABASE app_db
-    OWNER app_owner
-    ENCODING 'UTF8'
-    TEMPLATE template1;
+
+DO $$
+BEGIN
+   IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'app_db') THEN
+      PERFORM dblink_exec('dbname=postgres', 'CREATE DATABASE app_db OWNER app_owner ENCODING ''UTF8'' TEMPLATE template1;');
+   END IF;
+END
+$$;
 
 \connect app_db
 

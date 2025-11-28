@@ -87,7 +87,7 @@ resource "aws_ecs_task_definition" "ecs_task_fastapi" {
   # container_definitions = file("./container/fastapi.json")
 
   # method: template file
-  container_definitions = templatefile("${path.module}/container/fastapi.json.tftpl", {
+  container_definitions = templatefile("${path.module}/container/fastapi.tftpl", {
     image         = local.ecr_fastapi
     awslogs_group = local.svc_fastapi_log_group_name
     region        = var.aws_region
@@ -121,8 +121,8 @@ resource "aws_ecs_service" "ecs_svc_fastapi" {
   # network
   network_configuration {
     security_groups  = [aws_security_group.fastapi.id]
-    subnets          = [for subnet in aws_subnet.public : subnet.id]
-    assign_public_ip = true # enable public ip
+    subnets          = [for subnet in aws_subnet.private : subnet.id]
+    assign_public_ip = false # disable public ip
   }
 
   # lb

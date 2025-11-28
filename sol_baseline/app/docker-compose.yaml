@@ -1,5 +1,8 @@
 name: baseline
 
+volumes:
+  pgdata:
+
 networks:
   public_network:
     driver: bridge
@@ -16,6 +19,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
+      - pgdata:/var/lib/postgresql/data
       - ./pgdb/config:/config
     networks:
       # - public_network

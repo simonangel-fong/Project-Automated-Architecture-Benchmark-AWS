@@ -19,11 +19,14 @@ resource "aws_security_group" "postgres" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "ingress from fastapi to Postgres"
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.fastapi.id] # allow only fastapi
+    description = "ingress from fastapi to Postgres"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    security_groups = [
+      aws_security_group.fastapi.id, # allow fastapi
+      aws_security_group.init_db.id, # allow init_db
+    ]
   }
 
   egress {
