@@ -1,8 +1,5 @@
 name: baseline
 
-# volumes:
-#   pgdata:
-
 networks:
   public_network:
     driver: bridge
@@ -13,19 +10,13 @@ networks:
 services:
   postgres:
     container_name: postgres
-    image: 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-pgdb:dev
-    # image: pgdb
-    build:
-      context: ./pgdb/
-      dockerfile: Dockerfile
-    env_file:
-      - fastapi/.env
+    image: postgres:16-alpine
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    # volumes:
-    #   - pgdata:/var/lib/postgresql/data
+    volumes:
+      - ./pgdb/config:/config
     networks:
       # - public_network
       - private_network
@@ -50,6 +41,24 @@ services:
         reservations:
           cpus: "0.5"
           memory: 1024M
+
+  init_db:
+    container_name: init_db
+    restart: "no"
+    build:
+      context: ./init_db/
+      dockerfile: Dockerfile
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    networks:
+      - private_network
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   fastapi01:
     container_name: fastapi01
@@ -76,6 +85,7 @@ services:
       - 8000:8000
     depends_on:
       - postgres
+      - init_db
     deploy:
       resources:
         limits:
@@ -98,5 +108,5 @@ services:
       - "8080:8080"
     depends_on:
       - fastapi01
-
-
+      - postgres
+      - init_db
