@@ -14,14 +14,14 @@ const SOLUTION_ID = __ENV.SOLUTION_ID || "Sol-Baseline"; // e.g. Sol-Baseline / 
 const PROFILE = "write-heavy";
 
 // High-performance write test parameters
-const RATE_START = parseNumberEnv("RATE_START", 50);     // initial RPS
+const RATE_START = parseNumberEnv("RATE_START", 50); // initial RPS
 const RATE_TARGET = parseNumberEnv("RATE_TARGET", 1000); // peak RPS
-const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 2);      // minutes per ramp stage
-const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 4);      // minutes to hold peak
+const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 2); // minutes per ramp stage
+const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 2); // minutes to hold peak
 
 // VU pool
-const VU = parseNumberEnv("VU", 50);        // pre-allocated VUs
-const MAX_VU = parseNumberEnv("MAX_VU", 1000); // safety upper bound
+const VU = parseNumberEnv("VU", 50); // pre-allocated VUs
+const MAX_VU = parseNumberEnv("MAX_VU", 200); // safety upper bound
 
 // ==============================
 // k6 options
@@ -37,17 +37,25 @@ export const options = {
     profile: PROFILE,
   },
 
+  // SLO:
+  // "rate<0.01": Less than 1% of requests return an error.
+  // "p(95)<500": 95% of requests have a response time below 500ms.
+  // "p(99)<1000": 99% of requests have a response time below 1000ms.
+
   thresholds: {
-    // Overall failure rate 
+    // Overall failure rate
     "http_req_failed{scenario:hp_write_telemetry}": [
-      "rate<0.05", // less than 5% failures
+      {
+        threshold: "rate<0.01", // SLO
+        abortOnFail: true, // abort when 1st failure
+        delayAbortEval: "20s", // delay to collect degraded system data
+      },
     ],
 
     // POST /telemetry
     "http_req_duration{scenario:hp_write_telemetry,endpoint:telemetry_post}": [
-      "p(50)<150", // median
-      "p(95)<400", // p95 under 400ms at high write load
-      "p(99)<800", // p99 under 800ms
+      { threshold: "p(95)<300" },
+      { threshold: "p(99)<1000" },
     ],
   },
 
@@ -55,19 +63,19 @@ export const options = {
     hp_write_telemetry: {
       executor: "ramping-arrival-rate",
       startRate: RATE_START, // initial RPS
-      timeUnit: "1s",        // RPS-based
+      timeUnit: "1s", // RPS-based
 
-      preAllocatedVUs: VU,   // initial VU pool
-      maxVUs: MAX_VU,        // max VUs
+      preAllocatedVUs: VU, // initial VU pool
+      maxVUs: MAX_VU, // max VUs
 
       // Smooth ramp to RATE_TARGET and then hold
       stages: [
-        { duration: `${STAGE_RAMP}m`, target: RATE_START },                          // warm-up
+        { duration: `${STAGE_RAMP}m`, target: RATE_START }, // warm-up
         { duration: `${STAGE_RAMP}m`, target: Math.round(RATE_TARGET * 0.25) },
         { duration: `${STAGE_RAMP}m`, target: Math.round(RATE_TARGET * 0.5) },
         { duration: `${STAGE_RAMP}m`, target: Math.round(RATE_TARGET * 0.75) },
-        { duration: `${STAGE_RAMP}m`, target: RATE_TARGET },                         // reach peak
-        { duration: `${STAGE_PEAK}m`, target: RATE_TARGET },                         // hold peak
+        { duration: `${STAGE_RAMP}m`, target: RATE_TARGET }, // reach peak
+        { duration: `${STAGE_PEAK}m`, target: RATE_TARGET }, // hold peak
       ],
 
       gracefulStop: "60s",

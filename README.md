@@ -31,7 +31,7 @@ Evaluate how multiple **system architectures** impact the performance of an IoT 
 | Solution ID  | Variant             | Description                                        | Intended Improvement                        |
 | ------------ | ------------------- | -------------------------------------------------- | ------------------------------------------- |
 | Sol-Baseline | **Baseline**        | FastAPI + PostgreSQL (ECS + RDS)                   | Starting reference                          |
-| Sol-App      | **App Tuning**      | DB connection pool tuning; optimized SQL/app logic | Higher throughput, lower latency            |
+| Sol-Tune      | **App Tuning**      | DB connection pool tuning; optimized SQL/app logic | Higher throughput, lower latency            |
 | Sol-Scale    | **ECS Autoscaling** | Horizontal scaling of API containers               | Improved handling of peak load              |
 | Sol-Cache    | **Redis Caching**   | Cache read endpoints                               | Faster reads, reduced DB load               |
 | Sol-Queue    | **Write Queue**     | Async write pipeline (producer → queue → consumer) | Higher write throughput, smoother ingestion |
@@ -86,9 +86,9 @@ All architectures are evaluated using the same workload profiles and metrics to 
 | Sol-Baseline | Read-Heavy   |                  |                |                     |                 |                 |            |       |
 | Sol-Baseline | Write-Heavy  |                  |                |                     |                 |                 |            |       |
 | Sol-Baseline | Mixed        |                  |                |                     |                 |                 |            |       |
-| Sol-App      | Read-Heavy   |                  |                |                     |                 |                 |            |       |
-| Sol-App      | Write-Heavy  |                  |                |                     |                 |                 |            |       |
-| Sol-App      | Mixed        |                  |                |                     |                 |                 |            |       |
+| Sol-Tune      | Read-Heavy   |                  |                |                     |                 |                 |            |       |
+| Sol-Tune      | Write-Heavy  |                  |                |                     |                 |                 |            |       |
+| Sol-Tune      | Mixed        |                  |                |                     |                 |                 |            |       |
 | Sol-Scale    | Read-Heavy   |                  |                |                     |                 |                 |            |       |
 | Sol-Scale    | Write-Heavy  |                  |                |                     |                 |                 |            |       |
 | Sol-Scale    | Mixed        |                  |                |                     |                 |                 |            |       |
@@ -102,3 +102,4 @@ All architectures are evaluated using the same workload profiles and metrics to 
 ---
 
 - [Sol-Baseline](./doc/baseline/baseline.md)
+- [Sol-Tune](./doc/tune/tune.md)

@@ -16,20 +16,20 @@ const PROFILE = "mixed"; // Mixed profile
 // -------- Write (POST) parameters --------
 const W_RATE_START = parseNumberEnv("W_RATE_START", 50); // initial write RPS
 const W_RATE_TARGET = parseNumberEnv("W_RATE_TARGET", 500); // peak write RPS
-const W_STAGE_RAMP = parseNumberEnv("W_STAGE_RAMP", 5); // minutes per write ramp stage
-const W_STAGE_PEAK = parseNumberEnv("W_STAGE_PEAK", 10); // minutes to hold peak write RPS
+const W_STAGE_RAMP = parseNumberEnv("W_STAGE_RAMP", 2); // minutes per write ramp stage
+const W_STAGE_PEAK = parseNumberEnv("W_STAGE_PEAK", 2); // minutes to hold peak write RPS
 
 const W_VU = parseNumberEnv("W_VU", 50); // pre-allocated VUs for write
-const W_MAX_VU = parseNumberEnv("W_MAX_VU", 800); // max VUs for write scenario
+const W_MAX_VU = parseNumberEnv("W_MAX_VU", 200); // max VUs for write scenario
 
 // -------- Background Read (GET) parameters --------
 const R_RATE_START = parseNumberEnv("R_RATE_START", 50);
-const R_RATE_TARGET = parseNumberEnv("R_RATE_TARGET", 150); // background read RPS
-const R_STAGE_RAMP = parseNumberEnv("R_STAGE_RAMP", 5); // minutes per read ramp stage
-const R_STAGE_PEAK = parseNumberEnv("R_STAGE_PEAK", 10); // minutes to hold peak read RPS
+const R_RATE_TARGET = parseNumberEnv("R_RATE_TARGET", 500); // background read RPS
+const R_STAGE_RAMP = parseNumberEnv("R_STAGE_RAMP", 2); // minutes per read ramp stage
+const R_STAGE_PEAK = parseNumberEnv("R_STAGE_PEAK", 2); // minutes to hold peak read RPS
 
 const R_VU = parseNumberEnv("R_VU", 50); // pre-allocated VUs for read
-const R_MAX_VU = parseNumberEnv("R_MAX_VU", 400); // max VUs for read scenario
+const R_MAX_VU = parseNumberEnv("R_MAX_VU", 200); // max VUs for read scenario
 
 // ==============================
 // k6 options
@@ -47,19 +47,29 @@ export const options = {
 
   thresholds: {
     // Overall failure rates
-    "http_req_failed{scenario:hp_write_telemetry}": ["rate<0.05"],
-    "http_req_failed{scenario:hp_read_telemetry}": ["rate<0.05"],
-
+    "http_req_failed{scenario:hp_write_telemetry}": [
+      {
+        threshold: "rate<0.01", // SLO
+        abortOnFail: true, // abort when 1st failure
+        delayAbortEval: "20s", // delay to collect degraded system data
+      },
+    ],
+    "http_req_failed{scenario:hp_read_telemetry}": [
+      {
+        threshold: "rate<0.01", // SLO
+        abortOnFail: true, // abort when 1st failure
+        delayAbortEval: "20s", // delay to collect degraded system data
+      },
+    ],
     // Write performance (POST /telemetry)
     "http_req_duration{scenario:hp_write_telemetry,endpoint:telemetry_post}": [
-      "p(50)<150",
-      "p(95)<400",
-      "p(99)<800",
+      { threshold: "p(95)<300" },
+      { threshold: "p(99)<1000" },
     ],
 
     // Read performance (GET /telemetry/latest)
     "http_req_duration{scenario:hp_read_telemetry,endpoint:telemetry_get_latest}":
-      ["p(50)<200", "p(95)<500", "p(99)<900"],
+      [{ threshold: "p(95)<300" }, { threshold: "p(99)<1000" }],
   },
 
   scenarios: {
@@ -68,7 +78,7 @@ export const options = {
     // ==========================
     hp_write_telemetry: {
       executor: "ramping-arrival-rate",
-      startRate: W_RATE_START,
+      startRate: 0,
       timeUnit: "1s",
 
       preAllocatedVUs: W_VU,
@@ -98,7 +108,7 @@ export const options = {
       gracefulStop: "60s",
       exec: "hp_write_telemetry",
       tags: {
-        role: "write", 
+        role: "write",
       },
     },
 
@@ -107,7 +117,7 @@ export const options = {
     // ==========================
     hp_read_telemetry: {
       executor: "ramping-arrival-rate",
-      startRate: R_RATE_START,
+      startRate: 0,
       timeUnit: "1s",
 
       preAllocatedVUs: R_VU,
@@ -116,7 +126,7 @@ export const options = {
       stages: [
         { duration: `${R_STAGE_RAMP}m`, target: R_RATE_START },
         {
-          duration: `${R_STAGE_RAMP}m`,
+          duration: `${R_STAGE_RAMP * 3}m`,
           target: Math.round(R_RATE_TARGET * 0.5),
         },
         { duration: `${R_STAGE_RAMP}m`, target: R_RATE_TARGET },

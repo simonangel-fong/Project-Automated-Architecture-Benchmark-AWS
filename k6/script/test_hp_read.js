@@ -14,13 +14,13 @@ const SOLUTION_ID = __ENV.SOLUTION_ID || "Sol-Baseline";
 const PROFILE = "read-heavy";
 
 // High-performance read test parameters
-const RATE_START = parseNumberEnv("RATE_START", 50);     // initial RPS
+const RATE_START = parseNumberEnv("RATE_START", 50); // initial RPS
 const RATE_TARGET = parseNumberEnv("RATE_TARGET", 1000); // peak RPS
-const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 5);      // minutes per ramp stage
-const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 5);      // minutes to hold peak
+const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 2); // minutes per ramp stage
+const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 2); // minutes to hold peak
 
 // VU pool
-const VU = parseNumberEnv("VU", 50);      // pre-allocated VUs
+const VU = parseNumberEnv("VU", 50); // pre-allocated VUs
 const MAX_VU = parseNumberEnv("MAX_VU", 200); // max VUs
 
 // ==============================
@@ -28,7 +28,7 @@ const MAX_VU = parseNumberEnv("MAX_VU", 200); // max VUs
 // ==============================
 export const options = {
   cloud: {
-    name: `HP Read – ${SOLUTION_ID}`,
+    name: `HP Read – ${SOLUTION_ID} – ${RATE_TARGET} RPS`,
   },
   // Global tags for all metrics
   tags: {
@@ -36,37 +36,43 @@ export const options = {
     profile: PROFILE,
   },
 
+  // SLO:
+  // "rate<0.01": Less than 1% of requests return an error.
+  // "p(95)<300": 95% of requests have a response time below 300ms.
+  // "p(99)<1000": 99% of requests have a response time below 1000ms.
+
   thresholds: {
     // Overall failure rate
     "http_req_failed{scenario:hp_read_telemetry}": [
-      "rate<0.05", // less than 5% failures allowed under HP load
+      {
+        threshold: "rate<0.01", // SLO
+        abortOnFail: true, // abort when 1st failure
+        delayAbortEval: "20s", // delay to collect degraded system data
+      },
     ],
 
     // GET /telemetry/latest
-    "http_req_duration{scenario:hp_read_telemetry,endpoint:telemetry_get_latest}": [
-      "p(50)<150", // median
-      "p(95)<400", // p95 under 400ms at high load
-      "p(99)<800", // p99 under 800ms
-    ],
+    "http_req_duration{scenario:hp_read_telemetry,endpoint:telemetry_get_latest}":
+      [{ threshold: "p(95)<300" }, { threshold: "p(99)<1000" }],
   },
 
   scenarios: {
     hp_read_telemetry: {
       executor: "ramping-arrival-rate",
-      startRate: RATE_START, // initial RPS
-      timeUnit: "1s",        // RPS-based
+      startRate: 0, // initial RPS
+      timeUnit: "1s", // RPS-based
 
-      preAllocatedVUs: VU,   // initial VU pool
-      maxVUs: MAX_VU,        // safety upper bound
+      preAllocatedVUs: VU, // initial VU pool
+      maxVUs: MAX_VU, // safety upper bound
 
       // Smooth ramp up to RATE_TARGET and then hold
       stages: [
-        { duration: `${STAGE_RAMP}m`, target: RATE_START },                          // warm-up
+        { duration: `${STAGE_RAMP}m`, target: RATE_START }, // warm-up
         { duration: `${STAGE_RAMP}m`, target: Math.round(RATE_TARGET * 0.25) },
         { duration: `${STAGE_RAMP}m`, target: Math.round(RATE_TARGET * 0.5) },
         { duration: `${STAGE_RAMP}m`, target: Math.round(RATE_TARGET * 0.75) },
-        { duration: `${STAGE_RAMP}m`, target: RATE_TARGET },                         // reach peak
-        { duration: `${STAGE_PEAK}m`, target: RATE_TARGET },                         // hold peak
+        { duration: `${STAGE_RAMP}m`, target: RATE_TARGET }, // reach peak
+        { duration: `${STAGE_PEAK}m`, target: RATE_TARGET }, // hold peak
       ],
 
       gracefulStop: "60s",
