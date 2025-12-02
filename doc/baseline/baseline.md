@@ -82,7 +82,7 @@ docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-f
 ## AWS
 
 ```sh
-cd sol_baseline/aws
+cd aws/sol_baseline
 
 terraform init -backend-config=backend.config
 
