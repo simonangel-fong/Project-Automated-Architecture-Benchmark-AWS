@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - "feature-baseline-testing"
-      - ".github/workflows/baseline-cd-apply.yml"
+      - ".github/workflows/baseline-cd-apply.yaml"
     paths:
       - "app/fastapi/**"
       - "aws/sol_baseline"
