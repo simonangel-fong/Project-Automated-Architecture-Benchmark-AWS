@@ -9,7 +9,7 @@ on:
       - "app/fastapi/**"
       - "aws/sol_baseline/**"
       - "k6/script/**"
-      - ".github/workflows/baseline-cd-apply.yaml"
+      # - ".github/workflows/baseline-cd-apply.yaml"
 
 concurrency:
   group: baseline-cd-apply-${{ github.ref_name }}
@@ -481,6 +481,7 @@ jobs:
 
   destroy:
     name: Baseline-Destroy
+    needs: notification
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: baseline
