@@ -298,44 +298,44 @@ jobs:
           echo ${{ steps.testing-smoke.outcome }}
           echo "testing_smoke_result=${{ steps.testing-smoke.outcome }}" >> "$GITHUB_OUTPUT"
 
-  # testing-read:
-  #   name: Baseline-Testing(Read)
-  #   needs: testing-smoke
-  #   if: ${{ needs.testing-smoke.result }}
-  #   runs-on: ubuntu-latest
-  #   environment: baseline
-  #   env:
-  #     BASE_URL: "https://iot-baseline.arguswatcher.net"
-  #     K6_REPORT: k6/report/baseline_cicd_read.html
-  #     K6_SCRIPT: k6/script/test_hp_read.js
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  testing-read:
+    name: Baseline-Testing(Read)
+    needs: testing-smoke
+    if: ${{ needs.testing-smoke.outputs.testing_smoke_result == 'success' }}
+    runs-on: ubuntu-latest
+    environment: baseline
+    env:
+      BASE_URL: "https://iot-baseline.arguswatcher.net"
+      K6_REPORT: k6/report/baseline_cicd_read.html
+      K6_SCRIPT: k6/script/test_hp_read.js
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup K6
-  #       uses: grafana/setup-k6-action@v1
+      - name: Setup K6
+        uses: grafana/setup-k6-action@v1
 
-  #     - name: Read Testing
-  #       id: testing-read
-  #       uses: grafana/run-k6-action@v1
-  #       env:
-  #         K6_WEB_DASHBOARD: "true"
-  #         K6_WEB_DASHBOARD_EXPORT: "${{ env.K6_REPORT }}"
-  #       with:
-  #         debug: true
-  #         fail-fast: true
-  #         flags: --env BASE_URL=${{env.BASE_URL}}
-  #         path: |
-  #           ${{ env.K6_SCRIPT }}
+      - name: Read Testing
+        id: testing-read
+        uses: grafana/run-k6-action@v1
+        env:
+          K6_WEB_DASHBOARD: "true"
+          K6_WEB_DASHBOARD_EXPORT: "${{ env.K6_REPORT }}"
+        with:
+          debug: true
+          fail-fast: true
+          flags: --env BASE_URL=${{env.BASE_URL}}
+          path: |
+            ${{ env.K6_SCRIPT }}
 
-  #     - name: Upload report artifact
-  #       if: always()
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: "k6-report-read-${{ vars.ENV }}"
-  #         path: |
-  #           ${{ env.K6_REPORT }}
-  #         retention-days: 7
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "k6-report-read-${{ vars.ENV }}"
+          path: |
+            ${{ env.K6_REPORT }}
+          retention-days: 7
 
   # testing-write:
   #   name: Baseline-Testing(Write)
