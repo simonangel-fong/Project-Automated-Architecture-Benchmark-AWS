@@ -7,7 +7,7 @@ import { checkGet, checkPost, buildTelemetryPayload } from "./utils.js";
 // ==============================
 export function getHome({ base_url }) {
   return checkGet({
-    url: `${base_url}/api/`,
+    url: `${base_url}/api`,
     endpoint: "home",
   });
 }
