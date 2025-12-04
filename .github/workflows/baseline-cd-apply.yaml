@@ -291,6 +291,7 @@ jobs:
   testing-read:
     name: Baseline-Testing(Read)
     needs: testing-smoke
+    if: always()
     runs-on: ubuntu-latest
     environment: baseline
     env:
@@ -328,7 +329,8 @@ jobs:
 
   testing-write:
     name: Baseline-Testing(Write)
-    needs: testing-smoke
+    needs: testing-read
+    if: always()
     runs-on: ubuntu-latest
     environment: baseline
     env:
