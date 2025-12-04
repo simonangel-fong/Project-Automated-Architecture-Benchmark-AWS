@@ -19,6 +19,11 @@
 git branch feature-baseline-dev
 git branch feature-baseline-testing
 git checkout feature-baseline-testing
+<<<<<<< HEAD
+=======
+git commit -am "doc: update baseline"
+git push
+>>>>>>> feature-baseline-testing
 ```
 
 ## Local Testing

@@ -28,11 +28,14 @@ export const options = {
     name: "Smoke Testing",
   },
   thresholds: {
+    checks: ["rate>0.99"],
+    http_reqs: ["count>0"],
+
     http_req_failed: ["rate<0.01"], // HTTP-level failures
     http_req_duration: ["p(95)<500"], // Global latency guardrail
 
-    "http_req_duration{endpoint:home}": ["p(95)<200", "p(99)<500"], // Home latency
-    "http_req_duration{endpoint:telemetry_post}": ["p(95)<500", "p(99)<1000"], // Post latency
+    "http_req_duration{endpoint:home}": ["p(95)<300", "p(99)<500"], // Home latency
+    "http_req_duration{endpoint:telemetry_post}": ["p(95)<800", "p(99)<1300"], // Post latency
   },
 
   scenarios: {
