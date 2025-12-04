@@ -244,7 +244,7 @@ jobs:
       - name: Output
         id: output
         run: |
-          echo "BASE_URL=$(terraform output -raw dns_url)" >> "$GITHUB_OUTPUT"
+          echo "BASE_URL=$(terraform output dns_url)" >> "$GITHUB_OUTPUT"
     outputs:
       BASE_URL: ${{ steps.output.outputs.BASE_URL }}
 
