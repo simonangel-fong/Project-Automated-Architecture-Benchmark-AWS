@@ -259,10 +259,6 @@ jobs:
       BASE_URL: "https://iot-baseline.arguswatcher.net"
       K6_REPORT: k6/report/baseline_cicd_smoke.html
       K6_SCRIPT: k6/script/test_smoke.js
-
-    outputs:
-      testing_smoke_result: ${{ steps.testing-smoke-output.outputs.testing_smoke_result }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -292,17 +288,10 @@ jobs:
             ${{ env.K6_REPORT }}
           retention-days: 7
 
-      - name: Output Summary
-        id: testing-smoke-output
-        run: |
-          echo "${{ steps.testing-smoke.outcome }}"
-          echo "testing_smoke_result=${{ steps.testing-smoke.outcome }}" >> "$GITHUB_OUTPUT"
-
   testing-read:
     name: Read Performance Testing
-    needs: testing-smoke
-    # only when smoke success
-    if: ${{ needs.testing-smoke.outputs.testing_smoke_result == 'success' }}
+    needs:
+      - testing-smoke
     runs-on: ubuntu-latest
     environment: baseline
     env:
@@ -350,7 +339,9 @@ jobs:
 
   testing-write:
     name: Write Performance Testing
-    needs: testing-read
+    needs:
+      - testing-read
+      - testing-smoke
     if: always()
     runs-on: ubuntu-latest
     environment: baseline
@@ -389,7 +380,10 @@ jobs:
 
   testing-mixed:
     name: Mixed Performance Testing
-    needs: testing-write
+    needs:
+      - testing-read
+      - testing-smoke
+      - testing-write
     if: always()
     runs-on: ubuntu-latest
     environment: baseline
@@ -427,9 +421,13 @@ jobs:
           retention-days: 7
 
   notification:
-    name: Baseline-Testing(Notify)
+    name: Testing Notification
     environment: baseline
-    needs: testing-mixed
+    needs:
+      - testing-read
+      - testing-smoke
+      - testing-write
+      - testing-mixed
     if: always()
     runs-on: ubuntu-latest
 
@@ -468,7 +466,7 @@ jobs:
               <li>Smoke: <b>${{ needs.testing-smoke.result }}</b></li>
               <li>Read: <b>${{ needs.testing-read.result }}</b></li>
               <li>Write: <b>${{ needs.testing-write.result }}</b></li>
-              <li>Mixed: <b>${{ needs.testing-mide.result }}</b></li>
+              <li>Mixed: <b>${{ needs.testing-mixed.result }}</b></li>
             </ul>
 
             <p>
@@ -481,9 +479,9 @@ jobs:
             k6-reports-all/**/*.html
 
   # destroy:
-  #   name: Destroy(Prod)
+  #   name: Baseline-Destroy
   #   needs: set-tf-ini
-  #   if: needs.set-tf-ini.outputs.TF_DEPLOY_FLAG == 'false'
+  #   if: always()
   #   runs-on: ubuntu-latest
   #   timeout-minutes: 90
   #   environment: prod
