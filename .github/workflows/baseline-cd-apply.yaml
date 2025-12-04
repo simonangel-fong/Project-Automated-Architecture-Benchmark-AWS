@@ -366,118 +366,99 @@ jobs:
             ${{ env.K6_REPORT }}
           retention-days: 7
 
+  testing-mixed:
+    name: Baseline-Testing(Mixed)
+    needs: testing-write
+    if: always()
+    runs-on: ubuntu-latest
+    environment: baseline
+    env:
+      BASE_URL: "https://iot-baseline.arguswatcher.net"
+      K6_REPORT: k6/report/baseline_cicd_mixed.html
+      K6_SCRIPT: k6/script/test_hp_mixed.js
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  # testing-load:
-  #   name: Baseline-Testing(Load)
-  #   needs:
-  #     # - deploy
-  #     - testing-smoke
-  #   if: needs.testing-smoke.result == 'success'
-  #   runs-on: ubuntu-latest
-  #   environment: baseline
+      - name: Setup K6
+        uses: grafana/setup-k6-action@v1
 
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       include:
-  #         - kind: read
-  #           script: test_hp_read.js
-  #         - kind: write
-  #           script: test_hp_write.js
-  #         - kind: mixed
-  #           script: test_hp_mixed.js
+      - name: Mixed Testing
+        id: testing-mixed
+        uses: grafana/run-k6-action@v1
+        env:
+          K6_WEB_DASHBOARD: "true"
+          K6_WEB_DASHBOARD_EXPORT: "${{ env.K6_REPORT }}"
+        with:
+          debug: true
+          fail-fast: true
+          flags: --env BASE_URL=${{env.BASE_URL}}
+          path: |
+            ${{ env.K6_SCRIPT }}
 
-  #   env:
-  #     DIR_LOAD_TESTING: k6/script
-  #     DIR_K6_REPORT: k6/report
-  #     TEST_KIND: ${{ matrix.kind }}
-  #     K6_REPORT: ${{vars.ENV}}_cicd_${{ matrix.kind }}.html
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "k6-report-mixed-${{ vars.ENV }}"
+          path: |
+            ${{ env.K6_REPORT }}
+          retention-days: 7
 
-  #     - name: Setup K6
-  #       uses: grafana/setup-k6-action@v1
+  testing-notify:
+    name: Baseline-Testing(Notify)
+    environment: baseline
+    needs:
+      - testing-mixed
+    if: always()
+    runs-on: ubuntu-latest
 
-  #     - name: Prepare k6 report directory
-  #       run: mkdir -p "${{ env.DIR_K6_REPORT }}"
+    steps:
+      - name: Download all report artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: k6-reports-all
 
-  #     - name: Run ${{ matrix.kind }} Testing
-  #       id: k6-testing
-  #       uses: grafana/run-k6-action@v1
-  #       env:
-  #         K6_WEB_DASHBOARD: "true"
-  #         K6_WEB_DASHBOARD_EXPORT: "${{ env.DIR_K6_REPORT }}/${{ env.K6_REPORT }}"
-  #       with:
-  #         debug: true
-  #         fail-fast: true
-  #         flags: --env BASE_URL=https://iot-baseline.arguswatcher.net
-  #         path: |
-  #           ${{ env.DIR_LOAD_TESTING }}/${{ matrix.script }}
+      - name: List downloaded reports
+        run: |
+          echo "Downloaded k6 report files:"
+          ls -R k6-reports-all
 
-  #     - name: Upload ${{ matrix.kind }} report artifact
-  #       if: always()
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: "k6-report-${{ matrix.kind }}-${{ vars.ENV }}"
-  #         path: |
-  #           ${{ env.DIR_K6_REPORT }}/${{ env.K6_REPORT }}
-  #         retention-days: 7
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "${{ job.status }} - ${{ github.workflow }}: ${{ vars.PROJECT }} (${{ vars.ENV }})"
+          to: ${{ secrets.EMAIL_USERNAME }}
+          from: ${{ secrets.EMAIL_USERNAME }}
+          html_body: |
+            <h2>GitHub Actions CI/CD - k6 Testing</h2>
+            <p><b>Project</b>: ${{ vars.PROJECT }}</p>
+            <p><b>Environment</b>: ${{ vars.ENV }}</p>
+            <p><b>Workflow</b>: ${{ github.workflow }}</p>
+            <p><b>Branch</b>: ${{ github.ref }}</p>
+            <p><b>Commit</b>: ${{ github.sha }}</p>
 
-  # testing-notify:
-  #   name: Baseline-Testing - Notify
-  #   environment: baseline
-  #   needs:
-  #     - testing-smoke
-  #     - testing-load
-  #   if: always()
-  #   runs-on: ubuntu-latest
+            <h3>Results</h3>
+            <ul>
+              <li>Smoke: <b>${{ needs.testing-smoke.result }}</b></li>
+              <li>Read: <b>${{ needs.testing-read.result }}</b></li>
+              <li>Write: <b>${{ needs.testing-write.result }}</b></li>
+              <li>Mixed: <b>${{ needs.testing-mide.result }}</b></li>
+            </ul>
 
-  #   steps:
-  #     - name: Download all k6 report artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: k6-reports-all
-
-  #     - name: List downloaded reports
-  #       run: |
-  #         echo "Downloaded k6 report files:"
-  #         ls -R k6-reports-all
-
-  #     - name: Send email notification
-  #       uses: dawidd6/action-send-mail@v3
-  #       with:
-  #         server_address: smtp.gmail.com
-  #         server_port: 465
-  #         secure: true
-  #         username: ${{ secrets.EMAIL_USERNAME }}
-  #         password: ${{ secrets.EMAIL_PASSWORD }}
-  #         subject: "${{ job.status }} - ${{ github.workflow }}: ${{ vars.PROJECT }} (${{ vars.ENV }})"
-  #         to: ${{ secrets.EMAIL_USERNAME }}
-  #         from: ${{ secrets.EMAIL_USERNAME }}
-  #         html_body: |
-  #           <h2>GitHub Actions CI/CD - k6 Testing</h2>
-  #           <p><b>Project</b>: ${{ vars.PROJECT }}</p>
-  #           <p><b>Environment</b>: ${{ vars.ENV }}</p>
-  #           <p><b>Workflow</b>: ${{ github.workflow }}</p>
-  #           <p><b>Branch</b>: ${{ github.ref }}</p>
-  #           <p><b>Commit</b>: ${{ github.sha }}</p>
-
-  #           <h3>Results</h3>
-  #           <ul>
-  #             <li>Smoke: <b>${{ needs.testing-smoke.result }}</b></li>
-  #             <li>Load (R/W/M): <b>${{ needs.testing-load.result }}</b></li>
-  #           </ul>
-
-  #           <p>
-  #             <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">
-  #               View Workflow Run
-  #             </a>
-  #           </p>
-  #           <p>All k6 HTML reports are attached to this email.</p>
-  #         # Attach all HTML reports from all artifacts
-  #         attachments: |
-  #           k6-reports-all/**/*.html
+            <p>
+              <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">
+                View Workflow Run
+              </a>
+            </p>
+            <p>All k6 HTML reports are attached to this email.</p>
+          attachments: |
+            k6-reports-all/**/*.html
 
   # destroy:
   #   name: Destroy(Prod)
