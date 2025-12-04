@@ -1,6 +1,6 @@
 # aws_ecs_svc_flyway.tf
 locals {
-  ecr_flyway = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}-flyway:${var.env}"
+  ecr_flyway = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}-flyway"
 }
 
 # #################################

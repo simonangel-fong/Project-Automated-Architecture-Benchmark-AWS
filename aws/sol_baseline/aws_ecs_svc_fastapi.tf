@@ -6,7 +6,7 @@
 locals {
   svc_fastapi_log_group_name = "/ecs/task/${var.project}-${var.env}-fastapi"
   debug                      = var.env == "prod" ? false : true
-  ecr_fastapi                = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}-fastapi:${var.env}"
+  ecr_fastapi                = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}-fastapi"
   app_pgdb_host              = aws_db_instance.postgres.address
   app_pgdb_db                = aws_db_instance.postgres.db_name
   app_pgdb_user              = aws_db_instance.postgres.username
