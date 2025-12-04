@@ -185,7 +185,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          PARAMS_JSON="$(terraform output -json flyway_run_task)"
+          PARAMS_JSON="$(terraform output -json flyway_task_param)"
 
           CLUSTER=$(echo "$PARAMS_JSON" | jq -r '.cluster')
           TASK_DEF=$(echo "$PARAMS_JSON" | jq -r '.task_definition')
