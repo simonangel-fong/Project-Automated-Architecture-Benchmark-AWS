@@ -432,7 +432,7 @@ jobs:
       - testing-smoke
       - testing-write
       - testing-mixed
-    if: always()
+    if: ${{ needs.testing-smoke.result == 'success'}}
     runs-on: ubuntu-latest
 
     steps:
