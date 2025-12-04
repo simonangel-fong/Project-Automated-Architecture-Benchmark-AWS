@@ -256,8 +256,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: baseline
     env:
-      DIR_LOAD_TESTING: k6/script
-      DIR_K6_REPORT: k6/report
       K6_REPORT: k6/report/baseline_cicd_smoke.html
       K6_SCRIPT: k6/script/test_smoke.js
     steps:
@@ -268,7 +266,7 @@ jobs:
         uses: grafana/setup-k6-action@v1
 
       - name: Smoke Testing
-        id: smoke-testing
+        id: testing-smoke
         uses: grafana/run-k6-action@v1
         env:
           K6_WEB_DASHBOARD: "true"
@@ -289,48 +287,43 @@ jobs:
             ${{ env.K6_REPORT }}
           retention-days: 7
 
-  # testing-read:
-  #   name: Baseline-Testing(Read)
-  #   # needs: deploy
-  #   if: always()
-  #   runs-on: ubuntu-latest
-  #   environment: baseline
-  #   env:
-  #     DIR_LOAD_TESTING: k6/script
-  #     DIR_K6_REPORT: k6/report
-  #     K6_SCRIPT: k6/script/test_smoke.js
-  #     K6_REPORT_READ: baseline_cicd_read.html
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  testing-read:
+    name: Baseline-Testing(Read)
+    needs: testing-smoke
+    runs-on: ubuntu-latest
+    environment: baseline
+    env:
+      K6_REPORT: k6/report/baseline_cicd_read.html
+      K6_SCRIPT: k6/script/test_hp_read.js
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup K6
-  #       uses: grafana/setup-k6-action@v1
+      - name: Setup K6
+        uses: grafana/setup-k6-action@v1
 
-  #     - name: Prepare k6 report directory
-  #       run: mkdir -p "${{ env.DIR_K6_REPORT }}"
+      - name: Read Testing
+        id: testing-read
+        uses: grafana/run-k6-action@v1
+        env:
+          BASE_URL: "https://iot-baseline.arguswatcher.net"
+          K6_WEB_DASHBOARD: "true"
+          K6_WEB_DASHBOARD_EXPORT: "${{ env.K6_REPORT }}"
+        with:
+          debug: true
+          fail-fast: true
+          flags: --env BASE_URL=${{env.BASE_URL}}
+          path: |
+            ${{ env.K6_SCRIPT }}
 
-  #     - name: Read Testing
-  #       id: read-testing
-  #       uses: grafana/run-k6-action@v1
-  #       env:
-  #         K6_WEB_DASHBOARD: "true"
-  #         K6_WEB_DASHBOARD_EXPORT: "${{ env.DIR_K6_REPORT }}/${{ env.K6_REPORT_READ }}"
-  #       with:
-  #         debug: true
-  #         fail-fast: true
-  #         flags: --env BASE_URL=https://iot-baseline.arguswatcher.net
-  #         path: |
-  #           ${{ env.K6_SCRIPT }}/test_smoke.js
-
-  #     - name: Upload smoke report artifact
-  #       if: always()
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: "k6-report-smoke-${{ vars.ENV }}"
-  #         path: |
-  #           ${{ env.DIR_K6_REPORT }}/${{ env.K6_REPORT_SMOKE }}
-  #         retention-days: 7
+      - name: Upload smoke report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "k6-report-read-${{ vars.ENV }}"
+          path: |
+            ${{ env.K6_REPORT }}
+          retention-days: 7
 
   # testing-load:
   #   name: Baseline-Testing(Load)
