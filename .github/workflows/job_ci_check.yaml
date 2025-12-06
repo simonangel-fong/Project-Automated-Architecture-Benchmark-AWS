@@ -2,10 +2,6 @@ name: Unit Tests & Terraform Lint
 
 on:
   workflow_call:
-    inputs:
-      env:
-        required: true
-        type: string
 
 # read only
 permissions:
