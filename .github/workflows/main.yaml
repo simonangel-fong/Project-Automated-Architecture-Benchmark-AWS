@@ -1,4 +1,5 @@
-name: Call a reusable workflow 
+# .github/workflows/main.yaml
+name: Call a reusable workflow
 
 on:
     pull_request:
