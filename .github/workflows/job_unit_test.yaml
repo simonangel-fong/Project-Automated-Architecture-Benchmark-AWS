@@ -1,0 +1,49 @@
+# .github/workflow/job_unit_test.yaml
+name: Unit Test
+
+on:
+  workflow_call:
+    inputs:
+      fastapi_path:
+        required: true
+        type: string
+
+# read only
+permissions:
+  contents: read
+
+# multiple trigger
+concurrency:
+  group: fastapi-unit-test-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true # Cancel older runs
+
+jobs:
+  unit_test_fastapi:
+    name: Unit Test(FastAPI)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHON_VERSION: 3.11
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.fastapi_path }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+          cache-dependency-path: ${{ inputs.fastapi_path }}/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Unit Test
+        run: |
+          pytest

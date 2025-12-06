@@ -10,6 +10,6 @@ on:
 jobs:
     test_reusable:
         name: Test Reusable
-        uses: ./.github/workflows/job_test.yaml
+        uses: ./.github/workflows/job_unit_test.yaml
         with:
-            param: "main parameter"
+            fastapi_path: app/fastapi

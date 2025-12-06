@@ -1,9 +1,0 @@
-name: Terraform Lint
-
-on:
-  workflow_dispatch:
-    inputs:
-      custom_message:
-        description: 'A message passed from the main workflow'
-        required: true
-        default: 'default message'
