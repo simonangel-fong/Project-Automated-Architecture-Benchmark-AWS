@@ -1,4 +1,4 @@
-name: Call a reusable workflow
+name: Call a reusable workflow 
 
 on:
     pull_request:
