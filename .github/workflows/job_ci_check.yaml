@@ -70,10 +70,9 @@ jobs:
     name: Terraform Validate
     needs: unit_test_fastapi
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     env: [baseline]
-    #     path: [sol_baseline]
+    strategy:
+      matrix:
+        env: [baseline, tune]
     env:
       TF_VERSION: 1.9.8
       TF_LINT_VERSION: v0.53.0

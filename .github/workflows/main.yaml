@@ -11,3 +11,7 @@ jobs:
     ci_check:
         name: Integrated Check
         uses: ./.github/workflows/job_ci_check.yaml
+
+    ecr_push:
+        name: ECR Push
+        uses: ./.github/workflows/job_ecr.yaml
