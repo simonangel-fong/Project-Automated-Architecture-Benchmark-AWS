@@ -4,6 +4,9 @@ name: Unit Test
 on:
   workflow_call:
     inputs:
+      app:
+        required: true
+        type: string
       app_path:
         required: true
         type: string
@@ -19,7 +22,7 @@ concurrency:
 
 jobs:
   unit_test:
-    name: Unit Test
+    name: Unit Test-${{ inputs.app }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
