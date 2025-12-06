@@ -1,5 +1,5 @@
 # .github/workflow/main.yaml
-name: Main Workflow
+name: CI Testing
 
 on:
     workflow_dispatch:
@@ -8,8 +8,8 @@ on:
             - "feature-baseline-testing"
 
 jobs:
-    test_reusable:
-        name: Test Reusable
+    unit_test:
+        name: Unit Test
         uses: ./.github/workflows/job_unit_test.yaml
         with:
-            fastapi_path: app/fastapi
+            app_path: app/fastapi

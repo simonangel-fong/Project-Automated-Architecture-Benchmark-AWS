@@ -4,7 +4,7 @@ name: Unit Test
 on:
   workflow_call:
     inputs:
-      fastapi_path:
+      app_path:
         required: true
         type: string
 
@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: true # Cancel older runs
 
 jobs:
-  unit_test_fastapi:
-    name: Unit Test(FastAPI)
+  unit_test:
+    name: Unit Test
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -27,7 +27,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ${{ inputs.fastapi_path }}
+        working-directory: ${{ inputs.app_path }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
@@ -37,7 +37,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
-          cache-dependency-path: ${{ inputs.fastapi_path }}/requirements.txt
+          cache-dependency-path: ${{ inputs.app_path }}/requirements.txt
 
       - name: Install dependencies
         run: |
