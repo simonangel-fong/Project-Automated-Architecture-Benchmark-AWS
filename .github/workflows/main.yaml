@@ -7,6 +7,6 @@ on:
 
 jobs:
     call-workflow-passing-data:
-        uses: ./github/workflows/components/test.yaml@main
+        uses: ./.github/workflows/components/test.yaml
         with:
             config-path: .github/labeler.yml
