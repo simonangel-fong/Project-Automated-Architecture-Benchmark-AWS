@@ -13,7 +13,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: output
+            - name: test reusable workflow
               uses: ./components/unit_test.yaml@main
               with:
                   config-path: ./config
