@@ -10,6 +10,7 @@ on:
 
 jobs:
     reusable_workflow_job:
+        name: Resuable Job
         runs-on: ubuntu-latest
         steps:
             - name: Checkout

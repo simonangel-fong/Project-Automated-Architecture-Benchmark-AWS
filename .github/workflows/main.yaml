@@ -9,6 +9,7 @@ on:
 
 jobs:
     test_reusable:
+        name: Test Reusable
         uses: ./.github/workflows/job_test.yaml
         with:
             param: "main parameter"
