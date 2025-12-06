@@ -12,4 +12,5 @@ jobs:
         name: Unit Test
         uses: ./.github/workflows/job_unit_test.yaml
         with:
+            app: fastapi
             app_path: app/fastapi
