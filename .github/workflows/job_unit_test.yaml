@@ -1,0 +1,14 @@
+on:
+    workflow_call:
+        inputs:
+            test-string:
+                required: true
+                type: string
+
+jobs:
+    reusable_workflow_job:
+        runs-on: ubuntu-latest
+        steps:
+            - name: show passed param
+              run: |
+                  echo ${{ inputs.test-string }}
