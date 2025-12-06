@@ -14,3 +14,9 @@ jobs:
         with:
             app: fastapi
             app_path: app/fastapi
+
+    lint_check:
+        name: Terraform Lint Check
+        uses: ./.github/workflows/job_lint_check.yaml
+        with:
+            tf_path: aws/sol_baseline
