@@ -15,7 +15,11 @@ jobs:
             - name: Checkout repository code
               uses: actions/checkout@v4
 
-            - name: Apply labels based on paths
-              uses: actions/labeler@v6
-              with:
-                  configuration-path: ${{ inputs.config-path }}
+            # - name: Apply labels based on paths
+            #   uses: actions/labeler@v6
+            #   with:
+            #       configuration-path: ${{ inputs.config-path }}
+
+            - name: Show parameter
+              run: |
+                  echo ${{ inputs.config-path }}
