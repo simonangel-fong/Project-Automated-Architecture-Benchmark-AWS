@@ -14,4 +14,5 @@ jobs:
 
     ecr_push:
         name: ECR Push
+        needs: ci_check
         uses: ./.github/workflows/job_ecr.yaml
