@@ -2,14 +2,14 @@ name: Baseline-Testing
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - "feature-baseline-testing" # testing branch
-    paths:
-      - "app/fastapi/**"
-      - "aws/sol_baseline/**"
-      - "k6/script/**"
-      - ".github/workflows/baseline-cd-testing.yaml"
+  # push:
+  #   branches:
+  #     - "feature-baseline-testing" # testing branch
+  #   paths:
+  #     - "app/fastapi/**"
+  #     - "aws/sol_baseline/**"
+  #     - "k6/script/**"
+  #     - ".github/workflows/baseline-cd-testing.yaml"
 
 concurrency:
   group: baseline-cd-apply-${{ github.ref_name }}
