@@ -15,4 +15,7 @@ jobs:
     ecr_push:
         name: ECR Push
         needs: ci_check
+        permissions:
+            id-token: write # OIDC
+            contents: read
         uses: ./.github/workflows/job_ecr.yaml
