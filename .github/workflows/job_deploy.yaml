@@ -69,16 +69,16 @@ jobs:
                   role-to-assume: ${{ secrets.aws_tf_role_arn}}
                   aws-region: ${{ inputs.aws_region }}
 
-            # - name: Configure Terraform plugin cache
-            #   run: |
-            #       mkdir -pv ${{ env.TF_PLUGIN_CACHE_DIR }}
-            #       echo 'plugin_cache_dir = "${{ env.TF_PLUGIN_CACHE_DIR }}"' > ~/.terraformrc
+            - name: Configure Terraform plugin cache
+              run: |
+                  mkdir -pv ${{ env.TF_PLUGIN_CACHE_DIR }}
+                  echo 'plugin_cache_dir = "${{ env.TF_PLUGIN_CACHE_DIR }}"' > ~/.terraformrc
 
-            # - name: Cache Terraform plugins
-            #   uses: actions/cache@v4
-            #   with:
-            #       path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-            #       key: ${{ runner.os }}-terraform-${{ env.TF_VERSION }}-${{ hashFiles('aws/.terraform.lock.hcl') }}
+            - name: Cache Terraform plugins
+              uses: actions/cache@v4
+              with:
+                  path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+                  key: ${{ runner.os }}-terraform-${{ env.TF_VERSION }}-${{ inputs.env }}-${{ hashFiles('aws/.terraform.lock.hcl') }}
 
             # - name: Terraform init - S3 backend
             #   working-directory: ${{ env.TF_DIR }}
