@@ -85,7 +85,7 @@ jobs:
               run: |
                   terraform init -reconfigure -input=false \
                     -backend-config="bucket=${{ secrets.aws_backend_bucket }}" \
-                    -backend-config="region=${{ inputs.env }}" \
+                    -backend-config="region=${{ inputs.aws_region }}" \
                     -backend-config="key=${{ inputs.project }}/${{ inputs.env }}/terraform.tfstate" \
                     -backend-config="encrypt=true"
 
