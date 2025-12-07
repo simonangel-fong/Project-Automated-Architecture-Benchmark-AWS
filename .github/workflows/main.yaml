@@ -25,15 +25,14 @@ jobs:
                     - image_name: fastapi
                       aws_region: ${{ vars.AWS_REGION }}
                       dir_dockerfile: app/fastapi
-                      ecr_repo: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.PROJECT }}-fastapi"
         uses: ./.github/workflows/job_ecr_push.yaml
         with:
             image_name: ${{ matrix.image.image_name }}
             aws_region: ${{ matrix.image.aws_region }}
             dir_dockerfile: ${{ matrix.image.dir_dockerfile }}
-            ecr_repo: ${{ matrix.image.ecr_repo }}
         secrets:
             aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
+            aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
 
     # notification:
     #     name: Send Notification Email
