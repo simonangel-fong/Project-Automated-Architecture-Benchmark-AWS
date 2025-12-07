@@ -1,0 +1,44 @@
+name: Send Email Notification
+
+on:
+    workflow_call:
+        inputs:
+            subject:
+                description: "Email subject"
+                required: true
+                type: string
+                default: "my title"
+            html_body:
+                description: "Email body in HTML"
+                required: true
+                type: string
+                default: "default body"
+            attachments:
+                description: "Email Attachment"
+                required: false
+                type: string
+
+permissions:
+    contents: read
+
+jobs:
+    notification:
+        name: Email Notification
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out the repo
+              uses: actions/checkout@v5
+
+            - name: Send email notification
+              uses: dawidd6/action-send-mail@v3
+              with:
+                  server_address: smtp.gmail.com
+                  server_port: 465
+                  secure: true
+                  username: ${{ secrets.EMAIL_USERNAME }}
+                  password: ${{ secrets.EMAIL_PASSWORD }}
+                  from: ${{ secrets.EMAIL_USERNAME }}
+                  to: ${{ secrets.EMAIL_USERNAME }}
+                  subject: ${{inputs.subject}}
+                  html_body: ${{ inputs.html_body }}
+                  attachments: ${{ inputs.attachments }}

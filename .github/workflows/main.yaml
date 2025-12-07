@@ -8,14 +8,21 @@ on:
             - "feature-baseline-testing"
 
 jobs:
-    ci_check:
-        name: Integrated Check
-        uses: ./.github/workflows/job_ci_check.yaml
+    # ci_check:
+    #     name: Integrated Check
+    #     uses: ./.github/workflows/job_ci_check.yaml
 
-    ecr_push:
-        name: ECR Push
-        needs: ci_check
-        permissions:
-            id-token: write # OIDC
-            contents: read
-        uses: ./.github/workflows/job_ecr.yaml
+    # ecr_push:
+    #     name: ECR Push
+    #     needs: ci_check
+    #     permissions:
+    #         id-token: write # OIDC
+    #         contents: read
+    #     uses: ./.github/workflows/job_ecr.yaml
+
+    notification:
+        name: Send Notification Email
+        uses: ./.github/workflows/job_email.yaml
+        with:
+            html_body: <p>test<p>
+            subject: "test"
