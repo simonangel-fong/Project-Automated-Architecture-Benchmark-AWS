@@ -35,7 +35,10 @@ on:
                 description: "AWS role for tf"
             aws_backend_bucket:
                 description: "AWS bucket for tf remote backend"
-
+        outputs:
+            base_url:
+                description: "A description of the output"
+                value: ${{ jobs.deploy.outputs.base_url }}
 jobs:
     deploy:
         name: Deploy ${{ inputs.env }}
@@ -54,6 +57,8 @@ jobs:
             TF_VAR_db_readonly_pwd: ${{ secrets.db_readonly_pwd }}
             TF_VAR_cloudflare_api_token: ${{ secrets.cf_api_token }}
             TF_VAR_cloudflare_zone_id: ${{ secrets.cf_zone_id }}
+        outputs:
+            base_url: ${{ steps.output_base_url.outputs.base_url }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -155,3 +160,11 @@ jobs:
                     --region "$AWS_REGION"
 
                   echo "Flyway migration task completed successfully."
+
+            - name: Output
+              id: output_base_url
+              working-directory: ${{ env.TF_DIR }}
+              run: |
+                  BASE_URL="$(terraform output -raw dns_url)"
+                  echo "$BASE_URL"
+                  echo "base_url=$BASE_URL" >> "$GITHUB_OUTPUT"
