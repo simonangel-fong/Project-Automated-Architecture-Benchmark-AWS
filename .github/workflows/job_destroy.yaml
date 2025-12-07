@@ -1,5 +1,5 @@
-# .github/workflows/job_deploy.yaml
-name: Deploy Resources
+# .github/workflows/job_destroy.yaml
+name: Destroy Resources
 
 on:
     workflow_call:
@@ -37,16 +37,16 @@ on:
                 description: "AWS bucket for tf remote backend"
 
 jobs:
-    deploy:
-        name: Deploy ${{ inputs.env }}
+    destroy:
+        name: Destroy Resources
         runs-on: ubuntu-latest
         timeout-minutes: 30
         env:
             TF_VERSION: 1.14.0
             TF_DIR: aws/${{ inputs.env }}
             TF_PLUGIN_CACHE_DIR: /home/runner/.terraform.d/plugin-cache
-            TF_VAR_aws_region: ${{ inputs.AWS_REGION }}
-            TF_VAR_env: ${{ inputs.ENV }}
+            TF_VAR_aws_region: ${{ inputs.aws_region }}
+            TF_VAR_env: ${{ inputs.env }}
             TF_VAR_db_name: ${{ secrets.db_name }}
             TF_VAR_db_username: ${{ secrets.db_username }}
             TF_VAR_db_password: ${{ secrets.db_password }}
@@ -66,8 +66,8 @@ jobs:
             - name: Configure AWS credentials (OIDC)
               uses: aws-actions/configure-aws-credentials@v4
               with:
-                  role-to-assume: ${{ secrets.aws_tf_role_arn}}
-                  aws-region: ${{ inputs.aws_region }}
+                  role-to-assume: ${{ secrets.AWS_TF_ROLE_ARN}}
+                  aws-region: ${{ inputs.AWS_REGION }}
 
             - name: Configure Terraform plugin cache
               run: |
@@ -84,9 +84,9 @@ jobs:
               working-directory: ${{ env.TF_DIR }}
               run: |
                   terraform init -reconfigure -input=false \
-                    -backend-config="bucket=${{ secrets.AWS_BACKEND_BUCKET }}" \
-                    -backend-config="region=${{ inputs.AWS_REGION }}" \
-                    -backend-config="key=${{ inputs.project }}/${{ inputs.ENV }}/terraform.tfstate" \
+                    -backend-config="bucket=${{ secrets.aws_backend_bucket }}" \
+                    -backend-config="region=${{ inputs.env }}" \
+                    -backend-config="key=${{ inputs.project }}/${{ inputs.env }}/terraform.tfstate" \
                     -backend-config="encrypt=true"
 
             - name: Terraform Validate
@@ -95,63 +95,24 @@ jobs:
                   terraform fmt -check -recursive -no-color
                   terraform validate -no-color
 
-            - name: Deploy - Terraform Plan
+            - name: Destroy - Terraform Plan
               working-directory: ${{ env.TF_DIR }}
-              id: deploy-plan
-              run: terraform plan -out=tfplan -input=false -no-color
+              id: destroy-plan
+              run: terraform plan -out=destroy-tfplan -input=false -no-color -destroy
 
-            - name: Deploy - Show plan (JSON)
+            - name: Destroy - Show plan (JSON)
               working-directory: ${{ env.TF_DIR }}
-              run: terraform show -json tfplan > tfplan.json
+              run: terraform show -json destroy-tfplan > destroy-tfplan.json
 
-            - name: Deploy - Save plan artifacts
+            - name: Destroy - Save plan artifacts
               uses: actions/upload-artifact@v4
               with:
-                  name: tfplan-bundle-deploy
+                  name: tfplan-bundle-destroy
                   path: |
-                      ${{ env.TF_DIR }}/tfplan
-                      ${{ env.TF_DIR }}/tfplan.json
+                      ${{ env.TF_DIR }}/destroy-tfplan
+                      ${{ env.TF_DIR }}/destroy-tfplan.json
                   retention-days: 3
 
-            - name: Deploy - Terraform Apply
+            - name: Destroy - Terraform Apply
               working-directory: ${{ env.TF_DIR }}
-              run: terraform apply -auto-approve -no-color tfplan
-
-            - name: Initial RDS
-              working-directory: ${{ env.TF_DIR }}
-              env:
-                  AWS_REGION: ${{ inputs.AWS_REGION }}
-              run: |
-                  set -euo pipefail
-
-                  PARAMS_JSON="$(terraform output -json flyway_task_param)"
-
-                  CLUSTER=$(echo "$PARAMS_JSON" | jq -r '.cluster')
-                  TASK_DEF=$(echo "$PARAMS_JSON" | jq -r '.task_definition')
-                  LAUNCH_TYPE=$(echo "$PARAMS_JSON" | jq -r '.launch_type')
-                  SUBNETS=$(echo "$PARAMS_JSON" | jq -r '.subnets | join(",")')
-                  SGS=$(echo "$PARAMS_JSON" | jq -r '.security_groups | join(",")')
-
-                  echo "Cluster: $CLUSTER"
-                  echo "Task definition: $TASK_DEF"
-                  echo "Subnets ID: $SUBNETS"
-                  echo "Security groups ID: $SGS"
-
-                  TASK_ARN=$(
-                    aws ecs run-task \
-                      --cluster "$CLUSTER" \
-                      --task-definition "$TASK_DEF" \
-                      --launch-type "$LAUNCH_TYPE" \
-                      --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],securityGroups=[$SGS]}" \
-                      --region "$AWS_REGION" \
-                      --query 'tasks[0].taskArn' \
-                      --output text
-                  )
-
-                  echo "Waiting for Flyway task to finish..."
-                  aws ecs wait tasks-stopped \
-                    --cluster "$CLUSTER" \
-                    --tasks "$TASK_ARN" \
-                    --region "$AWS_REGION"
-
-                  echo "Flyway migration task completed successfully."
+              run: terraform apply -auto-approve -no-color destroy-tfplan
