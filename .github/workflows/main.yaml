@@ -50,10 +50,10 @@ jobs:
             fail-fast: false
             matrix:
                 solution:
-                    - name: baseline
+                    - architecture: baseline
         uses: ./.github/workflows/job_lint_check.yaml
         with:
-            name: ${{ matrix.solution.name }}
+            architecture: ${{ matrix.solution.architecture }}
 
     # deploy:
     #     name: Deploy AWS Infra

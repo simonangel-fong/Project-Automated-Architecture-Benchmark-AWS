@@ -3,7 +3,7 @@ name: Reusable-Terraform Lint Check
 on:
     workflow_call:
         inputs:
-            name:
+            architecture:
                 description: "Terraform Architecture name"
                 required: true
                 type: string
