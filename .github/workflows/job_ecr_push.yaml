@@ -1,4 +1,4 @@
-# .github/workflows/job_ecr.yaml
+# .github/workflows/job_ecr_push.yaml
 name: ECR Push
 
 on:

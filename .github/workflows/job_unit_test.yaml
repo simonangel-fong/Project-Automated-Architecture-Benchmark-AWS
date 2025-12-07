@@ -1,4 +1,4 @@
-name: Unit Tests & Terraform Lint
+name: Reusable-Unit Tests
 
 on:
     workflow_call:
@@ -7,10 +7,6 @@ on:
                 description: "Application Path"
                 type: string
                 required: true
-
-# permission: read only
-permissions:
-    contents: read
 
 jobs:
     unit_test:
