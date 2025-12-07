@@ -41,7 +41,7 @@ jobs:
 
     lint-check:
         name: Terraform Lint Check
-        needs: unit_test
+        needs: ecr_push
         strategy:
             fail-fast: false
             matrix:
