@@ -43,6 +43,17 @@ jobs:
             aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
             aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
 
+    lint-check:
+        name: Terraform Lint Check
+        needs: ecr_push
+        strategy:
+            matrix:
+                solution:
+                    - dir_tf: [baseline]
+        uses: ./.github/workflows/job_lint_check.yaml
+        with:
+            dir_tf: ${{ matrix.solution.dir_tf }}
+
     # deploy:
     #     name: Deploy AWS Infra
     #     uses: ./.github/workflows/job_aws_deploy.yaml
