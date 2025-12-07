@@ -53,6 +53,7 @@ jobs:
             matrix:
                 solution:
                     - architecture: baseline
+                    - architecture: tune
         uses: ./.github/workflows/job_lint_check.yaml
         with:
             architecture: ${{ matrix.solution.architecture }}
