@@ -16,6 +16,9 @@ jobs:
             TF_VERSION: 1.9.8
             TF_LINT_VERSION: v0.53.0
             TF_PLUGIN_CACHE_DIR: /home/runner/.terraform.d/plugin-cache
+        defaults:
+            run:
+                working-directory: aws/${{ inputs.architecture }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -25,22 +28,22 @@ jobs:
               with:
                   terraform_version: ${{ env.TF_VERSION }}
 
-            # - name: Configure plugin cache dir
-            #   run: |
-            #       mkdir -pv /home/runner/.terraform.d/plugin-cache /home/runner/.tflint.d/plugins
-            #       echo 'plugin_cache_dir = "/home/runner/.terraform.d/plugin-cache"' > /home/runner/.terraformrc
+            - name: Configure plugin cache dir
+              run: |
+                  mkdir -pv /home/runner/.terraform.d/plugin-cache /home/runner/.tflint.d/plugins
+                  echo 'plugin_cache_dir = "/home/runner/.terraform.d/plugin-cache"' > /home/runner/.terraformrc
 
-            # - name: Cache Terraform plugin dir
-            #   uses: actions/cache@v4
-            #   with:
-            #       path: /home/runner/.terraform.d/plugin-cache
-            #       key: ${{ runner.os }}-terraform-${{ env.TF_VERSION }}
+            - name: Cache Terraform plugin dir
+              uses: actions/cache@v4
+              with:
+                  path: /home/runner/.terraform.d/plugin-cache
+                  key: ${{ runner.os }}-terraform-${{ inputs.architecture }}-${{ env.TF_VERSION }}
 
-            # - name: Terraform init (no backend)
-            #   run: terraform init -backend=false -no-color
+            - name: Terraform init (no backend)
+              run: terraform init -backend=false -no-color
 
-            # - name: Terraform fmt
-            #   run: terraform fmt -check -recursive -no-color
+            - name: Terraform fmt
+              run: terraform fmt -check -recursive -no-color
 
             # - name: Terraform validate
             #   run: terraform validate -no-color
