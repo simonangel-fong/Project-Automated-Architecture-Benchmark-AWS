@@ -23,9 +23,14 @@ jobs:
     notification:
         name: Send Notification Email
         uses: ./.github/workflows/job_email.yaml
-        with:
-            html_body: <p>test<p>
-            subject: "test"
         secrets:
             email_username: ${{ secrets.EMAIL_USERNAME }}
             email_password: ${{ secrets.EMAIL_PASSWORD }}
+        strategy:
+            fail-fast: false
+            matrix:
+                subject: [test01, test02]
+                html_body: ["<p>test01</p>", "<p>test02</p>"]
+        with:
+            subject: ${{matrix.subject}}
+            html_body: ${{matrix.html_body}}
