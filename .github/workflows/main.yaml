@@ -26,3 +26,6 @@ jobs:
         with:
             html_body: <p>test<p>
             subject: "test"
+        secrets:
+            email_username: ${{ secrets.EMAIL_USERNAME }}
+            email_password: ${{ secrets.EMAIL_PASSWORD }}

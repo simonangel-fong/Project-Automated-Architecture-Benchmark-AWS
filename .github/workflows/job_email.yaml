@@ -17,6 +17,13 @@ on:
                 description: "Email Attachment"
                 required: false
                 type: string
+        secrets:
+            email_username:
+                description: "Email Username"
+                required: true
+            email_password:
+                description: "Email Password"
+                required: true
 
 permissions:
     contents: read
@@ -35,10 +42,10 @@ jobs:
                   server_address: smtp.gmail.com
                   server_port: 465
                   secure: true
-                  username: ${{ secrets.EMAIL_USERNAME }}
-                  password: ${{ secrets.EMAIL_PASSWORD }}
-                  from: ${{ secrets.EMAIL_USERNAME }}
-                  to: ${{ secrets.EMAIL_USERNAME }}
+                  username: ${{ secrets.email_username }}
+                  password: ${{ secrets.email_password }}
+                  from: ${{ secrets.email_username }}
+                  to: ${{ secrets.email_username }}
                   subject: ${{inputs.subject}}
                   html_body: ${{ inputs.html_body }}
                   attachments: ${{ inputs.attachments }}
