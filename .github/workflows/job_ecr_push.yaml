@@ -16,6 +16,7 @@ on:
         description: "AWS Region"
         required: true
         type: string
+        default: "ca-central-1"
     secrets:
       aws_tf_role_arn:
         description: "AWS ARN - TF role"

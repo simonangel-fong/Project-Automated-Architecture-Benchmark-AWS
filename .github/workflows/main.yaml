@@ -23,8 +23,9 @@ jobs:
             matrix:
                 image:
                     - image_name: fastapi
-                      aws_region: ${{ vars.AWS_REGION }}
                       dir_dockerfile: app/fastapi
+                    - image_name: flyway
+                      dir_dockerfile: app/flyway
         uses: ./.github/workflows/job_ecr_push.yaml
         with:
             image_name: ${{ matrix.image.image_name }}
