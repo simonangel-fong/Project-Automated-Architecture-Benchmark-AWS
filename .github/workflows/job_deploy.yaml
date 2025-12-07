@@ -80,20 +80,20 @@ jobs:
                   path: ${{ env.TF_PLUGIN_CACHE_DIR }}
                   key: ${{ runner.os }}-terraform-${{ env.TF_VERSION }}-${{ inputs.env }}-${{ hashFiles('aws/.terraform.lock.hcl') }}
 
-            # - name: Terraform init - S3 backend
-            #   working-directory: ${{ env.TF_DIR }}
-            #   run: |
-            #       terraform init -reconfigure -input=false \
-            #         -backend-config="bucket=${{ secrets.AWS_BACKEND_BUCKET }}" \
-            #         -backend-config="region=${{ inputs.AWS_REGION }}" \
-            #         -backend-config="key=${{ inputs.project }}/${{ inputs.ENV }}/terraform.tfstate" \
-            #         -backend-config="encrypt=true"
+            - name: Terraform init - S3 backend
+              working-directory: ${{ env.TF_DIR }}
+              run: |
+                  terraform init -reconfigure -input=false \
+                    -backend-config="bucket=${{ secrets.AWS_BACKEND_BUCKET }}" \
+                    -backend-config="region=${{ inputs.AWS_REGION }}" \
+                    -backend-config="key=${{ inputs.project }}/${{ inputs.ENV }}/terraform.tfstate" \
+                    -backend-config="encrypt=true"
 
-            # - name: Terraform Validate
-            #   working-directory: ${{ env.TF_DIR }}
-            #   run: |
-            #       terraform fmt -check -recursive -no-color
-            #       terraform validate -no-color
+            - name: Terraform Validate
+              working-directory: ${{ env.TF_DIR }}
+              run: |
+                  terraform fmt -check -recursive -no-color
+                  terraform validate -no-color
 
             # - name: Deploy - Terraform Plan
             #   working-directory: ${{ env.TF_DIR }}
