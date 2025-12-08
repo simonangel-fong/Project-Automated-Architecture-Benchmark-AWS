@@ -3,7 +3,6 @@
 [Back](../../README.md)
 
 - [Project: IOT Mgnt Telemetry Cloud Native - Baseline](#project-iot-mgnt-telemetry-cloud-native---baseline)
-  - [Git Branch](#git-branch)
   - [Local Testing](#local-testing)
   - [ECR](#ecr)
     - [fastapi](#fastapi)
@@ -12,19 +11,6 @@
   - [Remote Testing](#remote-testing)
 
 ---
-
-## Git Branch
-
-```sh
-git branch feature-baseline-dev
-git branch feature-baseline-testing
-git checkout feature-baseline-testing
-<<<<<<< HEAD
-=======
-git commit -am "doc: update baseline"
-git push
->>>>>>> feature-baseline-testing
-```
 
 ## Local Testing
 

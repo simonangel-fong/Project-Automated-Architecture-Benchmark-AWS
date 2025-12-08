@@ -1,6 +1,6 @@
 # aws_ecs_svc_flyway.tf
 locals {
-  ecr_flyway = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}-flyway:${var.env}"
+  ecr_flyway = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}-flyway"
 }
 
 # #################################
@@ -90,3 +90,15 @@ resource "aws_ecs_task_definition" "flyway" {
     aws_cloudwatch_log_group.flyway,
   ]
 }
+
+output "flyway_task_param" {
+  description = "Parameters to run the Flyway ECS task for RDS initialization"
+  value = {
+    cluster         = aws_ecs_cluster.ecs_cluster.name
+    task_definition = aws_ecs_task_definition.flyway.arn
+    launch_type     = "FARGATE"
+    subnets         = [for s in aws_subnet.private : s.id]
+    security_groups = [aws_security_group.flyway.id]
+  }
+}
+

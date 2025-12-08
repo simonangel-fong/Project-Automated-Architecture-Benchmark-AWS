@@ -2,7 +2,7 @@
 
 - [Project: IOT Management Telemetry - Cloud Native Solution](#project-iot-management-telemetry---cloud-native-solution)
   - [Goal](#goal)
-  - [Design: System Architecture Variants](#design-system-architecture-variants)
+  - [Design: System Architecture](#design-system-architecture)
   - [Design: Testing](#design-testing)
       - [Workload Profiles](#workload-profiles)
       - [Load Model](#load-model)
@@ -26,15 +26,15 @@ Evaluate how multiple **system architectures** impact the performance of an IoT 
 
 ---
 
-## Design: System Architecture Variants
+## Design: System Architecture
 
-| Solution ID  | Variant             | Description                                        | Intended Improvement                        |
-| ------------ | ------------------- | -------------------------------------------------- | ------------------------------------------- |
-| Sol-Baseline | **Baseline**        | FastAPI + PostgreSQL (ECS + RDS)                   | Starting reference                          |
-| Sol-Tune      | **App Tuning**      | DB connection pool tuning; optimized SQL/app logic | Higher throughput, lower latency            |
-| Sol-Scale    | **ECS Autoscaling** | Horizontal scaling of API containers               | Improved handling of peak load              |
-| Sol-Cache    | **Redis Caching**   | Cache read endpoints                               | Faster reads, reduced DB load               |
-| Sol-Queue    | **Write Queue**     | Async write pipeline (producer → queue → consumer) | Higher write throughput, smoother ingestion |
+| Solution ID | Variant             | Description                                        | Intended Improvement                        |
+| ----------- | ------------------- | -------------------------------------------------- | ------------------------------------------- |
+| `baseline`  | **Baseline**        | ECS(FastAPI) + RDS(PostgreSQL)                     | Starting reference                          |
+| `scale`     | **ECS Autoscaling** | ECS Autoscaling                                    | Improved handling of stress load            |
+| `tune`      | **App Tuning**      | DB connection pool tuning; optimized SQL/app logic | Higher throughput, lower latency            |
+| `cache`     | **Redis Caching**   | Cache read endpoints                               | Faster reads, reduced DB load               |
+| `queue`     | **Write Queue**     | Async write pipeline (producer → queue → consumer) | Higher write throughput, smoother ingestion |
 
 ---
 
@@ -48,11 +48,11 @@ Use the **same k6 tests** across **different architectures** to ensure a fair an
 
 #### Workload Profiles
 
-| Test Profile    | Purpose                          | Workload Characteristics             |
-| --------------- | -------------------------------- | ------------------------------------ |
-| **Read-Heavy**  | Measure read scalability         | High RPS on `/telemetry/latest`      |
-| **Write-Heavy** | Measure write scalability        | High RPS on telemetry write endpoint |
-| **Mixed**       | Evaluate realistic load patterns | Configurable read/write ratios       |
+| Test Profile    | Purpose                          | Workload Characteristics                    |
+| --------------- | -------------------------------- | ------------------------------------------- |
+| **Read-Heavy**  | Measure read scalability         | High RPS on `GET /api/telemetry/latest`     |
+| **Write-Heavy** | Measure write scalability        | High RPS on `POST /api/telemetry/device_id` |
+| **Mixed**       | Evaluate realistic load patterns | Both `GET` and `POST`                       |
 
 ---
 
@@ -60,7 +60,7 @@ Use the **same k6 tests** across **different architectures** to ensure a fair an
 
 - **k6 `ramping-arrival-rate`** (RPS-based): Controls the number of requests per second.
 - **Ramp or step to ~1000 RPS**: Gradual increase toward the target load.
-- **No early stop**: Allow full observation of behavior beyond SLO breach.
+- **Early stop**: Stop after SLO breach
 
 ---
 
@@ -68,7 +68,7 @@ Use the **same k6 tests** across **different architectures** to ensure a fair an
 
 | Category           | Metrics                                                                     |
 | ------------------ | --------------------------------------------------------------------------- |
-| **Latency**        | p50, p95, p99 (endpoint-specific)                                           |
+| **Latency**        | p95, p99 (endpoint-specific)                                                |
 | **Errors**         | Failure rate, status code distribution, timeouts                            |
 | **Capacity**       | Max RPS where latency and error thresholds remain acceptable                |
 | **System Metrics** | ECS CPU/memory, RDS CPU/IOPS/connections, Redis hit rate, queue backlog/lag |
@@ -86,9 +86,9 @@ All architectures are evaluated using the same workload profiles and metrics to 
 | Sol-Baseline | Read-Heavy   |                  |                |                     |                 |                 |            |       |
 | Sol-Baseline | Write-Heavy  |                  |                |                     |                 |                 |            |       |
 | Sol-Baseline | Mixed        |                  |                |                     |                 |                 |            |       |
-| Sol-Tune      | Read-Heavy   |                  |                |                     |                 |                 |            |       |
-| Sol-Tune      | Write-Heavy  |                  |                |                     |                 |                 |            |       |
-| Sol-Tune      | Mixed        |                  |                |                     |                 |                 |            |       |
+| Sol-Tune     | Read-Heavy   |                  |                |                     |                 |                 |            |       |
+| Sol-Tune     | Write-Heavy  |                  |                |                     |                 |                 |            |       |
+| Sol-Tune     | Mixed        |                  |                |                     |                 |                 |            |       |
 | Sol-Scale    | Read-Heavy   |                  |                |                     |                 |                 |            |       |
 | Sol-Scale    | Write-Heavy  |                  |                |                     |                 |                 |            |       |
 | Sol-Scale    | Mixed        |                  |                |                     |                 |                 |            |       |
@@ -101,6 +101,16 @@ All architectures are evaluated using the same workload profiles and metrics to 
 
 ---
 
-- [Sol-Baseline](./doc/baseline/baseline.md)
-- [Sol-Tune](./doc/tune/tune.md)
+- [Baseline](./doc/baseline/baseline.md)
+- [Tune](./doc/tune/tune.md)
 - [FastAPI](./doc/fastapi/fastapi.md)
+
+- SLO
+
+  - p99 latency: 300ms
+  - error rate: <0.01
+  - throughput: ~1000 req/s
+
+- (pool size, worker) = (15, 1); 50ms
+  - each connection can be used how many times: 1s/50ms = 20
+  - total pool size per second: 15 \* 20 = 300
