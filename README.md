@@ -4,9 +4,9 @@
   - [Goal](#goal)
   - [Design: System Architecture](#design-system-architecture)
   - [Design: Testing](#design-testing)
-      - [Workload Profiles](#workload-profiles)
-      - [Load Model](#load-model)
-      - [Metrics Collected](#metrics-collected)
+    - [Workload Profiles](#workload-profiles)
+    - [Load Model](#load-model)
+    - [Metrics Collected](#metrics-collected)
     - [Comparison Method](#comparison-method)
     - [Comparison Table](#comparison-table)
 
@@ -28,13 +28,13 @@ Evaluate how multiple **system architectures** impact the performance of an IoT 
 
 ## Design: System Architecture
 
-| Solution ID | Variant             | Description                                        | Intended Improvement                        |
-| ----------- | ------------------- | -------------------------------------------------- | ------------------------------------------- |
-| `baseline`  | **Baseline**        | ECS(FastAPI) + RDS(PostgreSQL)                     | Starting reference                          |
-| `scale`     | **ECS Autoscaling** | ECS Autoscaling                                    | Improved handling of stress load            |
-| `tune`      | **App Tuning**      | DB connection pool tuning; optimized SQL/app logic | Higher throughput, lower latency            |
-| `cache`     | **Redis Caching**   | Cache read endpoints                               | Faster reads, reduced DB load               |
-| `queue`     | **Write Queue**     | Async write pipeline (producer → queue → consumer) | Higher write throughput, smoother ingestion |
+| Solution   | Description                                        | Intended Improvement                        |
+| ---------- | -------------------------------------------------- | ------------------------------------------- |
+| `baseline` | ECS(FastAPI) + RDS(PostgreSQL)                     | Starting reference                          |
+| `scale`    | ECS Autoscaling                                    | Improved handling of stress load            |
+| `tune`     | DB connection pool tuning; optimized SQL/app logic | Higher throughput, lower latency            |
+| `cache`    | Cache read endpoints                               | Faster reads, reduced DB load               |
+| `queue`    | Async write pipeline (producer → queue → consumer) | Higher write throughput, smoother ingestion |
 
 ---
 
@@ -46,7 +46,7 @@ Use the **same k6 tests** across **different architectures** to ensure a fair an
 
 ---
 
-#### Workload Profiles
+### Workload Profiles
 
 | Test Profile    | Purpose                          | Workload Characteristics                    |
 | --------------- | -------------------------------- | ------------------------------------------- |
@@ -56,7 +56,7 @@ Use the **same k6 tests** across **different architectures** to ensure a fair an
 
 ---
 
-#### Load Model
+### Load Model
 
 - **k6 `ramping-arrival-rate`** (RPS-based): Controls the number of requests per second.
 - **Ramp or step to ~1000 RPS**: Gradual increase toward the target load.
@@ -64,7 +64,7 @@ Use the **same k6 tests** across **different architectures** to ensure a fair an
 
 ---
 
-#### Metrics Collected
+### Metrics Collected
 
 | Category           | Metrics                                                                     |
 | ------------------ | --------------------------------------------------------------------------- |
@@ -101,9 +101,9 @@ All architectures are evaluated using the same workload profiles and metrics to 
 
 ---
 
+- [App Development](./doc/app_dev/app_dev.md)
 - [Baseline](./doc/baseline/baseline.md)
 - [Tune](./doc/tune/tune.md)
-- [FastAPI](./doc/fastapi/fastapi.md)
 
 - SLO
 

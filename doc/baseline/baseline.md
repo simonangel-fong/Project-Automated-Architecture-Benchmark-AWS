@@ -4,10 +4,7 @@
 
 - [Project: IOT Mgnt Telemetry Cloud Native - Baseline](#project-iot-mgnt-telemetry-cloud-native---baseline)
   - [Local Testing](#local-testing)
-  - [ECR](#ecr)
-    - [fastapi](#fastapi)
-    - [flyway](#flyway)
-  - [AWS](#aws)
+  - [AWS Deployment](#aws-deployment)
   - [Remote Testing](#remote-testing)
 
 ---
@@ -19,70 +16,24 @@ docker compose -f app/compose.baseline.yaml down -v
 docker compose -f app/compose.baseline.yaml up -d --build
 
 # smoke
-docker run --rm --name test_smoke --net=baseline_public_network -p 5665:5665 -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/sol_baseline_local_smoke.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js
+docker run --rm --name test_smoke --net=baseline_public_network -p 5665:5665 -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_local_smoke.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js
 
 # read heavy
-docker run --rm --name test_hp_read --net=baseline_public_network -p 5665:5665 -e SOLUTION_ID="Sol-Baseline" -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/sol_baseline_local_read.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
+docker run --rm --name test_hp_read --net=baseline_public_network -p 5665:5665 -e SOLUTION_ID="baseline" -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_local_read.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
 
 # write heavy
-docker run --rm --name test_hp_write --net=baseline_public_network -p 5665:5665 -e SOLUTION_ID="Sol-Baseline" -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/sol_baseline_local_write.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
+docker run --rm --name test_hp_write --net=baseline_public_network -p 5665:5665 -e SOLUTION_ID="baseline" -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_local_write.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
 
 # mixed
-docker run --rm --name test_hp_mixed --net=baseline_public_network -p 5665:5665 -e SOLUTION_ID="Sol-Baseline" -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/sol_baseline_local_mixed.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
+docker run --rm --name test_hp_mixed --net=baseline_public_network -p 5665:5665 -e SOLUTION_ID="baseline" -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_local_mixed.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
 ```
 
 ---
 
-## ECR
+## AWS Deployment
 
 ```sh
-aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin 099139718958.dkr.ecr.ca-central-1.amazonaws.com
-# Login Succeeded
-```
-
-### fastapi
-
-```sh
-aws ecr create-repository --repository-name iot-mgnt-telemetry-fastapi --region ca-central-1
-
-docker build -t fastaapi sol_baseline/app/fastapi
-# tag
-docker tag fastaapi 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-fastapi:baseline
-# push to docker
-docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-fastapi:baseline
-
-```
-
----
-
-### flyway
-
-- test
-
-```sh
-docker compose -f sol_baseline/app/docker-compose.yaml down -v
-docker compose -f sol_baseline/app/docker-compose.yaml up -d --build
-
-```
-
-- push image
-
-```sh
-aws ecr create-repository --repository-name iot-mgnt-telemetry-flyway --region ca-central-1
-
-docker build -t flyway sol_baseline/app/flyway
-# tag
-docker tag flyway 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-flyway:baseline
-# push to docker
-docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-flyway:baseline
-```
-
----
-
-## AWS
-
-```sh
-cd aws/sol_baseline
+cd aws/baseline
 
 terraform init -backend-config=backend.config
 
@@ -106,14 +57,15 @@ terraform destroy -auto-approve
 
 ```sh
 # smoke
-docker run --rm --name test_smoke -p 5665:5665 -e BASE_URL="https://iot-baseline.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/sol_baseline_aws_smoke.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js
+docker run --rm --name test_smoke -p 5665:5665 -e BASE_URL="https://iot-baseline.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_aws_smoke.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js
 
 # read heavy
-docker run --rm --name test_hp_read -p 5665:5665 -e SOLUTION_ID="Sol-Baseline" -e BASE_URL="https://iot-baseline.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/sol_baseline_aws_read.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
+docker run --rm --name test_hp_read -p 5665:5665 -e SOLUTION_ID="Sol-Baseline" -e BASE_URL="https://iot-baseline.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_aws_read.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
 
 # write heavy
-docker run --rm --name test_hp_write -p 5665:5665 -e SOLUTION_ID="Sol-Baseline" -e BASE_URL="https://iot-baseline.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/sol_baseline_aws_write.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
+docker run --rm --name test_hp_write -p 5665:5665 -e SOLUTION_ID="Sol-Baseline" -e BASE_URL="https://iot-baseline.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_aws_write.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
 
 # mixed
-docker run --rm --name test_hp_mixed -p 5665:5665 -e SOLUTION_ID="Sol-Baseline" -e BASE_URL="https://iot-baseline.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/aws_test_hp_mixed.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
+docker run --rm --name test_hp_mixed -p 5665:5665 -e SOLUTION_ID="Sol-Baseline" -e BASE_URL="https://iot-baseline.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_aws_mixed.html -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
+
 ```
