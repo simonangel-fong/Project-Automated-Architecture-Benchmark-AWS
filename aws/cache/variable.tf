@@ -45,12 +45,12 @@ variable "svc_fastapi_farget_memory" {
 
 variable "svc_fastapi_desired_count" {
   type    = number
-  default = 2
+  default = 5
 }
 
 variable "svc_fastapi_min_capacity" {
   type    = number
-  default = 2
+  default = 5
 }
 
 variable "svc_fastapi_max_capacity" {
@@ -60,7 +60,7 @@ variable "svc_fastapi_max_capacity" {
 
 variable "task_fastapi_pool_size" {
   type    = number
-  default = 5 # default: 5
+  default = 20 # default: 5
 }
 
 variable "task_fastapi_max_overflow" {
@@ -72,6 +72,22 @@ variable "task_fastapi_worker" {
   type    = number
   default = 2 # default: 2 cpu
 }
+
+# ##############################
+# AWS Elasticache
+# ##############################
+variable "redis_node_type" {
+  description = "Instance type for Redis cache nodes"
+  type        = string
+  default     = "cache.t4g.micro"
+}
+
+variable "redis_num_cache_nodes" {
+  description = "Number of Redis cache nodes"
+  type        = number
+  default     = 1
+}
+
 
 # ##############################
 # AWS RDS

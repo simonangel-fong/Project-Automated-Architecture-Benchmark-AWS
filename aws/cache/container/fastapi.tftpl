@@ -3,8 +3,8 @@
     "name": "fastapi",
     "image": "${image}",
 
-    "cpu": 1024,
-    "memory": 2048,
+    "cpu": ${cpu},
+    "memory": ${memory},
     "essential": true,
 
     "environment": [
@@ -18,7 +18,9 @@
       { "name": "POSTGRES__PASSWORD", "value": "${pgdb_pwd}" },
       { "name": "POOL_SIZE", "value": "${pool_size}" },
       { "name": "MAX_OVERFLOW", "value": "${max_overflow}" },
-      { "name": "WORKER", "value": "${worker}" }
+      { "name": "WORKER", "value": "${worker}" },
+      { "name": "REDIS__HOST", "value": "${redis_host}" },
+      { "name": "REDIS__PORT", "value": "${redis_port}" }
     ],
 
     "portMappings": [

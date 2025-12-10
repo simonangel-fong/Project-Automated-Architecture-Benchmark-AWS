@@ -11,8 +11,11 @@ locals {
   app_pgdb_db                = aws_db_instance.postgres.db_name
   app_pgdb_user              = aws_db_instance.postgres.username
   app_pgdb_pwd               = aws_db_instance.postgres.password
-  pool_size                  = 20
-  max_overflow               = 10
+  pool_size                  = var.task_fastapi_pool_size
+  max_overflow               = var.task_fastapi_max_overflow
+  worker                     = var.task_fastapi_worker
+  cpu                        = var.svc_fastapi_farget_cpu
+  memory                     = var.svc_fastapi_farget_memory
 }
 
 # #################################
@@ -80,8 +83,8 @@ resource "aws_ecs_task_definition" "ecs_task_fastapi" {
   family                   = "${var.project}-${var.env}-task-fastapi"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 1024
-  memory                   = 2048
+  cpu                      = var.svc_fastapi_farget_cpu
+  memory                   = var.svc_fastapi_farget_memory
   execution_role_arn       = aws_iam_role.ecs_task_execution_role_fastapi.arn
   task_role_arn            = aws_iam_role.ecs_task_role_fastapi.arn
 
@@ -91,6 +94,8 @@ resource "aws_ecs_task_definition" "ecs_task_fastapi" {
   # method: template file
   container_definitions = templatefile("${path.module}/container/fastapi.tftpl", {
     image         = local.ecr_fastapi
+    cpu           = local.cpu
+    memory        = local.memory
     awslogs_group = local.svc_fastapi_log_group_name
     region        = var.aws_region
     project       = var.project
@@ -102,6 +107,10 @@ resource "aws_ecs_task_definition" "ecs_task_fastapi" {
     pgdb_pwd      = local.app_pgdb_pwd
     pool_size     = local.pool_size
     max_overflow  = local.max_overflow
+    worker        = local.worker
+    redis_host    = aws_elasticache_replication_group.redis.primary_endpoint_address
+    redis_port    = aws_elasticache_replication_group.redis.port
+
   })
 
   tags = {
@@ -118,7 +127,7 @@ resource "aws_ecs_service" "ecs_svc_fastapi" {
 
   # task
   task_definition  = aws_ecs_task_definition.ecs_task_fastapi.arn
-  desired_count    = 1
+  desired_count    = var.svc_fastapi_desired_count
   launch_type      = "FARGATE"
   platform_version = "LATEST"
 
@@ -146,4 +155,50 @@ resource "aws_ecs_service" "ecs_svc_fastapi" {
     aws_vpc_endpoint.ecr_dkr,
     aws_vpc_endpoint.s3,
   ]
+}
+
+# #################################
+# Service: Scaling policy
+# #################################
+resource "aws_appautoscaling_target" "scaling_target_fastapi" {
+  service_namespace  = "ecs"
+  resource_id        = "service/${aws_ecs_cluster.ecs_cluster.name}/${aws_ecs_service.ecs_svc_fastapi.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  min_capacity       = var.svc_fastapi_min_capacity
+  max_capacity       = var.svc_fastapi_max_capacity
+}
+
+# scaling policy: cpu
+resource "aws_appautoscaling_policy" "scaling_cpu_fastapi" {
+  name               = "${var.project}-scale-cpu-fastapi"
+  resource_id        = aws_appautoscaling_target.scaling_target_fastapi.resource_id
+  scalable_dimension = aws_appautoscaling_target.scaling_target_fastapi.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.scaling_target_fastapi.service_namespace
+  policy_type        = "TargetTrackingScaling"
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+    target_value       = 40 # cpu%
+    scale_in_cooldown  = 30
+    scale_out_cooldown = 30
+  }
+}
+
+resource "aws_appautoscaling_policy" "scaling_memory_fastapi" {
+  name               = "${var.project}-scale-memory-fastapi"
+  resource_id        = aws_appautoscaling_target.scaling_target_fastapi.resource_id
+  scalable_dimension = aws_appautoscaling_target.scaling_target_fastapi.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.scaling_target_fastapi.service_namespace
+  policy_type        = "TargetTrackingScaling"
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+    target_value       = 40
+    scale_in_cooldown  = 60
+    scale_out_cooldown = 60
+  }
 }
