@@ -1,5 +1,5 @@
 # .github/workflows/job_test_performance.yaml
-name: Performance Testing
+name: Job-Performance Testing
 
 on:
   workflow_call:

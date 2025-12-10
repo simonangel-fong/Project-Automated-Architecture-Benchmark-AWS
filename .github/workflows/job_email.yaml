@@ -1,4 +1,5 @@
-name: Send Email Notification
+# .github/workflows/job_email.yaml
+name: Job-Send Email Notification
 
 on:
     workflow_call:

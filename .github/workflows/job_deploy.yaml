@@ -1,5 +1,5 @@
 # .github/workflows/job_deploy.yaml
-name: Deploy Resources
+name: Job-Deploy Resources
 
 on:
     workflow_call:

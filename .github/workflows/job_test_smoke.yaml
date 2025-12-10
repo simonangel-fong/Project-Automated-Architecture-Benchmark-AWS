@@ -1,5 +1,5 @@
 # .github/workflows/job_test_smoke.yaml
-name: Smoke Testing
+name: Job-Smoke Testing
 
 on:
   workflow_call:

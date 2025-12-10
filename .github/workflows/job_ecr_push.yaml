@@ -1,5 +1,5 @@
 # .github/workflows/job_ecr_push.yaml
-name: ECR Push
+name: Job-ECR Push
 
 on:
   workflow_call:

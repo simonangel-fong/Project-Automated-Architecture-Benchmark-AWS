@@ -1,5 +1,5 @@
 # .github/workflow/wf-ci-testing.yaml
-name: CI Testing
+name: Workflow-CI Testing
 
 on:
     workflow_dispatch:

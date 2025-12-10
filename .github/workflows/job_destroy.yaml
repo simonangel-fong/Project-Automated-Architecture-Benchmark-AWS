@@ -1,5 +1,5 @@
 # .github/workflows/job_destroy.yaml
-name: Destroy Resources
+name: Job-Destroy Resources
 
 on:
     workflow_call:
