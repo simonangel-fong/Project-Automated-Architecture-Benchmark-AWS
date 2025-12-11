@@ -26,3 +26,8 @@ output "flyway_init_cmd" {
   EOF
 
 }
+
+output "msk_bootstrap_brokers_tls" {
+  description = "Bootstrap broker string for TLS"
+  value       = aws_msk_cluster.kafka.bootstrap_brokers_tls
+}

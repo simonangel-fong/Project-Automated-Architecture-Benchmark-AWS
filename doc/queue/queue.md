@@ -63,4 +63,7 @@ docker run --rm --name queue_aws_write -p 5665:5665 -e SOLUTION_ID="queue" -e BA
 
 # mixed
 docker run --rm --name queue_aws_mixed -p 5665:5665 -e SOLUTION_ID="queue" -e BASE_URL="https://iot-queue.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/queue_aws_mixed.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
+
+python k6/pgdb_write_check.py
+
 ```

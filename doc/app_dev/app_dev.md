@@ -23,7 +23,7 @@ python -m venv .venv
 .venv\Scripts\activate.bat
 
 python.exe -m pip install --upgrade pip
-pip install fastapi "uvicorn[standard]" "SQLAlchemy[asyncio]" asyncpg pydantic python-dotenv pydantic-settings pytest pytest-asyncio httpx redis aiokafka 
+pip install fastapi "uvicorn[standard]" "SQLAlchemy[asyncio]" asyncpg pydantic python-dotenv pydantic-settings pytest pytest-asyncio httpx redis aiokafka
 
 pip freeze > requirements.txt
 # uvloop==0.22.1
@@ -46,6 +46,8 @@ pytest
 
 ### ECR
 
+- Repo
+
 ```sh
 # login
 aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin 099139718958.dkr.ecr.ca-central-1.amazonaws.com
@@ -53,13 +55,31 @@ aws ecr get-login-password --region ca-central-1 | docker login --username AWS -
 
 # Create repo
 aws ecr create-repository --repository-name iot-mgnt-telemetry-fastapi --region ca-central-1
+```
 
+- Baseline
+
+```sh
 # Push
 docker build -t fastaapi app/fastapi
 # tag
 docker tag fastaapi 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-fastapi
 # push to docker
 docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-fastapi
+
+```
+
+- queue
+
+```sh
+# Push
+docker build -t fastapi_kafka app/fastapi_kafka
+
+# tag
+docker tag fastapi_kafka 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-fastapi:kafka
+
+# push to docker
+docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry-fastapi:kafka
 
 ```
 

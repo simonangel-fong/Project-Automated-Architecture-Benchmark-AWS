@@ -45,7 +45,7 @@ variable "svc_fastapi_farget_memory" {
 
 variable "svc_fastapi_desired_count" {
   type    = number
-  default = 5
+  default = 3
 }
 
 variable "svc_fastapi_min_capacity" {
@@ -120,6 +120,24 @@ variable "db_app_pwd" {
 
 variable "db_readonly_pwd" {
   type = string
+}
+
+# ##############################
+# AWS MSK
+# ##############################
+variable "kafka_instance_type" {
+  type    = string
+  default = "kafka.t3.small"
+}
+
+variable "kafka_volume_size" {
+  type    = number
+  default = 20
+}
+
+variable "kafka_broker_count" {
+  type    = number
+  default = 3
 }
 
 # ##############################
