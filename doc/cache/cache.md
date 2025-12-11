@@ -26,6 +26,8 @@ docker run --rm --name cache_local_write --net=cache_public_network -p 5665:5665
 # mixed
 docker run --rm --name cache_local_mixed --net=cache_public_network -p 5665:5665 -e SOLUTION_ID="cache" -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/cache_local_mixed.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
 
+python k6/pgdb_write_check.py
+
 ```
 
 ---

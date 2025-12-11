@@ -16,7 +16,8 @@ const PROFILE = "write-heavy";
 // High-performance write test parameters
 const RATE_START = parseNumberEnv("RATE_START", 50); // initial RPS
 const RATE_TARGET = parseNumberEnv("RATE_TARGET", 1000); // peak RPS
-const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 1); // minutes per ramp stage
+const STAGE_START = parseNumberEnv("STAGE_START", 1); // minutes per start stage
+const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 5); // minutes per ramp stage
 const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 2); // minutes to hold peak
 
 // VU pool
@@ -70,12 +71,10 @@ export const options = {
 
       // Smooth ramp to RATE_TARGET and then hold
       stages: [
-        { duration: `${STAGE_RAMP}m`, target: RATE_START }, // warm-up
-        { duration: `${STAGE_RAMP}m`, target: Math.round(RATE_TARGET * 0.25) },
-        { duration: `${STAGE_RAMP}m`, target: Math.round(RATE_TARGET * 0.5) },
-        { duration: `${STAGE_RAMP}m`, target: Math.round(RATE_TARGET * 0.75) },
+        { duration: `${STAGE_START}m`, target: RATE_START }, // warm-up
         { duration: `${STAGE_RAMP}m`, target: RATE_TARGET }, // reach peak
         { duration: `${STAGE_PEAK}m`, target: RATE_TARGET }, // hold peak
+        { duration: `1m`, target: 0 }, // cool down
       ],
 
       gracefulStop: "60s",

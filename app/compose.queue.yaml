@@ -57,7 +57,7 @@ services:
       - private_network
     ports:
       - "5432:5432"
-    command: ["postgres", "-c", "config_file=/config/cache.conf"]
+    command: ["postgres", "-c", "config_file=/config/queue.conf"]
     healthcheck:
       test:
         [
@@ -71,7 +71,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2"
+          cpus: "4"
           memory: 2028M
         reservations:
           cpus: "0.5"
@@ -121,5 +121,3 @@ services:
         condition: service_healthy
       flyway:
         condition: service_completed_successfully
-      # fastapi01:
-      #   condition: service_healthy
