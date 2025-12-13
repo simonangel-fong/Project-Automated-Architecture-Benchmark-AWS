@@ -1,7 +1,16 @@
-# ###########################################
 # aws_ecs_svc_fastapi_monitoring.tf
-# a file to define ECS fastapi task monitoring
-# ###########################################
+# #################################
+# CloudWatch: log group
+# #################################
+resource "aws_cloudwatch_log_group" "log_group_fastapi" {
+  name              = local.svc_fastapi_log_group_name
+  retention_in_days = 7
+  kms_key_id        = aws_kms_key.cloudwatch_log.arn
+
+  tags = {
+    Name = local.svc_fastapi_log_group_name
+  }
+}
 
 # #################################
 # Monitoring: cup alarm
@@ -12,7 +21,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_fastapi_high_cpu" {
   metric_name         = "CPUUtilization"
   comparison_operator = "GreaterThanThreshold"
   statistic           = "Average"
-  threshold           = 70
+  threshold           = 50
   period              = 60 # period in seconds
   evaluation_periods  = 2  # number of periods to compare with threshold.  
 

@@ -5,8 +5,8 @@
 # #################################
 locals {
   svc_fastapi_log_group_name = "/ecs/task/${var.project}-${var.env}-fastapi"
-  debug                      = var.env == "prod" ? false : true
-  ecr_fastapi                = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}-fastapi:kafka"
+  debug                      = var.debug
+  ecr_fastapi                = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}:fastapi-kafka"
   app_pgdb_host              = aws_db_instance.postgres.address
   app_pgdb_db                = aws_db_instance.postgres.db_name
   app_pgdb_user              = aws_db_instance.postgres.username
@@ -19,37 +19,31 @@ locals {
 }
 
 # #################################
-# IAM: ECS Task Execution Role
+# IAM: Execution Role
 # #################################
 # assume role
-resource "aws_iam_role" "ecs_task_execution_role_fastapi" {
-  name               = "${var.project}-${var.env}-task-execution-role-fastapi"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_ecs.json
-
-  tags = {
-    Project = var.project
-    Role    = "ecs-task-execution-role-fastapi"
-  }
+resource "aws_iam_role" "execution_role_fastapi" {
+  name               = "${var.project}-${var.env}-execution-role-fastapi"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
 }
 
 # policy attachment: exec role
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_fastapi" {
-  role       = aws_iam_role.ecs_task_execution_role_fastapi.name
+  role       = aws_iam_role.execution_role_fastapi.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # #################################
-# IAM: ECS Task Role
+# IAM: Task Role
 # #################################
-resource "aws_iam_role" "ecs_task_role_fastapi" {
+resource "aws_iam_role" "task_role_fastapi" {
   name               = "${var.project}-${var.env}-task-role-fastapi"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_ecs.json
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
 }
 
-# #################################
-# IAM: ECS with MSK
-# #################################
-data "aws_iam_policy_document" "fastapi_msk" {
+# policy: fastapi to msk
+data "aws_iam_policy_document" "fastapi_to_msk" {
+  # Connect
   statement {
     sid    = "KafkaClusterConnectAndDescribe"
     effect = "Allow"
@@ -59,10 +53,11 @@ data "aws_iam_policy_document" "fastapi_msk" {
       "kafka-cluster:DescribeClusterDynamicConfiguration",
     ]
     resources = [
-      aws_msk_cluster.kafka.arn
+      "arn:aws:kafka:${var.aws_region}:${data.aws_caller_identity.current.account_id}:cluster/${aws_msk_cluster.kafka.cluster_name}/*"
     ]
   }
 
+  # Topic
   statement {
     sid    = "KafkaTopicAccess"
     effect = "Allow"
@@ -70,33 +65,20 @@ data "aws_iam_policy_document" "fastapi_msk" {
       "kafka-cluster:DescribeTopic",
       "kafka-cluster:DescribeTopicDynamicConfiguration",
       "kafka-cluster:WriteData",
-      "kafka-cluster:ReadData",
     ]
     resources = [
-      "${aws_msk_cluster.kafka.arn}/*"
-    ]
-  }
-
-  statement {
-    sid    = "KafkaGroupAccess"
-    effect = "Allow"
-    actions = [
-      "kafka-cluster:DescribeGroup",
-      "kafka-cluster:AlterGroup",
-    ]
-    resources = [
-      "${aws_msk_cluster.kafka.arn}/*"
+      "arn:aws:kafka:${var.aws_region}:${data.aws_caller_identity.current.account_id}:topic/${aws_msk_cluster.kafka.cluster_name}/*/telemetry"
     ]
   }
 }
 
 resource "aws_iam_policy" "fastapi_msk" {
   name   = "${var.project}-${var.env}-fastapi-msk"
-  policy = data.aws_iam_policy_document.fastapi_msk.json
+  policy = data.aws_iam_policy_document.fastapi_to_msk.json
 }
 
 resource "aws_iam_role_policy_attachment" "fastapi_msk" {
-  role       = aws_iam_role.ecs_task_role_fastapi.name
+  role       = aws_iam_role.task_role_fastapi.name
   policy_arn = aws_iam_policy.fastapi_msk.arn
 }
 
@@ -139,8 +121,8 @@ resource "aws_ecs_task_definition" "ecs_task_fastapi" {
   network_mode             = "awsvpc"
   cpu                      = var.svc_fastapi_farget_cpu
   memory                   = var.svc_fastapi_farget_memory
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role_fastapi.arn
-  task_role_arn            = aws_iam_role.ecs_task_role_fastapi.arn
+  execution_role_arn       = aws_iam_role.execution_role_fastapi.arn
+  task_role_arn            = aws_iam_role.task_role_fastapi.arn
 
   # method: json file
   # container_definitions = file("./container/fastapi.json")
@@ -234,7 +216,7 @@ resource "aws_appautoscaling_policy" "scaling_cpu_fastapi" {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
-    target_value       = 40 # cpu%
+    target_value       = 60 # cpu%
     scale_in_cooldown  = 30
     scale_out_cooldown = 30
   }

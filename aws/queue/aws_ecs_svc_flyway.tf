@@ -1,20 +1,15 @@
 # aws_ecs_svc_flyway.tf
 locals {
-  ecr_flyway = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}-flyway"
+  ecr_flyway = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.project}:flyway"
 }
 
 # #################################
-# IAM: ECS Task Execution Role
+# IAM: Execution Role
 # #################################
 # assume role
 resource "aws_iam_role" "ecs_task_execution_role_flyway" {
-  name               = "${var.project}-${var.env}-task-execution-role-flyway"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_ecs.json
-
-  tags = {
-    Project = var.project
-    Role    = "ecs-task-execution-role-flyway"
-  }
+  name               = "${var.project}-${var.env}-execution-role-flyway"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
 }
 
 # policy attachment: exec role
@@ -24,11 +19,11 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_flyway
 }
 
 # #################################
-# IAM: ECS Task Role
+# IAM: Task Role
 # #################################
 resource "aws_iam_role" "ecs_task_role_flyway" {
   name               = "${var.project}-${var.env}-task-role-flyway"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_ecs.json
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
 }
 
 # ##############################

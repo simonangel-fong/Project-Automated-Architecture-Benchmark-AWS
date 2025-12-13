@@ -15,13 +15,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # ==============================
 class KafkaSettings(BaseModel):
     """Kafka configuration."""
-
     bootstrap_servers: str = "broker:9092"
-    client_id: str = "iot-mgnt-telemetry"
+    client_id: str = "telemetry_producer"
+    topic: str = "telemetry"
 
-    # topic names
-    topic_telemetry_ingest: str = "telemetry_ingest"
-    topic_telemetry_dlq: str = "telemetry_dlq"
 
 # ==============================
 # PostgreSQL
@@ -82,14 +79,15 @@ class Settings(BaseSettings):
 
     # General
     app_name: str = "Iot management telemetry"
+    env: str = "dev"
+    debug: bool = True
+    aws_region: str = "ca-central-1"
+
     cors: str = Field(
         default="http://localhost,http://localhost:8000,http://localhost:8080",
         alias="CORS",
         description="Comma-separated list of allowed CORS origins",
     )
-    debug: bool = True
-    env: str = "dev"
-    # env: Literal["dev", "staging", "prod"] = "dev"
 
     # performance tuning
     pool_size: int = Field(
@@ -115,7 +113,7 @@ class Settings(BaseSettings):
     redis: RedisSettings = RedisSettings()
     kafka: KafkaSettings = KafkaSettings()
 
-    # Pydantic Settings config
+    # Settings config
     model_config = SettingsConfigDict(
         # project root .env
         env_file=str(Path(__file__).resolve().parent.parent.parent / ".env"),
@@ -124,7 +122,7 @@ class Settings(BaseSettings):
         env_nested_delimiter="__",    # POSTGRES__HOST -> settings.postgres.host
     )
 
-    # Convenience properties
+    # Properties
     @property
     def postgres_url(self) -> str:
         """Postgres connection URL."""

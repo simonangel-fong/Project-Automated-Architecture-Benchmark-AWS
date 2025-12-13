@@ -11,6 +11,11 @@ variable "env" {
   default = "queue"
 }
 
+variable "debug" {
+  type    = bool
+  default = true
+}
+
 # ##############################
 # AWS
 # ##############################
@@ -45,12 +50,12 @@ variable "svc_fastapi_farget_memory" {
 
 variable "svc_fastapi_desired_count" {
   type    = number
-  default = 1
+  default = 2
 }
 
 variable "svc_fastapi_min_capacity" {
   type    = number
-  default = 5
+  default = 1
 }
 
 variable "svc_fastapi_max_capacity" {

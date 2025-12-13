@@ -1,8 +1,7 @@
-# ##############################
-# IAM: ECS Task execution role
-# ##############################
-# assume policy
-data "aws_iam_policy_document" "assume_role_ecs" {
+# #################################
+# IAM: ECS Assume policy
+# #################################
+data "aws_iam_policy_document" "ecs_task_assume_role" {
   statement {
     effect = "Allow"
     principals {
