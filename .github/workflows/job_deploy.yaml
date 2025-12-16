@@ -132,7 +132,10 @@ jobs:
                   FLYWAY_INIT_CMD="$(terraform output -json flyway_init_cmd)"
                   CLUSTER="$(terraform output -raw ecs_cluster_name)"
 
+                  echo $FLYWAY_INIT_CMD
                   echo $CLUSTER
+
+                  echo aws ecs wait tasks-stopped --cluster "iot-mgnt-telemetry-baseline-cluster" --tasks "$FLYWAY_INIT_CMD" --region "${{vars.AWS_REGION}}"
 
                   echo "Waiting for Flyway task to finish..."
                   aws ecs wait tasks-stopped \
