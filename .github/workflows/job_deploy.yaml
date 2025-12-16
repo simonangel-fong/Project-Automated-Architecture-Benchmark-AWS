@@ -136,7 +136,7 @@ jobs:
 
                   echo "ECS Cluster: $CLUSTER"
                   echo "Starting Flyway task using: $FLYWAY_RUN_COMMAND"
-                  
+
 
                   echo "Waiting for Flyway task to finish..."
                   aws ecs wait tasks-stopped \

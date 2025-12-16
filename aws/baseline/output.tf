@@ -16,5 +16,5 @@ output "flyway_init_cmd" {
     --network-configuration "awsvpcConfiguration={subnets=[${join(",", [for s in aws_subnet.private : s.id])}],securityGroups=[${aws_security_group.flyway.id}]}" \
 
 EOF
-    # --output text
+  # --output text
 }
