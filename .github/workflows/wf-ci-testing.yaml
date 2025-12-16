@@ -62,18 +62,21 @@ jobs:
         secrets:
             aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
 
-    # lint-check:
-    #     name: Terraform Lint Check
-    #     needs: ecr_push
-    #     strategy:
-    #         fail-fast: false
-    #         matrix:
-    #             solution:
-    #                 - architecture: baseline
-    #                 - architecture: tune
-    #     uses: ./.github/workflows/job_lint_check.yaml
-    #     with:
-    #         architecture: ${{ matrix.solution.architecture }}
+    lint-check:
+        name: Terraform Lint Check
+        needs: ecr_push
+        strategy:
+            fail-fast: false
+            matrix:
+                solution:
+                    - tf_project_name: Baseline
+                      tf_path: aws/baseline
+                    - tf_project_name: Tune
+                      tf_path: aws/tune
+        uses: ./.github/workflows/job_lint_check.yaml
+        with:
+            tf_project_name: ${{ matrix.solution.tf_project_name }}
+            tf_path: ${{ matrix.solution.tf_path }}
 
     # deploy:
     #     name: Deploy Resources
