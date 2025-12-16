@@ -115,7 +115,7 @@ jobs:
 
   smoke_testing:
     name: Smoke Testing
-    # needs: deploy
+    needs: deploy
     uses: ./.github/workflows/job_test_smoke.yaml
     strategy:
       fail-fast: false
