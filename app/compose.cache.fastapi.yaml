@@ -2,7 +2,7 @@ services:
   fastapi01:
     container_name: fastapi01
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env
@@ -48,7 +48,7 @@ services:
   fastapi02:
     container_name: fastapi02
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env
@@ -94,7 +94,7 @@ services:
   fastapi03:
     container_name: fastapi03
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env
@@ -140,7 +140,7 @@ services:
   fastapi04:
     container_name: fastapi04
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env
@@ -186,7 +186,7 @@ services:
   fastapi05:
     container_name: fastapi05
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env
@@ -232,7 +232,7 @@ services:
   fastapi06:
     container_name: fastapi06
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env
@@ -278,7 +278,7 @@ services:
   fastapi07:
     container_name: fastapi07
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env
@@ -324,7 +324,7 @@ services:
   fastapi08:
     container_name: fastapi08
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env
@@ -370,7 +370,7 @@ services:
   fastapi09:
     container_name: fastapi09
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env
@@ -416,7 +416,7 @@ services:
   fastapi10:
     container_name: fastapi10
     build:
-      context: ./fastapi/
+      context: ./fastapi_redis/
       dockerfile: Dockerfile
     env_file:
       - .cache.env

@@ -67,11 +67,33 @@ class RedisSettings(BaseModel):
 class Settings(BaseSettings):
     """Application settings."""
 
+    # Pydantic Settings config
+    model_config = SettingsConfigDict(
+        # project root .env
+        env_file=str(Path(__file__).resolve().parent.parent.parent / ".env"),
+        env_file_encoding="utf-8",
+        extra="ignore",               # ignore unknown env vars
+        env_nested_delimiter="__",    # POSTGRES__HOST -> settings.postgres.host
+    )
+
     # General
-    app_name: str = "Iot management telemetry"
-    env: str = "dev"
-    debug: bool = True
-    aws_region: str = "ca-central-1"
+    project: str = Field(
+        default="iot mgnt telemetry",
+        alias="PROJECT",
+        description="The project name",
+    )
+
+    env: str = Field(
+        default="dev",
+        alias="ENV",
+        description="The environment name",
+    )
+
+    debug: bool = Field(
+        default=True,
+        alias="DEBUG",
+        description="Whether it is debug mode",
+    )
 
     cors: str = Field(
         default="http://localhost,http://localhost:8000,http://localhost:8080",
@@ -102,15 +124,6 @@ class Settings(BaseSettings):
     postgres: PostgresSettings = PostgresSettings()
     redis: RedisSettings = RedisSettings()
 
-    # Settings config
-    model_config = SettingsConfigDict(
-        # project root .env
-        env_file=str(Path(__file__).resolve().parent.parent.parent / ".env"),
-        env_file_encoding="utf-8",
-        extra="ignore",               # ignore unknown env vars
-        env_nested_delimiter="__",    # POSTGRES__HOST -> settings.postgres.host
-    )
-
     # Properties
     @property
     def postgres_url(self) -> str:
@@ -121,7 +134,6 @@ class Settings(BaseSettings):
     def redis_url(self) -> str:
         """Redis connection URL."""
         return self.redis.url
-
 
     @property
     def cors_list(self) -> list[str]:

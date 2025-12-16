@@ -23,7 +23,7 @@ const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 2); // minutes to hold peak
 
 // VU pool
 const VU = parseNumberEnv("VU", 50); // pre-allocated VUs
-const MAX_VU = parseNumberEnv("MAX_VU", 100); // max VUs
+const MAX_VU = parseNumberEnv("MAX_VU", 200); // max VUs
 
 // ==============================
 // k6 options
@@ -58,7 +58,7 @@ export const options = {
       [
         {
           threshold: "p(99)<300", // 99% of requests < 300ms
-          abortOnFail: ABORT_ON_FAIL, // abort when 1st failure
+          // abortOnFail: ABORT_ON_FAIL, // abort when 1st failure
           // delayAbortEval: "10s",
         },
         { threshold: "p(90)<1000" },

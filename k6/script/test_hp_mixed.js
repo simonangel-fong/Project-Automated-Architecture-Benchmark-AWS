@@ -31,11 +31,11 @@ const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 5); // minutes per ramp stage
 const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 2); // minutes to hold peak RPS
 
 // -------- VU --------
-const W_VU = parseNumberEnv("W_VU", 10); // pre-allocated VUs for write
-const W_MAX_VU = parseNumberEnv("W_MAX_VU", 50); // max VUs for write scenario
+const W_VU = parseNumberEnv("W_VU", 20); // pre-allocated VUs for write
+const W_MAX_VU = parseNumberEnv("W_MAX_VU", 100); // max VUs for write scenario
 
-const R_VU = parseNumberEnv("R_VU", 10); // pre-allocated VUs for read
-const R_MAX_VU = parseNumberEnv("R_MAX_VU", 50); // max VUs for read scenario
+const R_VU = parseNumberEnv("R_VU", 20); // pre-allocated VUs for read
+const R_MAX_VU = parseNumberEnv("R_MAX_VU", 100); // max VUs for read scenario
 
 // ==============================
 // k6 options
@@ -71,7 +71,7 @@ export const options = {
     "http_req_duration{scenario:hp_write_telemetry,endpoint:telemetry_post}": [
       {
         threshold: "p(99)<300", // 99% of requests < 300ms
-        abortOnFail: ABORT_ON_FAIL, // abort when 1st failure
+        // abortOnFail: ABORT_ON_FAIL, // abort when 1st failure
         // delayAbortEval: "10s",
       },
       { threshold: "p(90)<1000" },
@@ -82,7 +82,7 @@ export const options = {
       [
         {
           threshold: "p(99)<300", // 99% of requests < 300ms
-          abortOnFail: ABORT_ON_FAIL, // abort when 1st failure
+          // abortOnFail: ABORT_ON_FAIL, // abort when 1st failure
           // delayAbortEval: "10s",
         },
         { threshold: "p(90)<1000" },

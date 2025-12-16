@@ -58,7 +58,7 @@ variable "svc_param" {
   }))
   default = {
     fastapi_svc = {
-      image_suffix  = "fastapi-baseline"
+      image_suffix  = "fastapi-redis"
       cpu           = 2048
       memory        = 4096
       count_desired = 6

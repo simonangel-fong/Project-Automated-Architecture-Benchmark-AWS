@@ -1,6 +1,6 @@
 # router/home.py
 import os
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from ..config.setting import get_settings
 
@@ -28,7 +28,7 @@ async def home() -> dict:
     """
     print(settings.cors_list)
     response: dict = {
-        "app": settings.app_name,
+        "project": settings.project,
         "status": "ok",
         "environment": settings.env,
         "debug": settings.debug,
@@ -64,9 +64,5 @@ async def home() -> dict:
             "db_name": settings.redis.db,
         }
 
-        response["mq"] = {
-            "bootstrap_servers": settings.kafka.bootstrap_servers,
-            "client_id": settings.kafka.client_id
-        }
 
     return response

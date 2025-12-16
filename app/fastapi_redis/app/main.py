@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import logging
-from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings, setup_logging
-from .mq import init_producer, close_producer
 from .routers import home, health, device, telemetry
 
 setup_logging()
@@ -16,12 +14,6 @@ logger = logging.getLogger(__name__)
 API_PREFIX = "/api"
 settings = get_settings()
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await init_producer()
-    yield
-    await close_producer()
 
 
 app = FastAPI(
@@ -33,7 +25,6 @@ app = FastAPI(
         "and API keys, while administrative endpoints are intended for internal "
         "operations and tooling."
     ),
-    lifespan=lifespan,
 )
 
 # ====================
