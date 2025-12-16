@@ -112,6 +112,28 @@ jobs:
             aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
             aws_backend_bucket: ${{ vars.AWS_BACKEND_BUCKET }}
 
+    prepare_urls:
+        name: Aggregate URLs
+        runs-on: ubuntu-latest
+        needs: deploy
+        outputs:
+            base_urls_json: ${{ steps.collect.outputs.base_urls_json }} 
+
+        steps:
+            - name: Collect Matrix Outputs and Format as JSON
+              id: collect
+              run: |
+                # The key structure is: needs.<job_id>.outputs.<matrix_key>.<output_name>
+                # This pulls all 'base_url_output' values from the 'deploy' job's 'solution' matrix.
+                # The result is an array of strings: ["url1", "url2", ...]
+          
+                URLS_JSON='${{ toJSON(needs.deploy.outputs.base_url) }}'
+          
+                # Print for debugging
+                echo "Collected URLs: $URLS_JSON"
+          
+                # Pass the JSON string as an output of this 'prepare_urls' job
+                echo "base_urls_json=$URLS_JSON" >> "$GITHUB_OUTPUT"
 
     # smoke_testing:
     #     name: Smoke Testing
