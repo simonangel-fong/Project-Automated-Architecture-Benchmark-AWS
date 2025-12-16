@@ -123,7 +123,8 @@ jobs:
       - name: Collect Matrix Outputs and Format as JSON
         id: collect
         run: |
-          URLS_JSON='${{ toJSON(needs.deploy.outputs.base_url) }}'
+          outcomes="$(cat */outcome | jq -c --slurp .)"
+          URLS_JSON='${{ toJSON(needs.deploy.outputs) }}'
 
           echo "Collected URLs: $URLS_JSON"
 
@@ -137,7 +138,7 @@ jobs:
       fail-fast: false
       matrix:
         solution:
-          - base_url: ${{ fromJSON(needs.prepare_urls.outputs.base_urls_json) }}
+          ${{ fromJSON(needs.prepare_urls.outputs.base_urls_json) }}
     with:
       base_url: ${{ matrix.solution.base_url }}
 
