@@ -8,14 +8,14 @@ on:
         description: "The base url"
         required: true
         type: string
-      env:
-        description: "Environment"
-        type: string
-        default: ca-central-1
+      # env:
+      #   description: "Environment"
+      #   type: string
+      #   default: ca-central-1
 
 jobs:
   testing-smoke:
-    name: Smoke Testing ${{ inputs.env }}
+    name: Smoke Testing
     runs-on: ubuntu-latest
     env:
       BASE_URL: ${{ inputs.base_url }}
@@ -28,6 +28,8 @@ jobs:
       - name: Wait for DNS
         run: |
           set -euo pipefail
+
+          echo ${{ inputs.base_url }}
 
           ATTEMPT=120
           URL_STATUS=0
@@ -73,7 +75,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: "k6-report-smoke-${{ inputs.env }}"
+          name: "k6-report-smoke-${{ inputs.base_url }}"
           path: |
             ${{ env.K6_REPORT }}
           retention-days: 7

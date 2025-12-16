@@ -2,196 +2,189 @@
 name: Workflow-CI Testing
 
 on:
-    workflow_dispatch:
-    push:
-        branches:
-            - "testing"
+  workflow_dispatch:
+  push:
+    branches:
+      - "testing"
 
 # multiple trigger
 concurrency:
-    group: ci-testing-${{ github.workflow }}-${{ github.ref_name }}
-    cancel-in-progress: true # Cancel older runs
+  group: ci-testing-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true # Cancel older runs
 
 jobs:
-    unit_test:
-        name: Unit Test
-        strategy:
-            fail-fast: false
-            matrix:
-                fastapi:
-                    - path: app/fastapi_baseline
-                    - path: app/fastapi_redis
-                    - path: app/fastapi_kafka
+  # unit_test:
+  #   name: Unit Test
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       fastapi:
+  #         - path: app/fastapi_baseline
+  #         - path: app/fastapi_redis
+  #         - path: app/fastapi_kafka
 
-        uses: ./.github/workflows/job_unit_test.yaml
-        with:
-            dir_app: "${{matrix.fastapi.path}}"
+  #   uses: ./.github/workflows/job_unit_test.yaml
+  #   with:
+  #     dir_app: "${{matrix.fastapi.path}}"
 
-    ecr_push:
-        name: ECR Push
-        needs: unit_test
-        permissions:
-            contents: read
-            id-token: write # OIDC
-        strategy:
-            fail-fast: false
-            matrix:
-                image:
-                    - image_name: fastapi-baseline
-                      image_tag: fastapi-baseline
-                      dir_dockerfile: app/fastapi_baseline
-                    - image_name: fastapi-redis
-                      image_tag: fastapi-redis
-                      dir_dockerfile: app/fastapi_redis
-                    - image_name: fastapi-kafka
-                      image_tag: fastapi-kafka
-                      dir_dockerfile: app/fastapi_kafka
-                    - image_name: flyway
-                      image_tag: flyway
-                      dir_dockerfile: app/flyway
-                    - image_name: kafka-consumer
-                      image_tag: kafka-consumer
-                      dir_dockerfile: app/kafka/consumer
-        uses: ./.github/workflows/job_ecr_push.yaml
-        with:
-            image_name: ${{ matrix.image.image_name }}
-            image_tag: ${{ matrix.image.image_tag }}
-            dir_dockerfile: ${{ matrix.image.dir_dockerfile }}
-            ecr_repo: "${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.PROJECT }}"
-            aws_region: ${{ vars.AWS_REGION }}
-        secrets:
-            aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
+  # ecr_push:
+  #   name: ECR Push
+  #   needs: unit_test
+  #   permissions:
+  #     contents: read
+  #     id-token: write # OIDC
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       image:
+  #         - image_name: fastapi-baseline
+  #           image_tag: fastapi-baseline
+  #           dir_dockerfile: app/fastapi_baseline
+  #         - image_name: fastapi-redis
+  #           image_tag: fastapi-redis
+  #           dir_dockerfile: app/fastapi_redis
+  #         - image_name: fastapi-kafka
+  #           image_tag: fastapi-kafka
+  #           dir_dockerfile: app/fastapi_kafka
+  #         - image_name: flyway
+  #           image_tag: flyway
+  #           dir_dockerfile: app/flyway
+  #         - image_name: kafka-consumer
+  #           image_tag: kafka-consumer
+  #           dir_dockerfile: app/kafka/consumer
+  #   uses: ./.github/workflows/job_ecr_push.yaml
+  #   with:
+  #     image_name: ${{ matrix.image.image_name }}
+  #     image_tag: ${{ matrix.image.image_tag }}
+  #     dir_dockerfile: ${{ matrix.image.dir_dockerfile }}
+  #     ecr_repo: "${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.PROJECT }}"
+  #     aws_region: ${{ vars.AWS_REGION }}
+  #   secrets:
+  #     aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
 
-    lint-check:
-        name: Terraform Lint Check
-        needs: ecr_push
-        strategy:
-            fail-fast: false
-            matrix:
-                solution:
-                    - tf_project_name: Baseline
-                      tf_path: aws/baseline
-                    - tf_project_name: Tune
-                      tf_path: aws/tune
-                    - tf_project_name: Scale
-                      tf_path: aws/scale
-                    - tf_project_name: cache
-                      tf_path: aws/cache
-                    - tf_project_name: queue
-                      tf_path: aws/queue
-        uses: ./.github/workflows/job_lint_check.yaml
-        with:
-            tf_project_name: ${{ matrix.solution.tf_project_name }}
-            tf_path: ${{ matrix.solution.tf_path }}
+  # lint-check:
+  #   name: Terraform Lint Check
+  #   needs: ecr_push
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       solution:
+  #         - tf_project_name: Baseline
+  #           tf_path: aws/baseline
+  #         - tf_project_name: Tune
+  #           tf_path: aws/tune
+  #         - tf_project_name: Scale
+  #           tf_path: aws/scale
+  #         - tf_project_name: cache
+  #           tf_path: aws/cache
+  #         - tf_project_name: queue
+  #           tf_path: aws/queue
+  #   uses: ./.github/workflows/job_lint_check.yaml
+  #   with:
+  #     tf_project_name: ${{ matrix.solution.tf_project_name }}
+  #     tf_path: ${{ matrix.solution.tf_path }}
 
-    deploy:
-        name: Deploy Resources
-        needs: lint-check
-        uses: ./.github/workflows/job_deploy.yaml
-        permissions:
-            contents: read
-            id-token: write # OIDC
-        strategy:
-            fail-fast: false
-            matrix:
-                solution:
-                    - env: baseline
-                    - env: tune
-        with:
-            project: ${{ vars.PROJECT}}
-            env: ${{ matrix.solution.env }}
-            aws_region: ${{ vars.AWS_REGION }}
-        secrets:
-            db_name: ${{ secrets.DB_NAME }}
-            db_username: ${{ secrets.DB_USERNAME }}
-            db_password: ${{ secrets.DB_PASSWORD }}
-            db_app_pwd: ${{ secrets.DB_APP_PWD }}
-            db_readonly_pwd: ${{ secrets.DB_READONLY_PWD }}
-            cf_api_token: ${{ secrets.CF_API_TOKEN }}
-            cf_zone_id: ${{ secrets.CF_ZONE_ID }}
-            aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
-            aws_backend_bucket: ${{ vars.AWS_BACKEND_BUCKET }}
+  deploy:
+    name: Deploy Resources
+    # needs: lint-check
+    uses: ./.github/workflows/job_deploy.yaml
+    permissions:
+      contents: read
+      id-token: write # OIDC
+    strategy:
+      fail-fast: false
+      matrix:
+        solution:
+          - env: baseline
+          - env: tune
+    with:
+      project: ${{ vars.PROJECT}}
+      env: ${{ matrix.solution.env }}
+      aws_region: ${{ vars.AWS_REGION }}
+    secrets:
+      db_name: ${{ secrets.DB_NAME }}
+      db_username: ${{ secrets.DB_USERNAME }}
+      db_password: ${{ secrets.DB_PASSWORD }}
+      db_app_pwd: ${{ secrets.DB_APP_PWD }}
+      db_readonly_pwd: ${{ secrets.DB_READONLY_PWD }}
+      cf_api_token: ${{ secrets.CF_API_TOKEN }}
+      cf_zone_id: ${{ secrets.CF_ZONE_ID }}
+      aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
+      aws_backend_bucket: ${{ vars.AWS_BACKEND_BUCKET }}
 
-    prepare_urls:
-        name: Aggregate URLs
-        runs-on: ubuntu-latest
-        needs: deploy
-        outputs:
-            base_urls_json: ${{ steps.collect.outputs.base_urls_json }} 
+  prepare_urls:
+    name: Aggregate URLs
+    runs-on: ubuntu-latest
+    needs: deploy
+    outputs:
+      base_urls_json: ${{ steps.collect.outputs.base_urls_json }}
 
-        steps:
-            - name: Collect Matrix Outputs and Format as JSON
-              id: collect
-              run: |
-                # The key structure is: needs.<job_id>.outputs.<matrix_key>.<output_name>
-                # This pulls all 'base_url_output' values from the 'deploy' job's 'solution' matrix.
-                # The result is an array of strings: ["url1", "url2", ...]
-          
-                URLS_JSON='${{ toJSON(needs.deploy.outputs.base_url) }}'
-          
-                # Print for debugging
-                echo "Collected URLs: $URLS_JSON"
-          
-                # Pass the JSON string as an output of this 'prepare_urls' job
-                echo "base_urls_json=$URLS_JSON" >> "$GITHUB_OUTPUT"
+    steps:
+      - name: Collect Matrix Outputs and Format as JSON
+        id: collect
+        run: |
+          URLS_JSON='${{ toJSON(needs.deploy.outputs.base_url) }}'
 
-    # smoke_testing:
-    #     name: Smoke Testing
-    #     needs: deploy
-    #     uses: ./.github/workflows/job_test_smoke.yaml
-    #     strategy:
-    #         fail-fast: false
-    #         matrix:
-    #             solution:
-    #                 - env: baseline
-    #     with:
-    #         base_url: ${{ needs.deploy.outputs.base_url }}
-    #         env: ${{ matrix.solution.env }}
+          echo "Collected URLs: $URLS_JSON"
 
-    # performance_testing:
-    #     name: Performance Testing
-    #     needs:
-    #         - deploy
-    #         - smoke_testing
-    #     uses: ./.github/workflows/job_test_performance.yaml
-    #     strategy:
-    #         fail-fast: false
-    #         matrix:
-    #             solution:
-    #                 - env: baseline
-    #     with:
-    #         base_url: ${{ needs.deploy.outputs.base_url }}
-    #         env: ${{ matrix.solution.env }}
+          echo "base_urls_json=$URLS_JSON" >> "$GITHUB_OUTPUT"
 
-    # destroy:
-    #     name: Destroy Resources
-    #     needs:
-    #         - performance_testing
-    #         - deploy
-    #     if: >
-    #         always() &&
-    #         (needs.deploy.result == 'success' || needs.deploy.result == 'failure') &&
-    #         (needs.performance_testing.result == 'success' || needs.performance_testing.result == 'failure' || needs.performance_testing.result == 'cancelled')
-    #     uses: ./.github/workflows/job_destroy.yaml
-    #     permissions:
-    #         contents: read
-    #         id-token: write # OIDC
-    #     strategy:
-    #         fail-fast: false
-    #         matrix:
-    #             solution:
-    #                 - env: baseline
-    #     with:
-    #         project: ${{ vars.PROJECT}}
-    #         env: ${{ matrix.solution.env }}
-    #         aws_region: ${{ vars.AWS_REGION }}
-    #     secrets:
-    #         db_name: ${{ secrets.DB_NAME }}
-    #         db_username: ${{ secrets.DB_USERNAME }}
-    #         db_password: ${{ secrets.DB_PASSWORD }}
-    #         db_app_pwd: ${{ secrets.DB_APP_PWD }}
-    #         db_readonly_pwd: ${{ secrets.DB_READONLY_PWD }}
-    #         cf_api_token: ${{ secrets.CF_API_TOKEN }}
-    #         cf_zone_id: ${{ secrets.CF_ZONE_ID }}
-    #         aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
-    #         aws_backend_bucket: ${{ vars.AWS_BACKEND_BUCKET }}
+  smoke_testing:
+    name: Smoke Testing
+    needs: prepare_urls
+    uses: ./.github/workflows/job_test_smoke.yaml
+    strategy:
+      fail-fast: false
+      matrix:
+        solution:
+          - base_url: ${{ fromJSON(needs.prepare_urls.outputs.base_urls_json) }}
+    with:
+      base_url: ${{ matrix.solution.base_url }}
+
+  # performance_testing:
+  #     name: Performance Testing
+  #     needs:
+  #         - deploy
+  #         - smoke_testing
+  #     uses: ./.github/workflows/job_test_performance.yaml
+  #     strategy:
+  #         fail-fast: false
+  #         matrix:
+  #             solution:
+  #                 - env: baseline
+  #     with:
+  #         base_url: ${{ needs.deploy.outputs.base_url }}
+  #         env: ${{ matrix.solution.env }}
+
+  # destroy:
+  #     name: Destroy Resources
+  #     needs:
+  #         - performance_testing
+  #         - deploy
+  #     if: >
+  #         always() &&
+  #         (needs.deploy.result == 'success' || needs.deploy.result == 'failure') &&
+  #         (needs.performance_testing.result == 'success' || needs.performance_testing.result == 'failure' || needs.performance_testing.result == 'cancelled')
+  #     uses: ./.github/workflows/job_destroy.yaml
+  #     permissions:
+  #         contents: read
+  #         id-token: write # OIDC
+  #     strategy:
+  #         fail-fast: false
+  #         matrix:
+  #             solution:
+  #                 - env: baseline
+  #     with:
+  #         project: ${{ vars.PROJECT}}
+  #         env: ${{ matrix.solution.env }}
+  #         aws_region: ${{ vars.AWS_REGION }}
+  #     secrets:
+  #         db_name: ${{ secrets.DB_NAME }}
+  #         db_username: ${{ secrets.DB_USERNAME }}
+  #         db_password: ${{ secrets.DB_PASSWORD }}
+  #         db_app_pwd: ${{ secrets.DB_APP_PWD }}
+  #         db_readonly_pwd: ${{ secrets.DB_READONLY_PWD }}
+  #         cf_api_token: ${{ secrets.CF_API_TOKEN }}
+  #         cf_zone_id: ${{ secrets.CF_ZONE_ID }}
+  #         aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
+  #         aws_backend_bucket: ${{ vars.AWS_BACKEND_BUCKET }}
