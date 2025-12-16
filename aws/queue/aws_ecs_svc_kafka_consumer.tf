@@ -13,7 +13,6 @@ locals {
   kafka_consumer_max                = var.svc_param.kafka_consumer_svc.count_max
   kafka_consumer_env_pool_size      = var.svc_param.kafka_consumer_svc.container_env["pool_size"]
   kafka_consumer_env_max_overflow   = var.svc_param.kafka_consumer_svc.container_env["max_overflow"]
-  kafka_consumer_env_worker         = var.svc_param.kafka_consumer_svc.container_env["worker"]
   kafka_consumer_env_pgdb_host      = aws_db_instance.postgres.address
   kafka_consumer_env_pgdb_db        = aws_db_instance.postgres.db_name
   kafka_consumer_env_pgdb_user      = aws_db_instance.postgres.username

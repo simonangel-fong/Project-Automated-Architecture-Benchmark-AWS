@@ -10,8 +10,6 @@ locals {
   fastapi_cpu              = var.svc_param.fastapi_svc.cpu
   fastapi_memory           = var.svc_param.fastapi_svc.memory
   fastapi_count_desired    = var.svc_param.fastapi_svc.count_desired
-  fastapi_count_min        = var.svc_param.fastapi_svc.count_min
-  fastapi_count_max        = var.svc_param.fastapi_svc.count_max
   fastapi_env_pool_size    = var.svc_param.fastapi_svc.container_env["pool_size"]
   fastapi_env_max_overflow = var.svc_param.fastapi_svc.container_env["max_overflow"]
   fastapi_env_worker       = var.svc_param.fastapi_svc.container_env["worker"]

@@ -100,13 +100,6 @@ variable "redis_node_type" {
   default     = "cache.t4g.micro"
 }
 
-variable "redis_num_cache_nodes" {
-  description = "Number of Redis cache nodes"
-  type        = number
-  default     = 1
-}
-
-
 # ##############################
 # AWS RDS
 # ##############################

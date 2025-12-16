@@ -53,6 +53,8 @@ variable "svc_param" {
     cpu           = number
     memory        = number
     count_desired = number
+    count_min     = number
+    count_max     = number
     container_env = map(any)
   }))
   default = {
@@ -61,6 +63,8 @@ variable "svc_param" {
       cpu           = 2048
       memory        = 4096
       count_desired = 1
+      count_min     = 1
+      count_max     = 1
       container_env = {
         pool_size    = 5
         max_overflow = 10
