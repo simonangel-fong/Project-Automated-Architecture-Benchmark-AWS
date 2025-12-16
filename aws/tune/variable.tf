@@ -53,8 +53,6 @@ variable "svc_param" {
     cpu           = number
     memory        = number
     count_desired = number
-    count_min     = number
-    count_max     = number
     container_env = map(any)
   }))
   default = {
@@ -63,8 +61,6 @@ variable "svc_param" {
       cpu           = 2048
       memory        = 4096
       count_desired = 1
-      count_min     = 1
-      count_max     = 1
       container_env = {
         pool_size    = 20
         max_overflow = 10
@@ -98,11 +94,6 @@ variable "task_param" {
 variable "instance_class" {
   type    = string
   default = "db.t4g.medium"
-}
-
-variable "rds_max_connection" {
-  type    = number
-  default = 400
 }
 
 variable "db_name" {
