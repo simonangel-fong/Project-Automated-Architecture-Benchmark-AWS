@@ -138,7 +138,7 @@ jobs:
                   echo "Starting Flyway task using: $FLYWAY_RUN_COMMAND"
                   
                   echo "Arn ...."
-                  TASK_ARN=$(eval "$FLYWAY_RUN_COMMAND" | tail -n 1)
+                  TASK_ARN=$(eval "$FLYWAY_RUN_COMMAND" | jq -r '.tasks[0].taskArn' | tr -d '[:space:]')
                   echo $TASK_ARN
 
                   echo "Waiting for Flyway task to finish..."
