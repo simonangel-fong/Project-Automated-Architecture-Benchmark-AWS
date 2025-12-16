@@ -78,7 +78,7 @@ class Settings(BaseSettings):
     """Application settings."""
 
     # General
-    app_name: str = "Iot management telemetry"
+    project: str = "Iot management telemetry"
     env: str = "dev"
     debug: bool = True
     aws_region: str = "ca-central-1"

@@ -28,7 +28,7 @@ async def home() -> dict:
     """
     print(settings.cors_list)
     response: dict = {
-        "app": settings.app_name,
+        "project": settings.project,
         "status": "ok",
         "environment": settings.env,
         "debug": settings.debug,
