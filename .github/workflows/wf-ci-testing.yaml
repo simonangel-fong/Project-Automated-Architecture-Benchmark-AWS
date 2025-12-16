@@ -120,6 +120,15 @@ jobs:
       base_urls_json: ${{ steps.collect.outputs.base_urls_json }}
 
     steps:
+      - name: Download all outcome artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts_dir
+
+      - name: test
+        run: |
+          echo "$(cat artifacts_dir/*/outcome.json | jq -cs .)"
+
       - name: Collect Matrix Outputs
         id: collect
         run: |
