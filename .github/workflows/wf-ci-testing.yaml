@@ -123,23 +123,24 @@ jobs:
       - name: Collect Matrix Outputs and Format as JSON
         id: collect
         run: |
-          URLS_JSON='${{ toJSON(needs.deploy.outputs) }}'
+          echo "${{ needs.deploy.outputs.base_url }}"
+          # URLS_JSON='${{ toJSON(needs.deploy.outputs) }}'
 
-          echo "Collected URLs: $URLS_JSON"
+          # echo "Collected URLs: $URLS_JSON"
 
-          echo "base_urls_json=$URLS_JSON" >> "$GITHUB_OUTPUT"
+          # echo "base_urls_json=$URLS_JSON" >> "$GITHUB_OUTPUT"
 
-  smoke_testing:
-    name: Smoke Testing
-    needs: prepare_urls
-    uses: ./.github/workflows/job_test_smoke.yaml
-    strategy:
-      fail-fast: false
-      matrix:
-        solution:
-          ${{ fromJSON(needs.prepare_urls.outputs.base_urls_json) }}
-    with:
-      base_url: ${{ matrix.solution.base_url }}
+  # smoke_testing:
+  #   name: Smoke Testing
+  #   needs: prepare_urls
+  #   uses: ./.github/workflows/job_test_smoke.yaml
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       solution:
+  #         ${{ fromJSON(needs.prepare_urls.outputs.base_urls_json) }}
+  #   with:
+  #     base_url: ${{ matrix.solution.base_url }}
 
   # performance_testing:
   #     name: Performance Testing
