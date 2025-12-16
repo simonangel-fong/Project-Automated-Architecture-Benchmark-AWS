@@ -129,7 +129,7 @@ jobs:
               run: |
                   set -euo pipefail
 
-                  echo "test ...."
+                  echo "Get output ...."
                   CLUSTER="$(terraform output -raw ecs_cluster_name)"
                   FLYWAY_RUN_COMMAND="$(terraform output -raw flyway_init_cmd)"
                   REGION="${{ inputs.AWS_REGION }}"
@@ -137,6 +137,7 @@ jobs:
                   echo "ECS Cluster: $CLUSTER"
                   echo "Starting Flyway task using: $FLYWAY_RUN_COMMAND"
                   
+                  echo "Arn ...."
                   TASK_ARN=$(eval "$FLYWAY_RUN_COMMAND" | tail -n 1)
                   echo TASK_ARN
 
