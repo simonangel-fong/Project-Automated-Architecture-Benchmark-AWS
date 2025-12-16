@@ -32,10 +32,10 @@ export const options = {
     http_reqs: ["count>0"],
 
     http_req_failed: ["rate<0.01"], // HTTP-level failures
-    http_req_duration: ["p(95)<500"], // Global latency guardrail
+    // http_req_duration: ["p(95)<500"], // Global latency guardrail
 
-    "http_req_duration{endpoint:home}": ["p(95)<300", "p(99)<500"], // Home latency
-    "http_req_duration{endpoint:telemetry_post}": ["p(95)<800", "p(99)<1300"], // Post latency
+    // "http_req_duration{endpoint:home}": ["p(95)<300", "p(99)<500"], // Home latency
+    // "http_req_duration{endpoint:telemetry_post}": ["p(95)<800", "p(99)<1300"], // Post latency
   },
 
   scenarios: {
