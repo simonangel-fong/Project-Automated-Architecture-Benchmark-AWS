@@ -8,6 +8,13 @@ on:
         description: "Image Name"
         required: true
         type: string
+      image_suffix:
+        description: "suffix of the the image"
+        type: string
+      dir_dockerfile:
+        description: "Path of the Dockerfile"
+        type: string
+        required: true
       aws_region:
         description: "AWS Region"
         type: string
@@ -25,9 +32,9 @@ jobs:
     name: ECR Push(${{ inputs.image_name }})
     runs-on: ubuntu-latest
     env:
-      DIR_DOCKFILE: app/${{ inputs.image_name }}
+      DIR_DOCKFILE: ${{ inputs.dir_dockerfile }}
       AWS_REGION: ${{ inputs.aws_region }}
-      ECR_REPOSITORY: "${{ secrets.aws_account_id }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.PROJECT }}-${{ inputs.image_name }}"
+      ECR_REPOSITORY: "${{ secrets.aws_account_id }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.PROJECT }}-${{ inputs.image_name }}:${{inputs.image_suffix}}"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

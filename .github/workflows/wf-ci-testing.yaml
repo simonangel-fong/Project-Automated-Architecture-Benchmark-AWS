@@ -27,25 +27,31 @@ jobs:
         with:
             dir_app: "${{matrix.fastapi.path}}"
 
-    # ecr_push:
-    #     name: ECR Push
-    #     needs: unit_test
-    #     permissions:
-    #         contents: read
-    #         id-token: write # OIDC
-    #     strategy:
-    #         fail-fast: false
-    #         matrix:
-    #             image:
-    #                 - image_name: fastapi
-    #                 - image_name: flyway
-    #     uses: ./.github/workflows/job_ecr_push.yaml
-    #     with:
-    #         image_name: ${{ matrix.image.image_name }}
-    #         aws_region: ${{ vars.AWS_REGION }}
-    #     secrets:
-    #         aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
-    #         aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+    ecr_push:
+        name: ECR Push
+        needs: unit_test
+        permissions:
+            contents: read
+            id-token: write # OIDC
+        strategy:
+            fail-fast: false
+            matrix:
+                image:
+                    - image_name: fastapi-baseline
+                      image_suffix: fastapi-baseline
+                      dir_dockerfile: app/fastapi_baseline
+                    - image_name: fastapi-redis
+                      image_suffix: fastapi-redis
+                      dir_dockerfile: app/fastapi_redis
+        uses: ./.github/workflows/job_ecr_push.yaml
+        with:
+            image_name: ${{ matrix.image.image_name }}
+            image_suffix: ${{ matrix.image.image_suffix }}
+            dir_dockerfile: ${{ matrix.image.dir_dockerfile }}
+            aws_region: ${{ vars.AWS_REGION }}
+        secrets:
+            aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
+            aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
 
     # lint-check:
     #     name: Terraform Lint Check
