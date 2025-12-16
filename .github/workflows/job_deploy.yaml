@@ -142,6 +142,7 @@ jobs:
 
                   echo "Waiting for Flyway task to finish..."
                   aws ecs wait tasks-stopped \
+                    --launch-type "FARGATE"
                     --cluster "$CLUSTER" \
                     --tasks "$TASK_ARN" \
                     --region "$REGION"
