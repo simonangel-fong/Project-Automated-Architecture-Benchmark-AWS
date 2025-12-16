@@ -157,7 +157,7 @@ jobs:
             - name: Upload outcome artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: outcome-${{ matrix.runner_id }} # Unique name for each matrix job
+                  name: outcome-${{ matrix.runner_id }}-${{ inputs.env }}
                   path: outcome.json
 
             - name: Output
