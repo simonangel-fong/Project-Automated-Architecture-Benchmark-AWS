@@ -98,6 +98,7 @@ jobs:
           - env: baseline
           - env: tune
           - env: scale
+          - env: cache
     with:
       project: ${{ vars.PROJECT}}
       env: ${{ matrix.solution.env }}
@@ -127,6 +128,8 @@ jobs:
             base_url: "https://iot-tune.arguswatcher.net"
           - env: scale
             base_url: "https://iot-scale.arguswatcher.net"
+          - env: cache
+            base_url: "https://iot-cache.arguswatcher.net"
     with:
       env: ${{ matrix.solution.env }}
       base_url: ${{ matrix.solution.base_url }}
@@ -150,6 +153,9 @@ jobs:
                 - env: scale
                   base_url: "https://iot-scale.arguswatcher.net"
                   test_report: scale_cicd_read.html
+                - env: cache
+                  base_url: "https://iot-cache.arguswatcher.net"
+                  test_report: cache_cicd_read.html
       with:
           base_url: ${{ matrix.solution.base_url }}
           env: ${{ matrix.solution.env }}
