@@ -73,6 +73,12 @@ jobs:
                       tf_path: aws/baseline
                     - tf_project_name: Tune
                       tf_path: aws/tune
+                    - tf_project_name: Scale
+                      tf_path: aws/scale
+                    - tf_project_name: cache
+                      tf_path: aws/cache
+                    - tf_project_name: queue
+                      tf_path: aws/queue
         uses: ./.github/workflows/job_lint_check.yaml
         with:
             tf_project_name: ${{ matrix.solution.tf_project_name }}
