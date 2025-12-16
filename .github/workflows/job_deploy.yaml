@@ -129,7 +129,7 @@ jobs:
               run: |
                   set -euo pipefail
 
-                  FLYWAY_INIT_CMD="$(terraform output -json flyway_init_cmd)"
+                  FLYWAY_INIT_CMD="$(terraform output -raw flyway_init_cmd)"
                   CLUSTER="$(terraform output -raw ecs_cluster_name)"
 
                   echo $FLYWAY_INIT_CMD
