@@ -1,5 +1,5 @@
 # .github/workflow/wf-testing.yaml
-name: Workflow-Auto Testing
+name: Workflow-Manaual Destroy
 
 on:
     workflow_dispatch:
