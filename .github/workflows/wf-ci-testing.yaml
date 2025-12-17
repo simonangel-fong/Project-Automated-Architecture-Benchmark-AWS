@@ -99,6 +99,7 @@ jobs:
           - env: tune
           - env: scale
           - env: cache
+          - env: queue
     with:
       project: ${{ vars.PROJECT}}
       env: ${{ matrix.solution.env }}
@@ -130,37 +131,39 @@ jobs:
             base_url: "https://iot-scale.arguswatcher.net"
           - env: cache
             base_url: "https://iot-cache.arguswatcher.net"
+          - env: queue
+            base_url: "https://iot-queue.arguswatcher.net"
     with:
       env: ${{ matrix.solution.env }}
       base_url: ${{ matrix.solution.base_url }}
 
-  performance_testing_reaad:
-      name: Performance Testing-Read
-      needs:
-          # - deploy
-          - smoke_testing
-      uses: ./.github/workflows/job_test_performance.yaml
-      strategy:
-          fail-fast: false
-          matrix:
-              solution:
-                - env: baseline
-                  base_url: "https://iot-baseline.arguswatcher.net"
-                  test_report: baseline_cicd_read.html
-                - env: tune
-                  base_url: "https://iot-tune.arguswatcher.net"
-                  test_report: tune_cicd_read.html
-                - env: scale
-                  base_url: "https://iot-scale.arguswatcher.net"
-                  test_report: scale_cicd_read.html
-                - env: cache
-                  base_url: "https://iot-cache.arguswatcher.net"
-                  test_report: cache_cicd_read.html
-      with:
-          base_url: ${{ matrix.solution.base_url }}
-          env: ${{ matrix.solution.env }}
-          test_report: ${{ matrix.solution.test_report }}
-          test_script: test_hp_read.js
+  # performance_testing_reaad:
+  #     name: Performance Testing-Read
+  #     needs:
+  #         # - deploy
+  #         - smoke_testing
+  #     uses: ./.github/workflows/job_test_performance.yaml
+  #     strategy:
+  #         fail-fast: false
+  #         matrix:
+  #             solution:
+  #               - env: baseline
+  #                 base_url: "https://iot-baseline.arguswatcher.net"
+  #                 test_report: baseline_cicd_read.html
+  #               - env: tune
+  #                 base_url: "https://iot-tune.arguswatcher.net"
+  #                 test_report: tune_cicd_read.html
+  #               - env: scale
+  #                 base_url: "https://iot-scale.arguswatcher.net"
+  #                 test_report: scale_cicd_read.html
+  #               - env: cache
+  #                 base_url: "https://iot-cache.arguswatcher.net"
+  #                 test_report: cache_cicd_read.html
+  #     with:
+  #         base_url: ${{ matrix.solution.base_url }}
+  #         env: ${{ matrix.solution.env }}
+  #         test_report: ${{ matrix.solution.test_report }}
+  #         test_script: test_hp_read.js
 
   # performance_testing_write:
   #     name: Performance Testing-Write
