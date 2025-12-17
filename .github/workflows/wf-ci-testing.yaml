@@ -150,12 +150,12 @@ jobs:
                 # - env: baseline
                 #   base_url: "https://iot-baseline.arguswatcher.net"
                 #   test_report: baseline_cicd_read.html
-                - env: tune
-                  base_url: "https://iot-tune.arguswatcher.net"
-                  test_report: tune_cicd_read.html
                 - env: scale
                   base_url: "https://iot-scale.arguswatcher.net"
                   test_report: scale_cicd_read.html
+                - env: tune
+                  base_url: "https://iot-tune.arguswatcher.net"
+                  test_report: tune_cicd_read.html
                 - env: cache
                   base_url: "https://iot-cache.arguswatcher.net"
                   test_report: cache_cicd_read.html
@@ -179,15 +179,18 @@ jobs:
           fail-fast: false
           matrix:
               solution:
-                - env: baseline
-                  base_url: "https://iot-baseline.arguswatcher.net"
-                  test_report: baseline_cicd_write.html
-                - env: tune
-                  base_url: "https://iot-tune.arguswatcher.net"
-                  test_report: tune_cicd_write.html
+                # - env: baseline
+                #   base_url: "https://iot-baseline.arguswatcher.net"
+                #   test_report: baseline_cicd_write.html
                 - env: scale
                   base_url: "https://iot-scale.arguswatcher.net"
                   test_report: scale_cicd_write.html
+                - env: tune
+                  base_url: "https://iot-tune.arguswatcher.net"
+                  test_report: tune_cicd_write.html
+                - env: cache
+                  base_url: "https://iot-cache.arguswatcher.net"
+                  test_report: cache_cicd_write.html
                 - env: queue
                   base_url: "https://iot-queue.arguswatcher.net"
                   test_report: queue_cicd_write.html
@@ -208,15 +211,18 @@ jobs:
           fail-fast: false
           matrix:
               solution:
-                - env: baseline
-                  base_url: "https://iot-baseline.arguswatcher.net"
-                  test_report: baseline_cicd_mixed.html
-                - env: tune
-                  base_url: "https://iot-tune.arguswatcher.net"
-                  test_report: tune_cicd_mixed.html
+                # - env: baseline
+                #   base_url: "https://iot-baseline.arguswatcher.net"
+                #   test_report: baseline_cicd_mixed.html
                 - env: scale
                   base_url: "https://iot-scale.arguswatcher.net"
                   test_report: scale_cicd_mixed.html
+                - env: tune
+                  base_url: "https://iot-tune.arguswatcher.net"
+                  test_report: tune_cicd_mixed.html
+                - env: cache
+                  base_url: "https://iot-cache.arguswatcher.net"
+                  test_report: cache_cicd_mixed.html
                 - env: queue
                   base_url: "https://iot-queue.arguswatcher.net"
                   test_report: queue_cicd_mixed.html

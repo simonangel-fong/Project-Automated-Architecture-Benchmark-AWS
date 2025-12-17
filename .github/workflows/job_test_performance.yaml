@@ -36,7 +36,7 @@ jobs:
       - name: Setup K6
         uses: grafana/setup-k6-action@v1
 
-      - name: Smoke Testing
+      - name: Performance Testing ${{ inputs.env }}
         id: testing-performance
         uses: grafana/run-k6-action@v1
         env:
