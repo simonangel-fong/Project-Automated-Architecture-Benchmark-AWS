@@ -5,10 +5,10 @@
 - [Project: IOT Mgnt Telemetry Cloud Native - Kafka](#project-iot-mgnt-telemetry-cloud-native---kafka)
   - [Local - Testing](#local---testing)
   - [AWS](#aws)
-  - [Remote Testing](#remote-testing)
   - [Kafka](#kafka)
     - [Init](#init)
     - [Consumer](#consumer)
+  - [Remote Testing](#remote-testing)
 
 ---
 
@@ -52,6 +52,36 @@ terraform destroy -auto-approve
 
 ```
 
+## Kafka
+
+### Init
+
+```sh
+# Push
+docker build -t kafka_init app/kafka/init
+# tag
+docker tag kafka_init 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:kafka-init
+# push to docker
+docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:kafka-init
+
+```
+
+---
+
+### Consumer
+
+```sh
+# Push
+docker build -t kafka_consumer app/kafka/consumer
+# tag
+docker tag kafka_consumer 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:kafka-consumer
+# push to docker
+docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:kafka-consumer
+
+```
+
+---
+
 ## Remote Testing
 
 ```sh
@@ -71,32 +101,16 @@ python k6/pgdb_write_check.py
 
 ```
 
-## Kafka
-
-### Init
-
+- breaking point
 
 ```sh
-# Push
-docker build -t kafka_init app/kafka/init
-# tag
-docker tag kafka_init 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:kafka-init
-# push to docker
-docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:kafka-init
+# read breaking point
+docker run --rm --name kafka_aws_read_break -p 5665:5665 -e SOLUTION_ID="kafka" -e BASE_URL="https://iot-kafka.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_aws_read_break.html -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_TARGET=10000 -e STAGE_RAMP=120 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
 
-```
+# write breaking point
+docker run --rm --name kafka_aws_write_break -p 5665:5665 -e SOLUTION_ID="kafka" -e BASE_URL="https://iot-kafka.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_aws_write_break.html -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_TARGET=10000 -e STAGE_RAMP=120 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
 
----
-
-### Consumer
-
-
-```sh
-# Push
-docker build -t kafka_consumer app/kafka/consumer
-# tag
-docker tag kafka_consumer 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:kafka-consumer
-# push to docker
-docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:kafka-consumer
+# mixed breaking point
+docker run --rm --name kafka_aws_write_break -p 5665:5665 -e SOLUTION_ID="kafka" -e BASE_URL="https://iot-kafka.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_aws_write_break.html -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_READ_TARGET=10000 -e STAGE_RAMP=120 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
 
 ```
