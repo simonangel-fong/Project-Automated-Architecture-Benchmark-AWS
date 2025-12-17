@@ -1,0 +1,2308 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 0,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 21,
+      "panels": [],
+      "title": "Application Load Balancer",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "LoadBalancer": "app/iot-mgnt-telemetry-scale-alb/2664ee86b55b076c"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Scale",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "HTTPCode_Target_2XX_Count",
+          "metricQueryType": 0,
+          "namespace": "AWS/ApplicationELB",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Scale",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "AWS/ApplicationELB",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "HTTPCode_Target_2XX_Count",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            }
+          },
+          "sqlExpression": "SELECT SUM(HTTPCode_Target_2XX_Count) FROM \"AWS/ApplicationELB\"",
+          "statistic": "Sum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "LoadBalancer": "app/iot-mgnt-telemetry-tune-alb/4c9e6ed25ee827ee"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Tune",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "HTTPCode_Target_2XX_Count",
+          "metricQueryType": 0,
+          "namespace": "AWS/ApplicationELB",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Tune",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "AWS/ApplicationELB",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "HTTPCode_Target_2XX_Count",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            }
+          },
+          "sqlExpression": "SELECT SUM(HTTPCode_Target_2XX_Count) FROM \"AWS/ApplicationELB\"",
+          "statistic": "Sum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "LoadBalancer": "app/iot-mgnt-telemetry-cache-alb/4460acd179c1f08b"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Redis",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "HTTPCode_Target_2XX_Count",
+          "metricQueryType": 0,
+          "namespace": "AWS/ApplicationELB",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Redis",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "AWS/ApplicationELB",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "HTTPCode_Target_2XX_Count",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            }
+          },
+          "sqlExpression": "SELECT SUM(HTTPCode_Target_2XX_Count) FROM \"AWS/ApplicationELB\"",
+          "statistic": "Sum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "LoadBalancer": "app/iot-mgnt-telemetry-queue-alb/bf1382f63d9f7981"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "HTTPCode_Target_2XX_Count",
+          "metricQueryType": 0,
+          "namespace": "AWS/ApplicationELB",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "AWS/ApplicationELB",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "HTTPCode_Target_2XX_Count",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            }
+          },
+          "sqlExpression": "SELECT SUM(HTTPCode_Target_2XX_Count) FROM \"AWS/ApplicationELB\"",
+          "statistic": "Sum"
+        }
+      ],
+      "title": "HTTP Request",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 9,
+      "panels": [],
+      "title": "ECS Service",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {},
+          "expression": "",
+          "id": "",
+          "label": "Scale",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "DesiredTaskCount",
+          "metricQueryType": 1,
+          "namespace": "ECS/ContainerInsights",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Scale",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "ECS/ContainerInsights",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderBy": {
+              "name": "SUM",
+              "type": "function"
+            },
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "DesiredTaskCount",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            "where": {
+              "expressions": [
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "iot-mgnt-telemetry-scale-cluster"
+                  },
+                  "property": {
+                    "name": "ClusterName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                },
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "iot-mgnt-telemetry-scale-service-fastapi"
+                  },
+                  "property": {
+                    "name": "ServiceName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                }
+              ],
+              "type": "and"
+            }
+          },
+          "sqlExpression": "SELECT SUM(DesiredTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'iot-mgnt-telemetry-scale-cluster' AND ServiceName = 'iot-mgnt-telemetry-scale-service-fastapi' ORDER BY SUM() ASC",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {},
+          "expression": "",
+          "id": "",
+          "label": "Tune",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "DesiredTaskCount",
+          "metricQueryType": 1,
+          "namespace": "ECS/ContainerInsights",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Tune",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "ECS/ContainerInsights",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderBy": {
+              "name": "SUM",
+              "type": "function"
+            },
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "DesiredTaskCount",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            "where": {
+              "expressions": [
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "iot-mgnt-telemetry-tune-cluster"
+                  },
+                  "property": {
+                    "name": "ClusterName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                },
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "iot-mgnt-telemetry-tune-service-fastapi"
+                  },
+                  "property": {
+                    "name": "ServiceName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                }
+              ],
+              "type": "and"
+            }
+          },
+          "sqlExpression": "SELECT SUM(DesiredTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'iot-mgnt-telemetry-tune-cluster' AND ServiceName = 'iot-mgnt-telemetry-tune-service-fastapi' ORDER BY SUM() ASC",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "ClusterName": "iot-mgnt-telemetry-cache-cluster",
+            "ServiceName": "iot-mgnt-telemetry-cache-service-fastapi"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Redis",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "DesiredTaskCount",
+          "metricQueryType": 0,
+          "namespace": "ECS/ContainerInsights",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Redis",
+          "region": "default",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "ClusterName": "iot-mgnt-telemetry-queue-cluster",
+            "ServiceName": "iot-mgnt-telemetry-queue-service-fastapi"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "DesiredTaskCount",
+          "metricQueryType": 0,
+          "namespace": "ECS/ContainerInsights",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "default",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        }
+      ],
+      "title": "Task Count - FastAPI",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 40
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "ClusterName": "iot-mgnt-telemetry-scale-cluster",
+            "ServiceName": "iot-mgnt-telemetry-scale-service-fastapi"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Scale",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/ECS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Scale",
+          "region": "default",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "ClusterName": "iot-mgnt-telemetry-tune-cluster",
+            "ServiceName": "iot-mgnt-telemetry-tune-service-fastapi"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Tune",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/ECS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Tune",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "ClusterName": "iot-mgnt-telemetry-cache-cluster",
+            "ServiceName": "iot-mgnt-telemetry-cache-service-fastapi"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Redis",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/ECS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Redis",
+          "region": "default",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "ClusterName": "iot-mgnt-telemetry-queue-cluster",
+            "ServiceName": "iot-mgnt-telemetry-queue-service-fastapi"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/ECS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "default",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "CPU Utilization(%) - FastAPI",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 8,
+      "panels": [],
+      "title": "RDS",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 12,
+        "x": 0,
+        "y": 23
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "iot-mgnt-telemetry-scale-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Scale",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "DatabaseConnections",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Scale",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "iot-mgnt-telemetry-tune-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Tune",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "DatabaseConnections",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Tune",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "iot-mgnt-telemetry-cache-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Redis",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "DatabaseConnections",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Redis",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "iot-mgnt-telemetry-queue-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "DatabaseConnections",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        }
+      ],
+      "title": "Connections - PostgreSQL",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 12,
+        "x": 12,
+        "y": 23
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "iot-mgnt-telemetry-scale-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Scale",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Scale",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Maximum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "iot-mgnt-telemetry-tune-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Tune",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Tune",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Maximum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "iot-mgnt-telemetry-cache-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Redis",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Redis",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Maximum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "iot-mgnt-telemetry-queue-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Maximum"
+        }
+      ],
+      "title": "CPU Utilization(%) - PostgreSQL",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "id": 7,
+      "panels": [],
+      "title": "ElastiCache - Redis",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queue"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cache"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Redis"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Kafka"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "CacheClusterId": "iot-mgnt-telemetry-cache-redis-001",
+            "CacheNodeId": "0001"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Redis",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/ElastiCache",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Redis",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "CacheClusterId": "iot-mgnt-telemetry-queue-redis-001",
+            "CacheNodeId": "0001"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/ElastiCache",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        }
+      ],
+      "title": "CPU Utilization(%) - Redis",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cache"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queue"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Redis"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Kafka"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 37
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "CacheClusterId": "iot-mgnt-telemetry-cache-redis-001",
+            "CacheNodeId": "0001"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Redis",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CacheHitRate",
+          "metricQueryType": 0,
+          "namespace": "AWS/ElastiCache",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Redis",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "CacheClusterId": "iot-mgnt-telemetry-queue-redis-001",
+            "CacheNodeId": "0001"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CacheHitRate",
+          "metricQueryType": 0,
+          "namespace": "AWS/ElastiCache",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "Cache Hit - Redis",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "id": 14,
+      "panels": [],
+      "title": "MSK - Kafka",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "1 -"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queue"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 49
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "Broker ID": "*",
+            "Cluster Name": "iot-mgnt-telemetry-queue-msk"
+          },
+          "expression": "",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "CpuSystem",
+          "metricQueryType": 0,
+          "namespace": "AWS/Kafka",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Queue",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        }
+      ],
+      "title": "CPU Utilization(%) - Kafka",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queue"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Kafka"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 49
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "Cluster Name": "iot-mgnt-telemetry-queue-msk"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "ClientConnectionCount",
+          "metricQueryType": 0,
+          "namespace": "AWS/Kafka",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Sum"
+        }
+      ],
+      "title": "Client Connection - Kafka",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queue"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Kafka"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 58
+      },
+      "id": 17,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {},
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "DesiredTaskCount",
+          "metricQueryType": 1,
+          "namespace": "ECS/ContainerInsights",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "ECS/ContainerInsights",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderBy": {
+              "name": "SUM",
+              "type": "function"
+            },
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "DesiredTaskCount",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            "where": {
+              "expressions": [
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "iot-mgnt-telemetry-queue-cluster"
+                  },
+                  "property": {
+                    "name": "ClusterName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                },
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "iot-mgnt-telemetry-queue-service-consumer"
+                  },
+                  "property": {
+                    "name": "ServiceName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                }
+              ],
+              "type": "and"
+            }
+          },
+          "sqlExpression": "SELECT SUM(DesiredTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'iot-mgnt-telemetry-queue-cluster' AND ServiceName = 'iot-mgnt-telemetry-queue-service-consumer' ORDER BY SUM() ASC",
+          "statistic": "Average"
+        }
+      ],
+      "title": "Task Count - Kafka-Consumer",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "eewwgkgzccc1sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 40
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queue"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Kafka"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 58
+      },
+      "id": 18,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "ClusterName": "iot-mgnt-telemetry-queue-cluster",
+            "ServiceName": "iot-mgnt-telemetry-queue-service-consumer"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/ECS",
+          "period": "",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "CPU Utilization(%) - Kafka-Consumer",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "5s",
+  "schemaVersion": 42,
+  "tags": [
+    "aws",
+    "performance test"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Performance Dashboard-Comparison",
+  "uid": "siv9pbx",
+  "version": 222,
+  "weekStart": ""
+}
