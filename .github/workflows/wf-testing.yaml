@@ -64,7 +64,6 @@ jobs:
 
   lint-check:
     name: Terraform Lint Check
-    needs: ecr_push
     strategy:
       fail-fast: false
       matrix:
@@ -86,7 +85,9 @@ jobs:
 
   deploy:
     name: Deploy Resources
-    needs: lint-check
+    needs:
+      - ecr_push
+      - lint-check
     uses: ./.github/workflows/job_deploy.yaml
     permissions:
       contents: read
