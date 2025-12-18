@@ -72,8 +72,8 @@ variable "svc_param" {
       count_min     = 6
       count_max     = 10
       container_env = {
-        pool_size    = 20
-        max_overflow = 10
+        pool_size    = 50
+        max_overflow = 20
         worker       = 2
       }
     },

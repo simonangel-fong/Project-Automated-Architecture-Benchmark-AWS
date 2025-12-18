@@ -137,7 +137,7 @@ resource "aws_ecs_task_definition" "ecs_task_fastapi" {
     image           = local.fastapi_ecr
     cpu             = local.fastapi_cpu
     memory          = local.fastapi_memory
-    awslogs_group   = local.fastapi_log_id
+    # awslogs_group   = local.fastapi_log_id
     region          = var.aws_region
     project         = var.project
     env             = var.env
@@ -192,7 +192,7 @@ resource "aws_ecs_service" "ecs_svc_fastapi" {
   }
 
   depends_on = [
-    aws_cloudwatch_log_group.log_group_fastapi,
+    # aws_cloudwatch_log_group.log_group_fastapi,
     aws_vpc_endpoint.ecr_api,
     aws_vpc_endpoint.ecr_dkr,
     aws_vpc_endpoint.s3,
@@ -245,18 +245,18 @@ resource "aws_appautoscaling_policy" "scaling_memory_fastapi" {
   }
 }
 
-# #################################
-# CloudWatch: log group
-# #################################
-resource "aws_cloudwatch_log_group" "log_group_fastapi" {
-  name              = local.fastapi_log_id
-  retention_in_days = 7
-  kms_key_id        = aws_kms_key.cloudwatch_log.arn
+# # #################################
+# # CloudWatch: log group
+# # #################################
+# resource "aws_cloudwatch_log_group" "log_group_fastapi" {
+#   name              = local.fastapi_log_id
+#   retention_in_days = 7
+#   kms_key_id        = aws_kms_key.cloudwatch_log.arn
 
-  tags = {
-    Name = local.fastapi_log_id
-  }
-}
+#   tags = {
+#     Name = local.fastapi_log_id
+#   }
+# }
 
 # #################################
 # Monitoring: cup alarm

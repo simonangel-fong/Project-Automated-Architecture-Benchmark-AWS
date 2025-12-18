@@ -33,12 +33,12 @@
       }
     ],
 
+
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
         "awslogs-create-group": "true",
-        "awslogs-group": "${awslogs_group}",
-        "awslogs-region": "${region}",
+        "awslogs-region": "${region}", 
         "awslogs-stream-prefix": "ecs",
         "awslogs-datetime-format": "%Y-%m-%dT%H:%M:%S.%f%z"
       }
