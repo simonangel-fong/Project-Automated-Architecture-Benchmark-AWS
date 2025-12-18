@@ -3,7 +3,7 @@
 # ########################################
 
 locals {
-  bucket_id     = "${var.project}-bucket"
+  bucket_id     = "${var.project}-${var.env}-bucket"
   web_file_path = "../../app/html"
 }
 
