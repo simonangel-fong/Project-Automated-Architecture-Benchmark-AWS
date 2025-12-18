@@ -32,6 +32,7 @@ jobs:
             TF_VAR_project: ${{ vars.PROJECT }}
             TF_VAR_env: ${{ vars.ENV }}
             TF_VAR_aws_region: ${{ vars.AWS_REGION }}
+            TF_VAR_domain_name: ${{vars.DOMAIN_NAME}}
             TF_VAR_cloudflare_api_token: ${{secrets.CF_API_TOKEN}}
             TF_VAR_cloudflare_zone_id: ${{secrets.CF_ZONE_ID}}
         steps:
