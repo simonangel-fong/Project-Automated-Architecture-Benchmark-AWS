@@ -3,21 +3,21 @@
 # ########################################
 
 locals {
-  bucket_name   = "${var.project}-bucket"
+  bucket_id     = "${var.project}-bucket"
   web_file_path = "../../app/html"
 }
 
-resource "aws_s3_bucket" "app_bucket" {
-  bucket        = local.bucket_name
+resource "aws_s3_bucket" "web" {
+  bucket        = local.bucket_id
   force_destroy = true
   tags = {
-    Name = local.bucket_name
+    Name = local.bucket_id
   }
 }
 
 # Enabe bucket versioning
-resource "aws_s3_bucket_versioning" "bucket_versioning" {
-  bucket = aws_s3_bucket.app_bucket.id
+resource "aws_s3_bucket_versioning" "web" {
+  bucket = aws_s3_bucket.web.id
 
   versioning_configuration {
     status = "Enabled"
@@ -36,7 +36,7 @@ module "web_file" {
 
 # update S3 object resource for hosting bucket files
 resource "aws_s3_object" "web_file" {
-  bucket = aws_s3_bucket.app_bucket.id
+  bucket = aws_s3_bucket.web.id
 
   # loop all files
   for_each     = module.web_file.files
@@ -53,8 +53,8 @@ resource "aws_s3_object" "web_file" {
 # ########################################
 # Enable static website hosting
 # ########################################
-resource "aws_s3_bucket_website_configuration" "website_config" {
-  bucket = aws_s3_bucket.app_bucket.id
+resource "aws_s3_bucket_website_configuration" "web" {
+  bucket = aws_s3_bucket.web.id
 
   index_document {
     suffix = "index.html"
@@ -71,7 +71,7 @@ resource "aws_s3_bucket_website_configuration" "website_config" {
 
 # Enable bucket public access block
 resource "aws_s3_bucket_public_access_block" "bucket_public_access" {
-  bucket = aws_s3_bucket.app_bucket.id
+  bucket = aws_s3_bucket.web.id
 
   block_public_acls       = false
   ignore_public_acls      = false
@@ -81,7 +81,7 @@ resource "aws_s3_bucket_public_access_block" "bucket_public_access" {
 
 # set ownership
 resource "aws_s3_bucket_ownership_controls" "bucket_ownership" {
-  bucket = aws_s3_bucket.app_bucket.id
+  bucket = aws_s3_bucket.web.id
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
@@ -89,7 +89,7 @@ resource "aws_s3_bucket_ownership_controls" "bucket_ownership" {
 
 # set access control list
 resource "aws_s3_bucket_acl" "bucket_acl" {
-  bucket = aws_s3_bucket.app_bucket.id
+  bucket = aws_s3_bucket.web.id
   acl    = "public-read"
 
   depends_on = [
@@ -100,7 +100,7 @@ resource "aws_s3_bucket_acl" "bucket_acl" {
 
 # Enable bucket policy for public read access
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = aws_s3_bucket.app_bucket.id
+  bucket = aws_s3_bucket.web.id
 
   policy = jsonencode({
     "Version" : "2012-10-17",
@@ -109,7 +109,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
         "Effect" : "Allow",
         "Principal" : "*",
         "Action" : "s3:GetObject",
-        "Resource" : "arn:aws:s3:::${aws_s3_bucket.app_bucket.id}/*"
+        "Resource" : "arn:aws:s3:::${aws_s3_bucket.web.id}/*"
       }
     ]
   })

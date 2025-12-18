@@ -22,11 +22,11 @@ variable "aws_region" { type = string }
 variable "cloudflare_api_token" { type = string }
 variable "cloudflare_zone_id" { type = string }
 
+# ##############################
+# AWS Cloudfront
+# ##############################
+variable "domain_name" { type = string }
 
-# ##############################
-# S3 bucket
-# ##############################
-variable "web_file_path" {
-  type    = string
-  default = "../html"
+locals {
+  dns_record = var.env == "prod" ? "iot.${var.domain_name}" : "iot-${var.env}.${var.domain_name}"
 }
