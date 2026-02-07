@@ -89,7 +89,7 @@ async def main() -> None:
             loop.add_signal_handler(sig, request_shutdown)
         except NotImplementedError:
             signal.signal(sig, lambda *_: request_shutdown())
-
+    
     await init_consumer()
     consumer = get_consumer()
 

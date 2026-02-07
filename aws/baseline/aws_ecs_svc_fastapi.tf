@@ -6,6 +6,7 @@
 locals {
   fastapi_log_id           = "/ecs/task/${var.project}-${var.env}-fastapi"
   fastapi_app_debug        = var.debug
+  fastapi_log_level        = "WARNING"
   fastapi_ecr              = "${local.ecr_repo}:${var.svc_param.fastapi_svc.image_suffix}"
   fastapi_cpu              = var.svc_param.fastapi_svc.cpu
   fastapi_memory           = var.svc_param.fastapi_svc.memory
@@ -99,19 +100,17 @@ resource "aws_ecs_task_definition" "ecs_task_fastapi" {
   execution_role_arn       = aws_iam_role.execution_role_fastapi.arn
   task_role_arn            = aws_iam_role.task_role_fastapi.arn
 
-  # method: json file
-  # container_definitions = file("./container/fastapi.json")
-
   # method: template file
   container_definitions = templatefile("${path.module}/container/fastapi.tftpl", {
+    project       = var.project
+    region        = var.aws_region
+    env           = var.env
+    debug         = local.fastapi_app_debug
+    log_level     = local.fastapi_log_level
     image         = local.fastapi_ecr
     cpu           = local.fastapi_cpu
     memory        = local.fastapi_memory
     awslogs_group = local.fastapi_log_id
-    region        = var.aws_region
-    project       = var.project
-    env           = var.env
-    debug         = local.fastapi_app_debug
     pgdb_host     = local.fastapi_env_pgdb_host
     pgdb_db       = local.fastapi_env_pgdb_db
     pgdb_user     = local.fastapi_env_pgdb_user

@@ -147,36 +147,108 @@ async def get_authenticated_device(
         extra={"device_uuid": str(device_uuid)},
     )
 
-    stmt = select(DeviceRegistry).where(
-        DeviceRegistry.device_uuid == device_uuid)
+    device_uuid_str = str(device_uuid)
+    cache_key = f"device:registry:{device_uuid_str}"
+    device = None
 
+    # try redis cache
     try:
-        result = await db.execute(stmt)
-        device = result.scalar_one_or_none()
-    except SQLAlchemyError as exc:
-        logger.exception(
-            "Database error while authenticating device",
-            extra={"device_uuid": str(device_uuid)},
+        cached = await redis_client.get(cache_key)
+        if cached:
+            logger.debug(
+                "Device registry cache hit",
+                extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
+            )
+            try:
+                device_data = json.loads(cached)
+                device = DeviceRegistry(
+                    device_uuid=UUID(device_data["device_uuid"]),
+                    api_key_hash=device_data["api_key_hash"],
+                )
+                logger.debug(
+                    "Device registry deserialized from cache",
+                    extra={"device_uuid": device_uuid_str},
+                )
+            except (json.JSONDecodeError, KeyError, ValueError) as exc:
+                logger.warning(
+                    "Failed to deserialize device registry cache, falling back to DB",
+                    extra={"device_uuid": device_uuid_str,
+                           "cache_key": cache_key, "error": str(exc)},
+                )
+                device = None
+    except Exception as exc:
+        logger.warning(
+            "Redis cache lookup failed for device registry",
+            extra={"device_uuid": device_uuid_str,
+                   "cache_key": cache_key, "error": str(exc)},
         )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to authenticate device.",
-        ) from exc
+        device = None
 
+    # query db
     if device is None:
-        logger.info(
-            "Device not found in registry",
-            extra={"device_uuid": str(device_uuid)},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Device not found.",
+        logger.debug(
+            "Device registry cache miss, querying database",
+            extra={"device_uuid": device_uuid_str},
         )
 
+        stmt = select(DeviceRegistry).where(
+            DeviceRegistry.device_uuid == device_uuid
+        )
+
+        try:
+            result = await db.execute(stmt)
+            device = result.scalar_one_or_none()
+        except SQLAlchemyError as exc:
+            logger.exception(
+                "Database error while authenticating device",
+                extra={"device_uuid": device_uuid_str},
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to authenticate device.",
+            ) from exc
+
+        if device is None:
+            logger.warning(
+                "Device not found in registry",
+                extra={"device_uuid": device_uuid_str},
+            )
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Device not found.",
+            )
+
+        # Cache in Redis
+        try:
+            device_data = {
+                "device_uuid": str(device.device_uuid),
+                "api_key_hash": device.api_key_hash,
+            }
+            await redis_client.set(
+                cache_key,
+                json.dumps(device_data),
+                ex=3600,  # Cache for 1 hour; adjust as needed
+            )
+            logger.debug(
+                "Device registry cached",
+                extra={
+                    "device_uuid": device_uuid_str,
+                    "cache_key": cache_key,
+                    "ttl": 3600,
+                },
+            )
+        except Exception as exc:
+            logger.warning(
+                "Failed to write device registry to Redis cache",
+                extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
+                exc_info=exc,
+            )
+
+    # Verify API key
     if not verify_api_key(api_key=api_key, stored_hash=device.api_key_hash):
-        logger.info(
+        logger.warning(
             "Invalid API key for device",
-            extra={"device_uuid": str(device_uuid)},
+            extra={"device_uuid": device_uuid_str},
         )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -185,7 +257,7 @@ async def get_authenticated_device(
 
     logger.debug(
         "Device authenticated successfully",
-        extra={"device_uuid": str(device_uuid)},
+        extra={"device_uuid": device_uuid_str},
     )
 
     return device
@@ -518,7 +590,7 @@ async def get_latest_telemetry_for_device(
         ) from exc
 
     if latest is None:
-        logger.info(
+        logger.warning(
             "No telemetry snapshot found for device",
             extra={"device_uuid": device_uuid_str},
         )

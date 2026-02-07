@@ -1,7 +1,7 @@
-name: scale
+name: redis
 
 include:
-  - compose.scale.fastapi.yaml
+  - compose.redis.fastapi.yaml
 
 volumes:
   pgdata:
@@ -23,13 +23,13 @@ services:
       POSTGRES_PASSWORD: test123
     volumes:
       # - pgdata:/var/lib/postgresql/data
-      - ./pgdb/config:/config
+      - ../pgdb/config:/config
     networks:
       # - public_network
       - private_network
     ports:
       - "5432:5432"
-    command: ["postgres", "-c", "config_file=/config/scale.conf"]
+    command: ["postgres", "-c", "config_file=/config/cache.conf"]
     healthcheck:
       test:
         [
@@ -43,16 +43,16 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2"
-          memory: 2028M
+          cpus: "4"
+          memory: 4096M
         reservations:
-          cpus: "0.5"
-          memory: 1024M
+          cpus: "1"
+          memory: 2048M
 
   flyway:
     container_name: flyway
     build:
-      context: ./flyway/
+      context: ../flyway/
       dockerfile: Dockerfile
     restart: "no"
     environment:
@@ -68,11 +68,21 @@ services:
       postgres:
         condition: service_healthy
 
+  redis:
+    container_name: redis
+    image: redis:7
+    restart: unless-stopped
+    networks:
+      # - public_network
+      - private_network
+    ports:
+      - "6379:6379"
+
   nginx:
     container_name: nginx
     image: nginx:latest
     volumes:
-      - ./nginx/config/scale.conf:/etc/nginx/conf.d/default.conf
+      - ../nginx/config/cache.conf:/etc/nginx/conf.d/default.conf
     networks:
       - public_network
       - private_network

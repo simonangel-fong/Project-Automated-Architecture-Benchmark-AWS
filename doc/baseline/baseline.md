@@ -12,7 +12,14 @@
 ## Local Testing
 
 ```sh
-docker compose -f app/compose.baseline.yaml down -v && docker compose -f app/compose.baseline.yaml up -d --build
+# dev
+docker compose -f app/compose_baseline/compose.baseline.yaml down -v && docker compose --env-file app/compose_baseline/.baseline.dev.env -f app/compose_baseline/compose.baseline.yaml up -d --build
+
+# staging
+docker compose -f app/compose_baseline/compose.baseline.yaml down -v && docker compose --env-file app/compose_baseline/.baseline.staging.env -f app/compose_baseline/compose.baseline.yaml up -d --build
+
+# prod
+docker compose -f app/compose_baseline/compose.baseline.yaml down -v && docker compose --env-file app/compose_baseline/.baseline.prod.env -f app/compose_baseline/compose.baseline.yaml up -d --build
 
 # smoke
 docker run --rm --name baseline_local_smoke --net=baseline_public_network -p 5665:5665 -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_local_smoke.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js

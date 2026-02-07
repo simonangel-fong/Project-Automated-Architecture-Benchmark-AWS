@@ -2,9 +2,8 @@ services:
   kafka_consumer01:
     container_name: kafka_consumer01
     build:
-      context: ./kafka/
+      context: ../kafka/consumer
       dockerfile: Dockerfile
-    # command: ["python", "-m", "app.main"]
     environment:
       POSTGRES__HOST: postgres
       POSTGRES__DB: app_db
@@ -22,9 +21,8 @@ services:
   kafka_consumer02:
     container_name: kafka_consumer02
     build:
-      context: ./kafka/
+      context: ../kafka/consumer
       dockerfile: Dockerfile
-    # command: ["python", "-m", "app.main"]
     environment:
       POSTGRES__HOST: postgres
       POSTGRES__DB: app_db

@@ -126,7 +126,7 @@ resource "aws_db_instance" "postgres" {
     Name = "${var.project}-${var.env}-rds-pgdb"
   }
 
-  depends_on = [
-    aws_cloudwatch_log_group.rds_postgres
-  ]
+  # depends_on = [
+  #   aws_cloudwatch_log_group.rds_postgres
+  # ]
 }

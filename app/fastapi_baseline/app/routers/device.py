@@ -78,7 +78,6 @@ async def list_devices(
         .limit(limit)
         .offset(offset)
     )
-    print(stmt)
     try:
         result = await db.execute(stmt)
         devices = result.scalars().all()
@@ -160,14 +159,15 @@ async def get_device_by_uuid(
             detail="Failed to retrieve device.",
         ) from exc
 
-    if device is None:
-        logger.info(
-            "Device not found",
-            extra={"device_uuid": str(device_uuid)},
+    if not device:
+        # log warning msg if not found
+        logger.warning(
+            "Device lookup failed: Not Found",
+            extra={"device_uuid": str(device_uuid)}
         )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Device not found.",
+            detail="Device not found."
         )
 
     logger.debug(

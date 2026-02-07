@@ -78,7 +78,6 @@ async def list_devices(
         .limit(limit)
         .offset(offset)
     )
-    print(stmt)
     try:
         result = await db.execute(stmt)
         devices = result.scalars().all()
@@ -175,7 +174,8 @@ async def get_device_by_uuid(
         ) from exc
 
     if device is None:
-        logger.info(
+        # log warning msg if not found
+        logger.warning(
             "Device not found",
             extra={"device_uuid": str(device_uuid)},
         )

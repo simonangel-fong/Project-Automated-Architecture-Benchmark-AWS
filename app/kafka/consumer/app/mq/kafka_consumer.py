@@ -38,26 +38,32 @@ async def init_consumer() -> AIOKafkaConsumer:
         settings = get_settings()
         topics = settings.kafka.topics or [settings.kafka.topic]
 
-        consumer = AIOKafkaConsumer(
-            *topics,
-            bootstrap_servers=settings.kafka_bootstrap_servers,
-            client_id=settings.kafka.client_id,
-            group_id=settings.kafka.group_id,
+        # Base configuration
+        consumer_config = {
+            "bootstrap_servers": settings.kafka_bootstrap_servers,
+            "client_id": settings.kafka.client_id,
+            "group_id": settings.kafka.group_id,
+            "auto_offset_reset": settings.kafka.auto_offset_reset,
+            "enable_auto_commit": False,
+            "value_deserializer": lambda v: json.loads(v.decode("utf-8")),
+            "request_timeout_ms": 40000,
+            "session_timeout_ms": 30000,
+            "heartbeat_interval_ms": 10000,
+            "max_poll_interval_ms": 600000,
+        }
+    
+        print(f"######## {settings.kafka.use_msk_auth} ########")
+        # AWS MSK security configuration
+        if settings.kafka.use_msk_auth:
+            consumer_config.update({
+                "security_protocol": "SASL_SSL",
+                "sasl_mechanism": "OAUTHBEARER",
+                "sasl_oauth_token_provider": MSKTokenProvider(settings.aws_region),
+                "ssl_context": ssl.create_default_context(),
+            })
 
-            security_protocol="SASL_SSL",
-            sasl_mechanism="OAUTHBEARER",
-            sasl_oauth_token_provider=MSKTokenProvider(settings.aws_region),
-            ssl_context=ssl.create_default_context(),
-
-            auto_offset_reset=settings.kafka.auto_offset_reset,
-            enable_auto_commit=settings.kafka.enable_auto_commit,
-            value_deserializer=lambda v: json.loads(v.decode("utf-8")),
-
-            request_timeout_ms=30000,
-            session_timeout_ms=10000,
-            heartbeat_interval_ms=3000,
-            max_poll_interval_ms=300000,  # 5 min
-        )
+        # create consumer
+        consumer = AIOKafkaConsumer(*topics, **consumer_config)
 
         try:
             await consumer.start()

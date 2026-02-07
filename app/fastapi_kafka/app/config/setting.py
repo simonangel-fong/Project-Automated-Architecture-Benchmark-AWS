@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Literal
 from urllib.parse import quote_plus
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,7 +18,8 @@ class KafkaSettings(BaseModel):
     bootstrap_servers: str = "broker:9092"
     client_id: str = "telemetry_producer"
     topic: str = "telemetry"
-
+    # msk auth
+    use_msk_auth: bool = False # turn on for aws msk
 
 # ==============================
 # PostgreSQL
@@ -77,11 +78,35 @@ class RedisSettings(BaseModel):
 class Settings(BaseSettings):
     """Application settings."""
 
+    # Pydantic Settings config
+    model_config = SettingsConfigDict(
+        # project root .env
+        env_file=str(Path(__file__).resolve().parent.parent.parent / ".env"),
+        env_file_encoding="utf-8",
+        extra="ignore",               # ignore unknown env vars
+        env_nested_delimiter="__",    # POSTGRES__HOST -> settings.postgres.host
+    )
+
+    # ------------------------------
     # General
-    project: str = "Iot management telemetry"
-    env: str = "dev"
-    debug: bool = True
-    aws_region: str = "ca-central-1"
+    # ------------------------------
+    project: str = Field(
+        default="iot mgnt telemetry",
+        alias="PROJECT",
+        description="The project name",
+    )
+
+    env: str = Field(
+        default="dev",
+        alias="ENV",
+        description="The environment name",
+    )
+
+    debug: bool = Field(
+        default=True,
+        alias="DEBUG",
+        description="Whether it is debug mode",
+    )
 
     cors: str = Field(
         default="http://localhost,http://localhost:8000,http://localhost:8080",
@@ -89,7 +114,12 @@ class Settings(BaseSettings):
         description="Comma-separated list of allowed CORS origins",
     )
 
-    # performance tuning
+    # General
+    aws_region: str = "ca-central-1"
+
+    # ------------------------------
+    # Performance tuning
+    # ------------------------------
     pool_size: int = Field(
         default=5,
         alias="POOL_SIZE",
@@ -108,19 +138,41 @@ class Settings(BaseSettings):
         description="The number of uvicorn workers.",
     )
 
+    # ------------------------------
+    # Logging controls
+    # ------------------------------
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
+        default="INFO",
+        alias="LOG_LEVEL",
+        description="Logging level: DEBUG/INFO/WARNING/ERROR/CRITICAL.",
+    )
+
+    # enable access log
+    access_log_enabled: bool = Field(
+        default=False,  # no access log, prevents log explode volume
+        alias="ACCESS_LOG_ENABLED",
+        description="Enable Uvicorn access logs.",
+    )
+
+    # enable log to file
+    log_to_file: bool = Field(
+        default=False,  # no log to file, log to stdout/stderr for best practice
+        alias="LOG_TO_FILE",
+        description="Write rotated files (usually False for ECS/EKS).",
+    )
+
+    @field_validator("log_level", mode="before")
+    @classmethod
+    def normalize_log_level(cls, v: str) -> str:
+        """Normalize LOG_LEVEL input to uppercase (e.g., 'warn' -> 'WARN' -> invalid)."""
+        return str(v).strip().upper()
+
+    # ------------------------------
     # Nested config
+    # ------------------------------
     postgres: PostgresSettings = PostgresSettings()
     redis: RedisSettings = RedisSettings()
     kafka: KafkaSettings = KafkaSettings()
-
-    # Settings config
-    model_config = SettingsConfigDict(
-        # project root .env
-        env_file=str(Path(__file__).resolve().parent.parent.parent / ".env"),
-        env_file_encoding="utf-8",
-        extra="ignore",               # ignore unknown env vars
-        env_nested_delimiter="__",    # POSTGRES__HOST -> settings.postgres.host
-    )
 
     # Properties
     @property

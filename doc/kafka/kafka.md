@@ -15,7 +15,14 @@
 ## Local - Testing
 
 ```sh
-docker compose -f app/compose.kafka.yaml down -v && docker compose -f app/compose.kafka.yaml up -d --build
+# dev
+docker compose -f app/compose_kafka/compose.kafka.yaml down -v && docker compose --env-file app/compose_kafka/.kafka.dev.env -f app/compose_kafka/compose.kafka.yaml up -d --build
+
+# staging
+docker compose -f app/compose_kafka/compose.kafka.yaml down -v && docker compose --env-file app/compose_kafka/.kafka.staging.env -f app/compose_kafka/compose.kafka.yaml up -d --build
+
+# prod
+docker compose -f app/compose_kafka/compose.kafka.yaml down -v && docker compose --env-file app/compose_kafka/.kafka.prod.env -f app/compose_kafka/compose.kafka.yaml up -d --build
 
 # smoke
 docker run --rm --name kafka_local_smoke --net=kafka_public_network -p 5665:5665 -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_local_smoke.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js
@@ -46,7 +53,7 @@ terraform fmt && terraform validate
 
 terraform apply -auto-approve
 
-aws ecs run-task --cluster iot-mgnt-telemetry-scale-cluster --task-definition iot-mgnt-telemetry-scale-task-flyway --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-,subnet-,subnet-],securityGroups=[sg-]}"
+aws ecs run-task --cluster iot-mgnt-telemetry-kafka-cluster --task-definition iot-mgnt-telemetry-scale-task-flyway --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-,subnet-,subnet-],securityGroups=[sg-]}"
 
 terraform destroy -auto-approve
 
@@ -105,12 +112,12 @@ python k6/pgdb_write_check.py
 
 ```sh
 # read breaking point
-docker run --rm --name kafka_aws_read_break -p 5665:5665 -e SOLUTION_ID="kafka" -e BASE_URL="https://iot-kafka.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_aws_read_break.html -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_TARGET=10000 -e STAGE_RAMP=30 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
+docker run --rm --name kafka_aws_read_break -p 5665:5665 -e SOLUTION_ID="kafka" -e BASE_URL="https://iot-kafka.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_aws_read_break.html -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_TARGET=10000 -e STAGE_RAMP=60 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
 
 # write breaking point
-docker run --rm --name kafka_aws_write_break -p 5665:5665 -e SOLUTION_ID="kafka" -e BASE_URL="https://iot-kafka.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_aws_write_break.html -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_TARGET=10000 -e STAGE_RAMP=120 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
+docker run --rm --name kafka_aws_write_break -p 5665:5665 -e SOLUTION_ID="kafka" -e BASE_URL="https://iot-kafka.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_aws_write_break.html -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_TARGET=10000 -e STAGE_RAMP=60 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
 
 # mixed breaking point
-docker run --rm --name kafka_aws_write_break -p 5665:5665 -e SOLUTION_ID="kafka" -e BASE_URL="https://iot-kafka.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_aws_write_break.html -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_READ_TARGET=10000 -e STAGE_RAMP=120 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
+docker run --rm --name kafka_aws_write_break -p 5665:5665 -e SOLUTION_ID="kafka" -e BASE_URL="https://iot-kafka.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/kafka_aws_write_break.html -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_READ_TARGET=10000 -e STAGE_RAMP=60 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
 
 ```

@@ -29,6 +29,8 @@ class KafkaSettings(BaseModel):
     topic: str = Field(default="telemetry")
     topics: List[str] = Field(default_factory=list)
 
+    # msk auth
+    use_msk_auth: bool = False # turn on for aws msk
 
 # ==============================
 # PostgreSQL

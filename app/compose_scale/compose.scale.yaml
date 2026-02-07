@@ -1,7 +1,7 @@
-name: tune
+name: scale
 
 include:
-  - compose.tune.fastapi.yaml
+  - compose.scale.fastapi.yaml
 
 volumes:
   pgdata:
@@ -22,12 +22,14 @@ services:
       POSTGRES_USER: dbadmin
       POSTGRES_PASSWORD: test123
     volumes:
-      - ./pgdb/config:/config
+      # - pgdata:/var/lib/postgresql/data
+      - ../pgdb/config:/config
     networks:
       # - public_network
       - private_network
     ports:
       - "5432:5432"
+    command: ["postgres", "-c", "config_file=/config/scale.conf"]
     healthcheck:
       test:
         [
@@ -50,7 +52,7 @@ services:
   flyway:
     container_name: flyway
     build:
-      context: ./flyway/
+      context: ../flyway/
       dockerfile: Dockerfile
     restart: "no"
     environment:
@@ -65,11 +67,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+
   nginx:
     container_name: nginx
     image: nginx:latest
     volumes:
-      - ./nginx/config/baseline.conf:/etc/nginx/conf.d/default.conf
+      - ../nginx/config/scale.conf:/etc/nginx/conf.d/default.conf
     networks:
       - public_network
       - private_network

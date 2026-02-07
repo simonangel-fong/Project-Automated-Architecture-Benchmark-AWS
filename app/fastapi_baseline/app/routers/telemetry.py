@@ -152,7 +152,7 @@ async def get_authenticated_device(
         ) from exc
 
     if device is None:
-        logger.info(
+        logger.warning(
             "Device not found in registry",
             extra={"device_uuid": str(device_uuid)},
         )
@@ -162,7 +162,7 @@ async def get_authenticated_device(
         )
 
     if not verify_api_key(api_key=api_key, stored_hash=device.api_key_hash):
-        logger.info(
+        logger.warning(
             "Invalid API key for device",
             extra={"device_uuid": str(device_uuid)},
         )
@@ -425,7 +425,7 @@ async def get_latest_telemetry_for_device(
         ) from exc
 
     if latest is None:
-        logger.info(
+        logger.warning(
             "No telemetry snapshot found for device",
             extra={"device_uuid": device_uuid_str},
         )

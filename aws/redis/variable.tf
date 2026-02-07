@@ -13,7 +13,7 @@ variable "env" {
 
 variable "debug" {
   type    = bool
-  default = true
+  default = false
 }
 
 # ##############################

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
-
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 
 from .config import get_settings, setup_logging
 from .mq import init_producer, close_producer
@@ -35,6 +36,14 @@ app = FastAPI(
     ),
     lifespan=lifespan,
 )
+
+@app.exception_handler(SQLAlchemyError)
+async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
+    logger.exception("A database error occurred")  # Log the full traceback
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "A database error occurred. Please try again later."},
+    )
 
 # ====================
 # CORS

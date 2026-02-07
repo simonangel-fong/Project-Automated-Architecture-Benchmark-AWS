@@ -27,8 +27,8 @@ const RATE_WRITE_TARGET = RATE_READ_TARGET * RATIO; // peak write RPS
 
 // -------- Stage --------
 const STAGE_START = parseNumberEnv("STAGE_START", 1); // minutes per ramp stage
-const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 15); // minutes per ramp stage
-const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 3); // minutes to hold peak RPS
+const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 10); // minutes per ramp stage
+const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 1); // minutes to hold peak RPS
 
 // -------- VU --------
 const W_VU = parseNumberEnv("W_VU", 20); // pre-allocated VUs for write

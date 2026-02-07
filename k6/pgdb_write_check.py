@@ -16,8 +16,6 @@ def write_count(url: str) -> None:
 
     for i in range(DURATION):
         response = requests.get(url, headers=headers)
-        # print(f"Status Code: {response.status_code}")
-        # print(f"Response Body: {response.json()}")
         if response.status_code == 200:
             data = response.json()
             status = response.status_code

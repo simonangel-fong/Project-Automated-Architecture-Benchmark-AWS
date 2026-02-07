@@ -20,8 +20,8 @@ const RATE_TARGET = parseNumberEnv("RATE_TARGET", 1000); // peak RPS
 
 // -------- Stage --------
 const STAGE_START = parseNumberEnv("STAGE_START", 1); // minutes per start stage
-const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 15); // minutes per ramp stage
-const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 3); // minutes to hold peak
+const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 10); // minutes per ramp stage
+const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 1); // minutes to hold peak
 
 // VU pool
 const VU = parseNumberEnv("VU", 50); // pre-allocated VUs

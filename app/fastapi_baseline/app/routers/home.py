@@ -26,7 +26,6 @@ async def home() -> dict:
     """
     Return basic service metadata and status.
     """
-    print(settings.cors_list)
     response: dict = {
         "project": settings.project,
         "status": "ok",

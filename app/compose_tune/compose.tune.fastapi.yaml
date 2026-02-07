@@ -2,14 +2,13 @@ services:
   fastapi01:
     container_name: fastapi01
     build:
-      context: ./fastapi_baseline/
+      context: ../fastapi_baseline/
       dockerfile: Dockerfile
-    env_file:
-      - .tune.env
     environment:
       PROJECT: "${PROJECT:-iot-mgnt-telemetry}"
       ENV: "${ENV:-tune}"
       DEBUG: "${DEBUG:-true}"
+      LOG_LEVEL: "${LOG_LEVEL:-DEBUG}"
       POOL_SIZE: "${POOL_SIZE:-20}"
       MAX_OVERFLOW: "${MAX_OVERFLOW:-10}"
       POSTGRES__HOST: "${POSTGRES__HOST:-postgres}"

@@ -12,7 +12,14 @@
 ## Local - Testing
 
 ```sh
-docker compose -f app/compose.scale.yaml down -v && docker compose -f app/compose.scale.yaml up -d --build
+# dev
+docker compose -f app/compose_scale/compose.scale.yaml down -v && docker compose --env-file app/compose_scale/.scale.dev.env -f app/compose_scale/compose.scale.yaml up -d --build
+
+# staging
+docker compose -f app/compose_scale/compose.scale.yaml down -v && docker compose --env-file app/compose_scale/.scale.staging.env -f app/compose_scale/compose.scale.yaml up -d --build
+
+# prod
+docker compose -f app/compose_scale/compose.scale.yaml down -v && docker compose --env-file app/compose_scale/.scale.prod.env -f app/compose_scale/compose.scale.yaml up -d --build
 
 # smoke
 docker run --rm --name scale_local_smoke --net=scale_public_network -p 5665:5665 -e BASE_URL="http://nginx:8080" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_local_smoke.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js

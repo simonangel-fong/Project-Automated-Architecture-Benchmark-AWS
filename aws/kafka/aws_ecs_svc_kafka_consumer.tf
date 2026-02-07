@@ -6,6 +6,8 @@
 locals {
   kafka_consumer_log_id             = "/ecs/task/${var.project}-${var.env}-kafka-consumer"
   kafka_consumer_ecr                = "${local.ecr_repo}:${var.svc_param.kafka_consumer_svc.image_suffix}"
+  kafka_log_level                   = "WARNING"
+  kafka_use_msk_auth                = true
   kafka_consumer_cpu                = var.svc_param.kafka_consumer_svc.cpu
   kafka_consumer_memory             = var.svc_param.kafka_consumer_svc.memory
   kafka_consumer_desired            = var.svc_param.kafka_consumer_svc.count_desired
@@ -146,14 +148,16 @@ resource "aws_ecs_task_definition" "ecs_task_consumer" {
   task_role_arn      = aws_iam_role.consumer_task_role.arn
 
   container_definitions = templatefile("${path.module}/container/kafka_consumer.tftpl", {
+    project         = var.project
+    region          = var.aws_region
+    env             = var.env
+    debug           = var.debug
+    log_level       = local.kafka_log_level
+    use_msk_auth    = local.kafka_use_msk_auth
     image           = local.kafka_consumer_ecr
     cpu             = local.kafka_consumer_cpu
     memory          = local.kafka_consumer_memory
     awslogs_group   = local.kafka_consumer_log_id
-    region          = var.aws_region
-    project         = var.project
-    env             = var.env
-    debug           = var.debug
     pgdb_host       = local.kafka_consumer_env_pgdb_host
     pgdb_db         = local.kafka_consumer_env_pgdb_db
     pgdb_user       = local.kafka_consumer_env_pgdb_user
