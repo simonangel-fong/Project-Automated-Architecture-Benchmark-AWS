@@ -191,8 +191,8 @@ resource "aws_appautoscaling_policy" "scaling_cpu_fastapi" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
     target_value       = local.fastapi_scale_cpu # cpu%
-    scale_in_cooldown  = 30
-    scale_out_cooldown = 30
+    scale_in_cooldown  = 20
+    scale_out_cooldown = 20
   }
 }
 
@@ -223,7 +223,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_fastapi_high_cpu" {
   comparison_operator = "GreaterThanThreshold"
   statistic           = "Average"
   threshold           = local.fastapi_scale_cpu
-  period              = 60 # period in seconds
+  period              = 10 # period in seconds
   evaluation_periods  = 2  # number of periods to compare with threshold.  
 
   dimensions = {

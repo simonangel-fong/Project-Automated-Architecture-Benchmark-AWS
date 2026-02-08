@@ -44,7 +44,7 @@ locals {
 
 variable "threshold_cpu" {
   type    = number
-  default = 40
+  default = 25
 }
 
 variable "svc_param" {
@@ -62,9 +62,9 @@ variable "svc_param" {
       image_suffix  = "fastapi-baseline"
       cpu           = 512
       memory        = 1024
-      count_desired = 2
-      count_min     = 2
-      count_max     = 10
+      count_desired = 4
+      count_min     = 4
+      count_max     = 15
       container_env = {
         pool_size    = 5
         max_overflow = 10

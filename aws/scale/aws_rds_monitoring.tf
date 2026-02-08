@@ -37,8 +37,8 @@ resource "aws_cloudwatch_metric_alarm" "rds_high_cpu" {
   metric_name         = "CPUUtilization"
   comparison_operator = "GreaterThanThreshold"
   statistic           = "Average"
-  threshold           = 50
-  period              = 60 # period in seconds
+  threshold           = 50 # over 50%
+  period              = 30 # period in seconds
   evaluation_periods  = 1  # number of periods to compare with threshold 
 
   dimensions = {
@@ -57,8 +57,8 @@ resource "aws_cloudwatch_metric_alarm" "rds_low_memory" {
   metric_name         = "FreeableMemory"
   comparison_operator = "LessThanThreshold"
   statistic           = "Average"
-  threshold           = 200 * 1024 * 1024 # 200 MiB in bytes
-  period              = 50                # period in seconds
+  threshold           = 500 * 1024 * 1024 # 500 MiB in bytes
+  period              = 30                # period in seconds
   evaluation_periods  = 1                 # number of periods to compare with threshold 
 
   dimensions = {
@@ -77,8 +77,8 @@ resource "aws_cloudwatch_metric_alarm" "rds_low_storage" {
   metric_name         = "FreeStorageSpace"
   comparison_operator = "LessThanThreshold"
   statistic           = "Average"
-  threshold           = 5 * 1024 * 1024 * 1024 # 5 GiB in bytes
-  period              = 300                    # period in seconds
+  threshold           = 2 * 1024 * 1024 * 1024 # 2 GiB in bytes
+  period              = 60                     # period in seconds
   evaluation_periods  = 2                      # number of periods to compare with threshold.  
 
   dimensions = {

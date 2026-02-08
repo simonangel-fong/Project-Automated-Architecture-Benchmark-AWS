@@ -8,7 +8,6 @@
     - [Load Model](#load-model)
     - [Metrics Collected](#metrics-collected)
     - [Comparison Method](#comparison-method)
-    - [Comparison Table](#comparison-table)
 
 ---
 
@@ -79,29 +78,6 @@ Use the **same k6 tests** across **different architectures** to ensure a fair an
 
 All architectures are evaluated using the same workload profiles and metrics to enable consistent comparison.
 
-### Comparison Table
-
-| Solution ID | Test Profile | p95 Latency (ms) | Error Rate (%) | Max Sustainable RPS | RDS CPU Max (%) | ECS CPU Max (%) | SLO Status | Notes |
-| ----------- | ------------ | ---------------- | -------------- | ------------------- | --------------- | --------------- | ---------- | ----- |
-| `baseline`  | Read-Heavy   |                  |                |                     |                 |                 |            |       |
-| `baseline`  | Write-Heavy  |                  |                |                     |                 |                 |            |       |
-| `baseline`  | Mixed        |                  |                |                     |                 |                 |            |       |
-| `tune`      | Read-Heavy   |                  |                |                     |                 |                 |            |       |
-| `tune`      | Write-Heavy  |                  |                |                     |                 |                 |            |       |
-| `tune`      | Mixed        |                  |                |                     |                 |                 |            |       |
-| `scale`     | Read-Heavy   |                  |                |                     |                 |                 |            |       |
-| `scale`     | Write-Heavy  |                  |                |                     |                 |                 |            |       |
-| `scale`     | Mixed        |                  |                |                     |                 |                 |            |       |
-| `redis`     | Read-Heavy   |                  |                |                     |                 |                 |            |       |
-| `redis`     | Write-Heavy  |                  |                |                     |                 |                 |            |       |
-| `redis`     | Mixed        |                  |                |                     |                 |                 |            |       |
-| `kafka`     | Read-Heavy   |                  |                |                     |                 |                 |            |       |
-| `kafka`     | Write-Heavy  |                  |                |                     |                 |                 |            |       |
-| `kafka`     | Mixed        |                  |                |                     |                 |                 |            |       |
-
----
-
-- [App Development](./doc/app_dev/app_dev.md)
 - [Baseline](./doc/baseline/baseline.md)
 - [Scale](./doc/scale/scale.md)
 - [Tune](./doc/tune/tune.md)

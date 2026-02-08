@@ -39,6 +39,22 @@ python k6/pgdb_write_check.py
 
 ---
 
+- kafka
+
+```sh
+# Push
+docker build -t fastapi_kafka app/fastapi_kafka
+
+# tag
+docker tag fastapi_kafka 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:fastapi-kafka
+
+# push to docker
+docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:fastapi-kafka
+
+```
+
+---
+
 ## AWS
 
 ```sh

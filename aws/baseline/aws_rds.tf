@@ -4,7 +4,7 @@
 # Variable
 # #################################
 locals {
-  rds_postgres_identifier = "${var.project}-${var.env}-rds-pgdb"
+  rds_postgres_identifier  = "${var.project}-${var.env}-rds-pgdb"
   rds_postgres_param_group = "${var.project}-${var.env}-rds-param-group-pgdb"
 }
 
@@ -33,7 +33,6 @@ resource "aws_security_group" "postgres" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    # cidr_blocks = ["0.0.0.0/0"]
     cidr_blocks = [aws_vpc.main.cidr_block]
   }
 

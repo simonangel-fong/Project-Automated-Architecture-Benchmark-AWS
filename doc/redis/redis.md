@@ -36,6 +36,23 @@ python k6/pgdb_write_check.py
 
 ---
 
+
+- redis
+
+```sh
+# Push
+docker build -t fastapi_redis app/fastapi_redis
+
+# tag
+docker tag fastapi_redis 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:fastapi-redis
+
+# push to docker
+docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:fastapi-redis
+
+```
+
+
+
 ## AWS
 
 ```sh

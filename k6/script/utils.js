@@ -61,6 +61,22 @@ export function buildTelemetryPayload({ xMax = 10, yMax = 10 } = {}) {
 }
 
 // ============================================
+// Function helps parse Boolean ENV var
+// ============================================
+export function parseBoolEnv(name, defaultValue) {
+  const raw = __ENV[name];
+
+  if (raw === undefined) return defaultValue;
+
+  const normalized = String(raw).toLowerCase().trim();
+
+  if (["true", "1", "yes", "y"].includes(normalized)) return true;
+  if (["false", "0", "no", "n"].includes(normalized)) return false;
+
+  return defaultValue;
+}
+
+// ============================================
 // Function helps parse Number ENV var
 // ============================================
 export function parseNumberEnv(name, defaultValue) {

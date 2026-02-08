@@ -1,7 +1,7 @@
 // test_hp_read.js
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.0.4/index.js";
 import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
-import { parseNumberEnv, getDeviceForVU } from "./utils.js";
+import { parseNumberEnv, parseBoolEnv, getDeviceForVU } from "./utils.js";
 import { getTelemetryLatest } from "./target_url.js";
 
 // ==============================
@@ -12,7 +12,7 @@ const BASE_URL = __ENV.BASE_URL || "http://localhost:8000";
 // Tag to distinguish solution variants
 const SOLUTION_ID = __ENV.SOLUTION_ID || "baseline";
 const PROFILE = "read-heavy";
-const ABORT_ON_FAIL = false;
+const ABORT_ON_FAIL = parseBoolEnv("ABORT_ON_FAIL", true);
 
 // High-performance read test parameters
 const RATE_START = parseNumberEnv("RATE_START", 50); // initial RPS
@@ -21,7 +21,7 @@ const RATE_TARGET = parseNumberEnv("RATE_TARGET", 1000); // peak RPS
 // -------- Stage --------
 const STAGE_START = parseNumberEnv("STAGE_START", 1); // minutes per start stage
 const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 10); // minutes per ramp stage
-const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 1); // minutes to hold peak
+const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 3); // minutes to hold peak
 
 // VU pool
 const VU = parseNumberEnv("VU", 50); // pre-allocated VUs
@@ -51,7 +51,7 @@ export const options = {
       {
         threshold: "rate<0.01", // Failure rate < 1%
         abortOnFail: ABORT_ON_FAIL,
-        // delayAbortEval: "10s",
+        delayAbortEval: "10s",
       },
     ],
 
