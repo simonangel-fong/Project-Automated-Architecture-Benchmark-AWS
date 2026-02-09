@@ -64,10 +64,10 @@ variable "svc_param" {
       memory        = 1024
       count_desired = 4
       count_min     = 4
-      count_max     = 15
+      count_max     = 35
       container_env = {
         pool_size    = 5
-        max_overflow = 10
+        max_overflow = 0
         worker       = 1
       }
     }

@@ -1,7 +1,7 @@
-// test_hp_read.js
+// constant_read.js
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.0.4/index.js";
 import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
-import { parseNumberEnv, parseBoolEnv, getDeviceForVU } from "./utils.js";
+import { parseNumberEnv, getDeviceForVU } from "./utils.js";
 import { getTelemetryLatest } from "./target_url.js";
 
 // ==============================
@@ -11,17 +11,15 @@ const BASE_URL = __ENV.BASE_URL || "http://localhost:8000";
 
 // Tag to distinguish solution variants
 const SOLUTION_ID = __ENV.SOLUTION_ID || "baseline";
-const PROFILE = "read-heavy";
-const ABORT_ON_FAIL = parseBoolEnv("ABORT_ON_FAIL", false);
+const PROFILE = "constant-read";
+const ABORT_ON_FAIL = false;
 
 // High-performance read test parameters
-const RATE_START = parseNumberEnv("RATE_START", 50); // initial RPS
 const RATE_TARGET = parseNumberEnv("RATE_TARGET", 1000); // peak RPS
 
 // -------- Stage --------
 const STAGE_START = parseNumberEnv("STAGE_START", 1); // minutes per start stage
-const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 20); // minutes per ramp stage
-const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 5); // minutes to hold peak
+const STAGE_CONSTANT = parseNumberEnv("STAGE_CONSTANT", 1); // minutes for constant
 
 // VU pool
 const VU = parseNumberEnv("VU", 50); // pre-allocated VUs
@@ -32,7 +30,7 @@ const MAX_VU = parseNumberEnv("MAX_VU", 200); // max VUs
 // ==============================
 export const options = {
   cloud: {
-    name: `HP Read: ${SOLUTION_ID} – ${RATE_TARGET} RPS`,
+    name: `Constant(Read): ${SOLUTION_ID} – ${RATE_TARGET} RPS`,
   },
   // Global tags for all metrics
   tags: {
@@ -47,28 +45,27 @@ export const options = {
 
   thresholds: {
     // Overall failure rate
-    "http_req_failed{scenario:hp_read_telemetry}": [
+    "http_req_failed{scenario:constant_read}": [
       {
         threshold: "rate<0.01", // Failure rate < 1%
         abortOnFail: ABORT_ON_FAIL,
-        delayAbortEval: "10s",
+        // delayAbortEval: "10s",
       },
     ],
 
     // GET /telemetry/latest
-    "http_req_duration{scenario:hp_read_telemetry,endpoint:telemetry_get_latest}":
-      [
-        {
-          threshold: "p(99)<300", // 99% of requests < 300ms
-          abortOnFail: ABORT_ON_FAIL, // abort when 1st failure
-          delayAbortEval: "10s",
-        },
-        { threshold: "p(90)<1000" },
-      ],
+    "http_req_duration{scenario:constant_read,endpoint:telemetry_get_latest}": [
+      {
+        threshold: "p(99)<300", // 99% of requests < 300ms
+        // abortOnFail: ABORT_ON_FAIL, // abort when 1st failure
+        // delayAbortEval: "10s",
+      },
+      { threshold: "p(90)<1000" },
+    ],
   },
 
   scenarios: {
-    hp_read_telemetry: {
+    constant_read: {
       executor: "ramping-arrival-rate",
       startRate: 0, // initial RPS
       timeUnit: "1s", // RPS-based
@@ -78,14 +75,11 @@ export const options = {
 
       // Smooth ramp up to RATE_TARGET and then hold
       stages: [
-        { duration: `${STAGE_START}m`, target: RATE_START }, // warm-up
-        { duration: `${STAGE_RAMP}m`, target: RATE_TARGET }, // reach peak
-        { duration: `${STAGE_PEAK}m`, target: RATE_TARGET }, // hold peak
-        { duration: `1m`, target: 0 }, // cool down
+        { duration: `${STAGE_START}m`, target: RATE_TARGET }, //
+        { duration: `${STAGE_CONSTANT}m`, target: RATE_TARGET }, //
       ],
-
       gracefulStop: "60s",
-      exec: "hp_read_telemetry",
+      exec: "constant_read",
     },
   },
 };
@@ -93,20 +87,20 @@ export const options = {
 // ==============================
 // Scenario function
 // ==============================
-export function hp_read_telemetry() {
+export function constant_read() {
   const device = getDeviceForVU();
   getTelemetryLatest({ base_url: BASE_URL, device });
 }
 
-export default hp_read_telemetry;
+export default constant_read;
 
 // ==============================
 // Summary output
 // ==============================
 export function handleSummary(data) {
   return {
-    "hp_read_test.json": JSON.stringify(data, null, 2),
-    "hp_read_test.html": htmlReport(data),
+    "constant_read.json": JSON.stringify(data, null, 2),
+    "constant_read.html": htmlReport(data),
     stdout: textSummary(data, { indent: " ", enableColors: true }),
   };
 }
