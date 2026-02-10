@@ -21,7 +21,7 @@ locals {
   kafka_consumer_env_pgdb_pwd       = aws_db_instance.postgres.password
   kafka_consumer_env_kafka_topic    = var.kafka_topic
   kafka_consumer_env_kafka_group_id = var.svc_param.kafka_consumer_svc.container_env["group_id"]
-  kafka_consumer_scale_cpu          = var.scale_cpu
+  kafka_consumer_scale_cpu          = var.threshold_cpu
 }
 
 # #################################

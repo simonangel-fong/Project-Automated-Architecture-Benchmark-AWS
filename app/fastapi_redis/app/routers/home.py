@@ -36,6 +36,10 @@ async def home() -> dict:
             "swagger_ui": "/docs",
             "redoc": "/redoc",
         },
+        "stats": {
+            "device_count": "/devices/count",
+            "telemetry_count": "/telemetry/count",
+        }
     }
 
     if settings.debug:
@@ -62,6 +66,5 @@ async def home() -> dict:
             "port": settings.redis.port,
             "db_name": settings.redis.db,
         }
-
 
     return response

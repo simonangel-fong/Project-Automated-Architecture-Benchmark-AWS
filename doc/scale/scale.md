@@ -3,14 +3,11 @@
 [Back](../../README.md)
 
 - [Project: IOT Mgnt Telemetry AWS ECS - Scale](#project-iot-mgnt-telemetry-aws-ecs---scale)
-  - [Local Development](#local-development)
   - [Local - Testing](#local---testing)
   - [AWS](#aws)
   - [Remote Testing](#remote-testing)
 
 ---
-
-## Local Development
 
 ## Local - Testing
 

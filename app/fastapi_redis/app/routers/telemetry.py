@@ -258,6 +258,44 @@ async def get_authenticated_device(
 
 
 # ============================================================
+# GET /telemetry/count
+# ============================================================
+@router.get(
+    "/count",
+    summary="Get telemetry registry statistics",
+    description=(
+        "Return high-level statistics about telemetry storage. "
+    ),
+)
+async def get_telemetry_count(
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, int]:
+    """
+    Return summary statistics for telemetry storage.
+    """
+    logger.debug("Fetching telemetry count (total telemetry event count)")
+
+    stmt = select(func.count()).select_from(TelemetryEvent)
+
+    try:
+        result = await db.execute(stmt)
+        telemetry_count = result.scalar_one()
+    except SQLAlchemyError as exc:
+        logger.exception("Database error while fetching telemetry count")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve telemetry count.",
+        ) from exc
+
+    logger.debug(
+        "Telemetry count fetched successfully",
+        extra={"telemetry_count": telemetry_count},
+    )
+
+    return {"telemetry_count": telemetry_count}
+
+
+# ============================================================
 # GET /telemetry/{device_uuid}
 # ============================================================
 @router.get(

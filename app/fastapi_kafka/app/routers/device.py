@@ -13,7 +13,7 @@ from fastapi import (
     Query,
     status,
 )
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,11 +28,10 @@ router = APIRouter(
     tags=["devices"],
 )
 
+
 # ============================================================
 # GET /devices
 # ============================================================
-
-
 @router.get(
     "",
     response_model=list[DeviceRegistryItem],
@@ -103,6 +102,50 @@ async def list_devices(
         },
     )
     return devices
+
+
+# ============================================================
+# GET /devices/count
+# ============================================================
+@router.get(
+    "/count",
+    summary="Get device registry statistics",
+    description=(
+        "Return high-level statistics about the device registry. "
+        "Currently includes the total number of registered devices."
+    ),
+)
+async def get_device_registry_count(
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, int]:
+    """
+    Retrieve summary statistics for the device registry.
+
+    The endpoint used by admin dashboards or monitoring
+    services to display high-level system metrics.
+    """
+    logger.debug("Fetching device registry count")
+
+    stmt = select(func.count()).select_from(DeviceRegistry)
+
+    try:
+        result = await db.execute(stmt)
+        device_count = result.scalar_one()
+    except SQLAlchemyError as exc:
+        logger.exception(
+            "Database error while fetching device registry count"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve device registry count.",
+        ) from exc
+
+    logger.debug(
+        "Device registry count fetched successfully",
+        extra={"device_count": device_count},
+    )
+
+    return {"device_count": device_count}
 
 
 # ============================================================

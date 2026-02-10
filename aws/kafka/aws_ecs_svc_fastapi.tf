@@ -22,7 +22,7 @@ locals {
   fastapi_env_pgdb_user    = aws_db_instance.postgres.username
   fastapi_env_pgdb_pwd     = aws_db_instance.postgres.password
   fastapi_env_kafka_topic  = var.kafka_topic
-  fastapi_scale_cpu        = var.scale_cpu
+  fastapi_scale_cpu        = var.threshold_cpu
 }
 
 # #################################
@@ -120,6 +120,19 @@ resource "aws_security_group" "fastapi" {
 }
 
 # #################################
+# CloudWatch: log group
+# #################################
+resource "aws_cloudwatch_log_group" "log_group_fastapi" {
+  name              = local.fastapi_log_id
+  retention_in_days = 7
+  kms_key_id        = aws_kms_key.cloudwatch_log.arn
+
+  tags = {
+    Name = local.fastapi_log_id
+  }
+}
+
+# #################################
 # ECS: Task Definition
 # #################################
 resource "aws_ecs_task_definition" "ecs_task_fastapi" {
@@ -130,9 +143,6 @@ resource "aws_ecs_task_definition" "ecs_task_fastapi" {
   memory                   = local.fastapi_memory
   execution_role_arn       = aws_iam_role.execution_role_fastapi.arn
   task_role_arn            = aws_iam_role.task_role_fastapi.arn
-
-  # method: json file
-  # container_definitions = file("./container/fastapi.json")
 
   # method: template file
   container_definitions = templatefile("${path.module}/container/fastapi.tftpl", {
@@ -195,6 +205,10 @@ resource "aws_ecs_service" "ecs_svc_fastapi" {
     Name = "${var.project}-${var.env}-service-fastapi"
   }
 
+  # lifecycle {
+  #   ignore_changes = [desired_count]
+  # }
+
   depends_on = [
     aws_cloudwatch_log_group.log_group_fastapi,
     aws_vpc_endpoint.ecr_api,
@@ -206,7 +220,8 @@ resource "aws_ecs_service" "ecs_svc_fastapi" {
 # #################################
 # Service: Scaling policy
 # #################################
-resource "aws_appautoscaling_target" "scaling_target_fastapi" {
+# scale target
+resource "aws_appautoscaling_target" "scale_target" {
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.ecs_cluster.name}/${aws_ecs_service.ecs_svc_fastapi.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -214,71 +229,108 @@ resource "aws_appautoscaling_target" "scaling_target_fastapi" {
   max_capacity       = local.fastapi_count_max
 }
 
-# scaling policy: cpu
-resource "aws_appautoscaling_policy" "scaling_cpu_fastapi" {
-  name               = "${var.project}-scale-cpu-fastapi"
-  resource_id        = aws_appautoscaling_target.scaling_target_fastapi.resource_id
-  scalable_dimension = aws_appautoscaling_target.scaling_target_fastapi.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.scaling_target_fastapi.service_namespace
-  policy_type        = "TargetTrackingScaling"
-
-  target_tracking_scaling_policy_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ECSServiceAverageCPUUtilization"
-    }
-    target_value       = local.fastapi_scale_cpu # cpu%
-    scale_in_cooldown  = 30
-    scale_out_cooldown = 30
-  }
-}
-
-resource "aws_appautoscaling_policy" "scaling_memory_fastapi" {
-  name               = "${var.project}-scale-memory-fastapi"
-  resource_id        = aws_appautoscaling_target.scaling_target_fastapi.resource_id
-  scalable_dimension = aws_appautoscaling_target.scaling_target_fastapi.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.scaling_target_fastapi.service_namespace
-  policy_type        = "TargetTrackingScaling"
-
-  target_tracking_scaling_policy_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
-    }
-    target_value       = 40
-    scale_in_cooldown  = 60
-    scale_out_cooldown = 60
-  }
-}
-
-# #################################
-# CloudWatch: log group
-# #################################
-resource "aws_cloudwatch_log_group" "log_group_fastapi" {
-  name              = local.fastapi_log_id
-  retention_in_days = 7
-  kms_key_id        = aws_kms_key.cloudwatch_log.arn
-
-  tags = {
-    Name = local.fastapi_log_id
-  }
-}
-
-# #################################
-# Monitoring: cup alarm
-# #################################
-resource "aws_cloudwatch_metric_alarm" "ecs_fastapi_high_cpu" {
-  alarm_name          = "${var.project}-${var.env}-ecs-fastapi-high-cpu"
+# Alarm: cpu high
+resource "aws_cloudwatch_metric_alarm" "cpu_high" {
+  alarm_name          = "${var.project}-${var.env}-cpu-alarm"
   namespace           = "AWS/ECS"
-  metric_name         = "CPUUtilization"
-  comparison_operator = "GreaterThanThreshold"
+  period              = "30"
+  evaluation_periods  = "2"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
   statistic           = "Average"
-  threshold           = 50
-  period              = 60 # period in seconds
-  evaluation_periods  = 2  # number of periods to compare with threshold.  
+  metric_name         = "CPUUtilization"
+  threshold           = var.threshold_cpu
 
   dimensions = {
     ClusterName = aws_ecs_cluster.ecs_cluster.name
     ServiceName = aws_ecs_service.ecs_svc_fastapi.name
   }
 
-  alarm_description = "High CPU on ECS FastAPI service"
+  alarm_actions = [aws_appautoscaling_policy.scale_up.arn]
+}
+
+# scale up policy
+resource "aws_appautoscaling_policy" "scale_up" {
+  name               = "${var.project}-${var.env}-scale-up-policy"
+  service_namespace  = aws_appautoscaling_target.scale_target.service_namespace
+  resource_id        = aws_appautoscaling_target.scale_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.scale_target.scalable_dimension
+  policy_type        = "StepScaling"
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 30
+    metric_aggregation_type = "Maximum"
+
+    step_adjustment {
+      metric_interval_lower_bound = 0
+      metric_interval_upper_bound = 5
+      scaling_adjustment          = 1
+    }
+
+    step_adjustment {
+      metric_interval_lower_bound = 5
+      metric_interval_upper_bound = 10
+      scaling_adjustment          = 2
+    }
+
+    step_adjustment {
+      metric_interval_lower_bound = 10
+      metric_interval_upper_bound = 15
+      scaling_adjustment          = 3
+    }
+
+    step_adjustment {
+      metric_interval_lower_bound = 15
+      scaling_adjustment          = 4
+    }
+  }
+}
+
+# Alarm: cpu low
+resource "aws_cloudwatch_metric_alarm" "cpu_low" {
+  alarm_name          = "${var.project}-${var.env}-cpu-low"
+  namespace           = "AWS/ECS"
+  period              = "30"
+  evaluation_periods  = "2"
+  comparison_operator = "LessThanThreshold"
+  statistic           = "Average"
+  metric_name         = "CPUUtilization"
+  threshold           = var.threshold_cpu
+
+  dimensions = {
+    ClusterName = aws_ecs_cluster.ecs_cluster.name
+    ServiceName = aws_ecs_service.ecs_svc_fastapi.name
+  }
+  alarm_actions = [aws_appautoscaling_policy.scale_down.arn]
+}
+
+resource "aws_appautoscaling_policy" "scale_down" {
+  name               = "${var.project}-${var.env}-scale-down"
+  service_namespace  = aws_appautoscaling_target.scale_target.service_namespace
+  resource_id        = aws_appautoscaling_target.scale_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.scale_target.scalable_dimension
+  policy_type        = "StepScaling"
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 30
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      metric_interval_lower_bound = -5
+      metric_interval_upper_bound = 0
+      scaling_adjustment          = -1
+    }
+
+    step_adjustment {
+      metric_interval_lower_bound = -10
+      metric_interval_upper_bound = -5
+      scaling_adjustment          = -2
+    }
+
+    step_adjustment {
+      metric_interval_upper_bound = -10
+      scaling_adjustment          = -3
+    }
+  }
 }

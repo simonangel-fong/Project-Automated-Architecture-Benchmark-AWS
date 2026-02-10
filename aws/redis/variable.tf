@@ -34,6 +34,7 @@ variable "vpc_cidr" {
   type    = string
   default = "10.0.0.0/16"
 }
+
 # ##############################
 # AWS ECS
 # ##############################
@@ -43,7 +44,7 @@ locals {
 
 variable "threshold_cpu" {
   type    = number
-  default = 40
+  default = 25
 }
 
 variable "svc_param" {
@@ -59,15 +60,15 @@ variable "svc_param" {
   default = {
     fastapi_svc = {
       image_suffix  = "fastapi-redis"
-      cpu           = 2048
-      memory        = 4096
-      count_desired = 6
-      count_min     = 6
-      count_max     = 10
+      cpu           = 512
+      memory        = 1024
+      count_desired = 4
+      count_min     = 4
+      count_max     = 35
       container_env = {
-        pool_size    = 20
-        max_overflow = 10
-        worker       = 2
+        pool_size    = 5
+        max_overflow = 0
+        worker       = 1
       }
     }
   }

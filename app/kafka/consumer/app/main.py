@@ -14,7 +14,7 @@ from .db import async_session_maker
 from .models import TelemetryEvent
 from .schemas import TelemetryItem
 
-BATCH_SIZE = 500
+BATCH_SIZE = 1000
 FLUSH_INTERVAL_SEC = 1.0
 RETRY_BACKOFF_SEC = 1.0
 

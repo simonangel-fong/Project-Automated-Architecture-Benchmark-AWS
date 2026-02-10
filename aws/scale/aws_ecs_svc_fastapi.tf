@@ -23,7 +23,6 @@ locals {
   fastapi_scale_cpu        = var.threshold_cpu
 }
 
-
 # #################################
 # IAM: Task Execution Role
 # #################################
@@ -31,6 +30,11 @@ locals {
 resource "aws_iam_role" "execution_role_fastapi" {
   name               = "${var.project}-${var.env}-execution-role-fastapi"
   assume_role_policy = data.aws_iam_policy_document.assume_role_ecs.json
+
+  tags = {
+    Project = var.project
+    Role    = "ecs-task-execution-role-fastapi"
+  }
 }
 
 # policy attachment: exec role
@@ -38,7 +42,6 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_fastap
   role       = aws_iam_role.execution_role_fastapi.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
-
 
 # #################################
 # IAM: Task Role

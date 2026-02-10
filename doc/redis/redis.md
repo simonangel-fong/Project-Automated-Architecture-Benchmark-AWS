@@ -4,7 +4,9 @@
 
 - [Project: IOT Mgnt Telemetry Cloud Native - Redis](#project-iot-mgnt-telemetry-cloud-native---redis)
   - [Local - Testing](#local---testing)
-  - [AWS](#aws)
+  - [AWS ECR](#aws-ecr)
+    - [Push ECR](#push-ecr)
+  - [AWS Deployment](#aws-deployment)
   - [Remote Testing](#remote-testing)
 
 ---
@@ -36,6 +38,9 @@ python k6/pgdb_write_check.py
 
 ---
 
+## AWS ECR
+
+### Push ECR
 
 - redis
 
@@ -51,9 +56,7 @@ docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:f
 
 ```
 
-
-
-## AWS
+## AWS Deployment
 
 ```sh
 cd aws/redis
@@ -64,6 +67,7 @@ terraform fmt && terraform validate
 
 terraform apply -auto-approve
 
+# init data via flyway
 aws ecs run-task --cluster iot-mgnt-telemetry-scale-cluster --task-definition iot-mgnt-telemetry-scale-task-flyway --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-,subnet-,subnet-],securityGroups=[sg-]}"
 
 terraform destroy -auto-approve
@@ -74,16 +78,16 @@ terraform destroy -auto-approve
 
 ```sh
 # smoke
-docker run --rm --name redis_aws_smoke -p 5668:5665 -e BASE_URL="https://iot-redis.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/redis_aws_smoke.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js
+docker run --rm --name redis_aws_smoke -p 5665:5665 -e BASE_URL="https://iot-redis.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/redis_aws_smoke.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js
 
 # read heavy
-docker run --rm --name redis_aws_read -p 5668:5665 -e SOLUTION_ID="redis" -e BASE_URL="https://iot-redis.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/redis_aws_read.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
+docker run --rm --name redis_aws_read -p 5665:5665 -e SOLUTION_ID="redis" -e BASE_URL="https://iot-redis.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/redis_aws_read.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
 
 # write heavy
-docker run --rm --name redis_aws_write -p 5668:5665 -e SOLUTION_ID="redis" -e BASE_URL="https://iot-redis.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/redis_aws_write.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
+docker run --rm --name redis_aws_write -p 5665:5665 -e SOLUTION_ID="redis" -e BASE_URL="https://iot-redis.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/redis_aws_write.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
 
 # mixed
-docker run --rm --name redis_aws_mixed -p 5668:5665 -e SOLUTION_ID="redis" -e BASE_URL="https://iot-redis.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/redis_aws_mixed.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
+docker run --rm --name redis_aws_mixed -p 5665:5665 -e SOLUTION_ID="redis" -e BASE_URL="https://iot-redis.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/redis_aws_mixed.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
 
 python k6/pgdb_write_check.py
 ```

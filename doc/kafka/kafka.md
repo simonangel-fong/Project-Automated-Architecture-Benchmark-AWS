@@ -4,10 +4,11 @@
 
 - [Project: IOT Mgnt Telemetry Cloud Native - Kafka](#project-iot-mgnt-telemetry-cloud-native---kafka)
   - [Local - Testing](#local---testing)
-  - [AWS](#aws)
-  - [Kafka](#kafka)
+  - [AWS ECR](#aws-ecr)
+    - [Push ECR](#push-ecr)
+  - [AWS Deployment](#aws-deployment)
+    - [Terraform](#terraform)
     - [Init](#init)
-    - [Consumer](#consumer)
   - [Remote Testing](#remote-testing)
 
 ---
@@ -39,6 +40,10 @@ python k6/pgdb_write_check.py
 
 ---
 
+## AWS ECR
+
+### Push ECR
+
 - kafka
 
 ```sh
@@ -53,28 +58,7 @@ docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:f
 
 ```
 
----
-
-## AWS
-
-```sh
-cd aws/kafka
-
-terraform init -backend-config=backend.config
-
-terraform fmt && terraform validate
-
-terraform apply -auto-approve
-
-aws ecs run-task --cluster iot-mgnt-telemetry-kafka-cluster --task-definition iot-mgnt-telemetry-scale-task-flyway --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-,subnet-,subnet-],securityGroups=[sg-]}"
-
-terraform destroy -auto-approve
-
-```
-
-## Kafka
-
-### Init
+- Init
 
 ```sh
 # Push
@@ -86,9 +70,7 @@ docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:k
 
 ```
 
----
-
-### Consumer
+- Consumer
 
 ```sh
 # Push
@@ -98,6 +80,35 @@ docker tag kafka_consumer 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mg
 # push to docker
 docker push 099139718958.dkr.ecr.ca-central-1.amazonaws.com/iot-mgnt-telemetry:kafka-consumer
 
+```
+
+---
+
+## AWS Deployment
+
+### Terraform
+
+```sh
+cd aws/kafka
+
+terraform init -backend-config=backend.config
+
+terraform fmt && terraform validate
+
+terraform apply -auto-approve
+
+terraform destroy -auto-approve
+
+```
+
+### Init
+
+```sh
+# init data via flyway
+aws ecs run-task --cluster iot-mgnt-telemetry-scale-cluster --task-definition iot-mgnt-telemetry-scale-task-flyway --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-,subnet-,subnet-],securityGroups=[sg-]}"
+
+# init msk
+aws ecs run-task --cluster iot-mgnt-telemetry-scale-cluster --task-definition iiot-mgnt-telemetry-kafka-kafka-init --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-,subnet-,subnet-],securityGroups=[sg-]}"
 ```
 
 ---
