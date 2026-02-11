@@ -60,8 +60,8 @@ export function smoke_test() {
   // Basic platform checks
   getHome({ base_url: BASE_URL });
   getHealth({ base_url: BASE_URL });
-  getHealthDB({ base_url: BASE_URL });
-  getDevices({ base_url: BASE_URL });
+  // getHealthDB({ base_url: BASE_URL });
+  // getDevices({ base_url: BASE_URL });
 
   // telemetry
   getTelemetryLatest({ base_url: BASE_URL, device });

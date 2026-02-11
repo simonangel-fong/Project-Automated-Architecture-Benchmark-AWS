@@ -30,17 +30,17 @@ async def health() -> dict:
     }
 
 
-@router.get("/db", summary="Database health check")
-async def health_db(db: AsyncSession = Depends(get_db)) -> JSONResponse:
-    try:
-        await db.execute(text("SELECT 1"))
-        return JSONResponse({"database": "reachable"})
-    except Exception as exc:
-        logger.exception("Database health check failed")
-        return JSONResponse(
-            status_code=503,
-            content={"database": "unreachable", "detail": _maybe_detail(exc)},
-        )
+# @router.get("/db", summary="Database health check")
+# async def health_db(db: AsyncSession = Depends(get_db)) -> JSONResponse:
+#     try:
+#         await db.execute(text("SELECT 1"))
+#         return JSONResponse({"database": "reachable"})
+#     except Exception as exc:
+#         logger.exception("Database health check failed")
+#         return JSONResponse(
+#             status_code=503,
+#             content={"database": "unreachable", "detail": _maybe_detail(exc)},
+#         )
 
 
 @router.get("/redis", summary="Redis health check")

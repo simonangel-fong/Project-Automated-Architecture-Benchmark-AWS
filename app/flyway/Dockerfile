@@ -9,4 +9,4 @@ COPY ./sql /flyway/sql
 # copy conf
 COPY ./conf /flyway/conf/
 
-CMD ["migrate"]
+CMD ["migrate", "-outOfOrder=true"]

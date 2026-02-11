@@ -269,202 +269,204 @@ async def get_authenticated_device(
 @router.get(
     "/count",
     summary="Get telemetry registry statistics",
-    description=(
-        "Return high-level statistics about telemetry storage. "
-    ),
+    description="Return high-level statistics about telemetry storage.",
 )
-async def get_telemetry_count(
-    db: AsyncSession = Depends(get_db),
-) -> dict[str, int]:
+async def get_telemetry_count() -> dict[str, int]:
     """
-    Return summary statistics for telemetry storage.
+    Return telemetry count from Redis (read model).
     """
-    logger.debug("Fetching telemetry count (total telemetry event count)")
 
-    stmt = select(func.count()).select_from(TelemetryEvent)
+    logger.debug("Fetching telemetry count from Redis")
 
     try:
-        result = await db.execute(stmt)
-        telemetry_count = result.scalar_one()
-    except SQLAlchemyError as exc:
-        logger.exception("Database error while fetching telemetry count")
+        value = await redis_client.get("telemetry:count")
+
+        if value is None:
+            # If Redis key missing: worker may not have synced yet
+            logger.warning("Redis telemetry:count key not found")
+            return {"telemetry_count": 0}
+
+        telemetry_count = int(value)
+
+    except Exception:
+        logger.exception("Redis error while fetching telemetry count")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve telemetry count.",
-        ) from exc
+            detail="Failed to retrieve telemetry count from cache.",
+        )
 
     logger.debug(
-        "Telemetry count fetched successfully",
+        "Telemetry count fetched successfully from Redis",
         extra={"telemetry_count": telemetry_count},
     )
 
     return {"telemetry_count": telemetry_count}
 
 
-# ============================================================
-# GET /telemetry/{device_uuid}
-# ============================================================
-@router.get(
-    "/{device_uuid}",
-    summary="List telemetry for a device",
-    description=(
-        "Return a list of telemetry events for a specific device, identified by its UUID. "
-        "The device must authenticate using the `X-API-Key` header. The time window can "
-        "be specified using `start_time` and `end_time`, or by using `latest_seconds` "
-        "to request data from a recent lookback period.\n\n"
-        "Results are ordered by `system_time_utc` in descending order (most recent first)."
-    ),
-    response_model=list[TelemetryItem],
-)
-async def list_telemetry_for_device(
-    device: DeviceRegistry = Depends(get_authenticated_device),
-    start_time: datetime | None = Query(
-        default=None,
-        description=(
-            "Start of the time range (UTC). If provided, `latest_seconds` is ignored. "
-            "If omitted while `end_time` is provided, the server will bound the lookback "
-            f"window to at most {MAX_LATEST_SECONDS} seconds."
-        ),
-    ),
-    end_time: datetime | None = Query(
-        default=None,
-        description=(
-            "End of the time range (UTC). If omitted but `start_time` is provided, "
-            "defaults to the current server time."
-        ),
-    ),
-    latest_seconds: int = Query(
-        default=DEFAULT_LATEST_SECONDS,
-        ge=1,
-        le=MAX_LATEST_SECONDS,
-        description=(
-            "Lookback window in seconds when `start_time` and `end_time` are not provided. "
-            "The server returns telemetry in the range [now() - latest_seconds, now()]."
-        ),
-    ),
-    limit: int = Query(
-        default=100,
-        ge=1,
-        le=5000,
-        description="Maximum number of telemetry records to return.",
-    ),
-    db: AsyncSession = Depends(get_db),
-) -> list[TelemetryItem]:
-    """
-    Device-facing telemetry listing endpoint.
+# # ============================================================
+# # GET /telemetry/{device_uuid}
+# # ============================================================
+# @router.get(
+#     "/{device_uuid}",
+#     summary="List telemetry for a device",
+#     description=(
+#         "Return a list of telemetry events for a specific device, identified by its UUID. "
+#         "The device must authenticate using the `X-API-Key` header. The time window can "
+#         "be specified using `start_time` and `end_time`, or by using `latest_seconds` "
+#         "to request data from a recent lookback period.\n\n"
+#         "Results are ordered by `system_time_utc` in descending order (most recent first)."
+#     ),
+#     response_model=list[TelemetryItem],
+# )
+# async def list_telemetry_for_device(
+#     device: DeviceRegistry = Depends(get_authenticated_device),
+#     start_time: datetime | None = Query(
+#         default=None,
+#         description=(
+#             "Start of the time range (UTC). If provided, `latest_seconds` is ignored. "
+#             "If omitted while `end_time` is provided, the server will bound the lookback "
+#             f"window to at most {MAX_LATEST_SECONDS} seconds."
+#         ),
+#     ),
+#     end_time: datetime | None = Query(
+#         default=None,
+#         description=(
+#             "End of the time range (UTC). If omitted but `start_time` is provided, "
+#             "defaults to the current server time."
+#         ),
+#     ),
+#     latest_seconds: int = Query(
+#         default=DEFAULT_LATEST_SECONDS,
+#         ge=1,
+#         le=MAX_LATEST_SECONDS,
+#         description=(
+#             "Lookback window in seconds when `start_time` and `end_time` are not provided. "
+#             "The server returns telemetry in the range [now() - latest_seconds, now()]."
+#         ),
+#     ),
+#     limit: int = Query(
+#         default=100,
+#         ge=1,
+#         le=5000,
+#         description="Maximum number of telemetry records to return.",
+#     ),
+#     db: AsyncSession = Depends(get_db),
+# ) -> list[TelemetryItem]:
+#     """
+#     Device-facing telemetry listing endpoint.
 
-    The device is authenticated via its UUID (path) and API key (header).
-    Only telemetry for the authenticated device is returned.
-    """
-    # Normalize time window
-    start_time, end_time = normalize_time_window(
-        start_time=start_time,
-        end_time=end_time,
-        latest_seconds=latest_seconds,
-    )
+#     The device is authenticated via its UUID (path) and API key (header).
+#     Only telemetry for the authenticated device is returned.
+#     """
+#     # Normalize time window
+#     start_time, end_time = normalize_time_window(
+#         start_time=start_time,
+#         end_time=end_time,
+#         latest_seconds=latest_seconds,
+#     )
 
-    logger.debug(
-        "Listing telemetry for device",
-        extra={
-            "device_uuid": str(device.device_uuid),
-            "start_time": start_time.isoformat(),
-            "end_time": end_time.isoformat(),
-            "limit": limit,
-        },
-    )
+#     logger.debug(
+#         "Listing telemetry for device",
+#         extra={
+#             "device_uuid": str(device.device_uuid),
+#             "start_time": start_time.isoformat(),
+#             "end_time": end_time.isoformat(),
+#             "limit": limit,
+#         },
+#     )
 
-    cache_key = (
-        f"telemetry:{device.device_uuid}:"
-        f"{int(start_time.timestamp())}:"
-        f"{int(end_time.timestamp())}:"
-        f"{limit}"
-    )
+#     cache_key = (
+#         f"telemetry:{device.device_uuid}:"
+#         f"{int(start_time.timestamp())}:"
+#         f"{int(end_time.timestamp())}:"
+#         f"{limit}"
+#     )
 
-    # Try Redis cache
-    try:
-        cached = await redis_client.get(cache_key)
-    except Exception:
-        cached = None
+#     # Try Redis cache
+#     try:
+#         cached = await redis_client.get(cache_key)
+#     except Exception:
+#         cached = None
 
-    if cached:
-        logger.debug(
-            "Telemetry cache hit",
-            extra={"device_uuid": str(
-                device.device_uuid), "cache_key": cache_key},
-        )
-        try:
-            payload = json.loads(cached)
-            items = [TelemetryItem.model_validate(obj) for obj in payload]
-            return items
-        except Exception:
-            # If cache is corrupted or incompatible, ignore and fall back to DB
-            logger.warning(
-                "Failed to deserialize telemetry cache payload, falling back to DB",
-                extra={"device_uuid": str(
-                    device.device_uuid), "cache_key": cache_key},
-            )
+#     if cached:
+#         logger.debug(
+#             "Telemetry cache hit",
+#             extra={"device_uuid": str(
+#                 device.device_uuid), "cache_key": cache_key},
+#         )
+#         try:
+#             payload = json.loads(cached)
+#             items = [TelemetryItem.model_validate(obj) for obj in payload]
+#             return items
+#         except Exception:
+#             # If cache is corrupted or incompatible, ignore and fall back to DB
+#             logger.warning(
+#                 "Failed to deserialize telemetry cache payload, falling back to DB",
+#                 extra={"device_uuid": str(
+#                     device.device_uuid), "cache_key": cache_key},
+#             )
 
-    # Cache miss: query PostgreSQL
-    stmt = (
-        select(TelemetryEvent)
-        .where(
-            TelemetryEvent.device_uuid == device.device_uuid,
-            TelemetryEvent.system_time_utc >= start_time,
-            TelemetryEvent.system_time_utc <= end_time,
-        )
-        .order_by(TelemetryEvent.system_time_utc.desc())
-        .limit(limit)
-    )
+#     # Cache miss: query PostgreSQL
+#     stmt = (
+#         select(TelemetryEvent)
+#         .where(
+#             TelemetryEvent.device_uuid == device.device_uuid,
+#             TelemetryEvent.system_time_utc >= start_time,
+#             TelemetryEvent.system_time_utc <= end_time,
+#         )
+#         .order_by(TelemetryEvent.system_time_utc.desc())
+#         .limit(limit)
+#     )
 
-    try:
-        result = await db.execute(stmt)
-        rows = result.scalars().all()
-    except SQLAlchemyError as exc:
-        logger.exception(
-            "Database error while listing telemetry",
-            extra={"device_uuid": str(device.device_uuid)},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve telemetry.",
-        ) from exc
+#     try:
+#         result = await db.execute(stmt)
+#         rows = result.scalars().all()
+#     except SQLAlchemyError as exc:
+#         logger.exception(
+#             "Database error while listing telemetry",
+#             extra={"device_uuid": str(device.device_uuid)},
+#         )
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="Failed to retrieve telemetry.",
+#         ) from exc
 
-    # Convert ORM rows -> DTOs
-    items: list[TelemetryItem] = [
-        TelemetryItem.model_validate(row) for row in rows
-    ]
+#     # Convert ORM rows -> DTOs
+#     items: list[TelemetryItem] = [
+#         TelemetryItem.model_validate(row) for row in rows
+#     ]
 
-    logger.debug(
-        "Telemetry listing succeeded",
-        extra={
-            "device_uuid": str(device.device_uuid),
-            "returned_count": len(items),
-        },
-    )
+#     logger.debug(
+#         "Telemetry listing succeeded",
+#         extra={
+#             "device_uuid": str(device.device_uuid),
+#             "returned_count": len(items),
+#         },
+#     )
 
-    # Store in Redis cache
-    try:
-        await redis_client.set(
-            cache_key,
-            json.dumps([item.model_dump(mode="json") for item in items]),
-            ex=TELEMETRY_CACHE_TTL_SECONDS,
-        )
-        logger.debug(
-            "Telemetry cached",
-            extra={
-                "device_uuid": str(device.device_uuid),
-                "cache_key": cache_key,
-                "ttl": TELEMETRY_CACHE_TTL_SECONDS,
-            },
-        )
-    except Exception:
-        logger.warning(
-            "Failed to write telemetry to Redis cache",
-            extra={"device_uuid": str(
-                device.device_uuid), "cache_key": cache_key},
-        )
+#     # Store in Redis cache
+#     try:
+#         await redis_client.set(
+#             cache_key,
+#             json.dumps([item.model_dump(mode="json") for item in items]),
+#             ex=TELEMETRY_CACHE_TTL_SECONDS,
+#         )
+#         logger.debug(
+#             "Telemetry cached",
+#             extra={
+#                 "device_uuid": str(device.device_uuid),
+#                 "cache_key": cache_key,
+#                 "ttl": TELEMETRY_CACHE_TTL_SECONDS,
+#             },
+#         )
+#     except Exception:
+#         logger.warning(
+#             "Failed to write telemetry to Redis cache",
+#             extra={"device_uuid": str(
+#                 device.device_uuid), "cache_key": cache_key},
+#         )
 
-    return items
+#     return items
 
 
 # ============================================================
@@ -495,22 +497,20 @@ async def create_telemetry_for_device(
     )
 
     topic = settings.kafka.topic
-
     key = str(device.device_uuid).encode("utf-8")
     value = item.model_dump(mode="json")
 
     # ---- Kafka publish ----
     try:
-        # send_and_wait returns RecordMetadata;
         md = await producer.send_and_wait(topic, value=value, key=key)
         logger.info(
             "Telemetry enqueued",
-            # extra={
-            #     "device_uuid": str(device.device_uuid),
-            #     "topic": topic,
-            #     "partition": md.partition,
-            #     "offset": md.offset,
-            # },
+            extra={
+                "device_uuid": str(device.device_uuid),
+                "topic": topic,
+                "partition": md.partition,
+                "offset": md.offset,
+            },
         )
     except KafkaError as exc:
         logger.exception(
@@ -531,21 +531,6 @@ async def create_telemetry_for_device(
             detail="Failed to enqueue telemetry event.",
         ) from exc
 
-    # ---- Redis cache ----
-    latest_key = f"telemetry:latest:{device.device_uuid}"
-    recent_list_key = f"telemetry:recent:{device.device_uuid}"
-    item_json = item.model_dump_json()
-
-    try:
-        await redis_client.set(latest_key, item_json, ex=TELEMETRY_CACHE_TTL_SECONDS)
-        await redis_client.lpush(recent_list_key, item_json)
-        await redis_client.ltrim(recent_list_key, 0, 99)
-    except Exception:
-        logger.warning(
-            "Failed to write telemetry to Redis cache",
-            extra={"device_uuid": str(device.device_uuid)},
-        )
-
     return item
 
 
@@ -558,177 +543,130 @@ async def create_telemetry_for_device(
     description=(
         "Return the latest known position for a specific device, identified by its UUID. "
         "The device must authenticate using the `X-API-Key` header.\n\n"
-        "This endpoint reads from the telemetry_latest snapshot table, which is maintained "
-        "by the backend whenever new telemetry events are ingested."
+        "This endpoint reads from Redis only (read model)."
     ),
     response_model=TelemetryLatestItem,
 )
 async def get_latest_telemetry_for_device(
     device: DeviceRegistry = Depends(get_authenticated_device),
-    db: AsyncSession = Depends(get_db),
 ) -> TelemetryLatestItem:
     """
-    Return the latest telemetry snapshot for the authenticated device.
+    Return the latest telemetry snapshot for the authenticated device from Redis only.
 
-    If no telemetry has ever been ingested for this device, a 404 is returned.
+    If the Redis key is missing (worker not synced yet), returns 404.
     """
-
     device_uuid_str = str(device.device_uuid)
     cache_key = f"telemetry:latest:{device_uuid_str}"
 
     logger.debug(
-        "Fetching latest telemetry snapshot for device",
-        extra={
-            "device_uuid": device_uuid_str,
-            "cache_key": cache_key,
-        },
+        "Fetching latest telemetry snapshot from Redis",
+        extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
     )
 
-    # Try Redis cache
     try:
         cached = await redis_client.get(cache_key)
-    except Exception:
-        cached = None
-
-    if cached:
-        try:
-            data = json.loads(cached)
-            item = TelemetryLatestItem.model_validate(data)
-            logger.debug(
-                "Latest telemetry snapshot cache hit",
-                extra={
-                    "device_uuid": device_uuid_str,
-                    "system_time_utc": item.system_time_utc.isoformat(),
-                },
-            )
-
-            return item
-        except Exception:
-            logger.warning(
-                "Failed to deserialize latest telemetry cache payload, falling back to DB",
-                extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
-            )
-
-    # Cache miss: query PostgreSQL
-    stmt = select(TelemetryLatest).where(
-        TelemetryLatest.device_uuid == device.device_uuid
-    )
-
-    try:
-        result = await db.execute(stmt)
-        latest = result.scalar_one_or_none()
-    except SQLAlchemyError as exc:
+    except Exception as exc:
         logger.exception(
-            "Database error while fetching latest telemetry",
-            extra={"device_uuid": device_uuid_str},
+            "Redis error while fetching latest telemetry",
+            extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve latest telemetry.",
+            detail="Failed to retrieve latest telemetry from cache.",
         ) from exc
 
-    if latest is None:
+    if not cached:
         logger.warning(
-            "No telemetry snapshot found for device",
-            extra={"device_uuid": device_uuid_str},
+            "No latest telemetry found in Redis for device",
+            extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
         )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No telemetry available for this device.",
         )
 
-    # ORM -> DTO
-    item = TelemetryLatestItem.model_validate(latest)
+    try:
+        data = json.loads(cached)
+        item = TelemetryLatestItem.model_validate(data)
+    except Exception as exc:
+        # Redis contains corrupted/unexpected payload
+        logger.exception(
+            "Failed to deserialize latest telemetry from Redis",
+            extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Telemetry cache payload is invalid.",
+        ) from exc
 
     logger.debug(
-        "Latest telemetry snapshot fetched successfully from DB",
+        "Latest telemetry snapshot fetched successfully from Redis",
         extra={
             "device_uuid": device_uuid_str,
             "system_time_utc": item.system_time_utc.isoformat(),
         },
     )
 
-    # Write-back to Redis
-    try:
-        await redis_client.set(
-            cache_key,
-            item.model_dump_json(),
-            ex=TELEMETRY_CACHE_TTL_SECONDS,  # TTL in seconds; tune as needed
-        )
-        logger.debug(
-            "Latest telemetry snapshot cached",
-            extra={
-                "device_uuid": device_uuid_str,
-                "cache_key": cache_key,
-                "ttl": TELEMETRY_CACHE_TTL_SECONDS,
-            },
-        )
-    except Exception:
-        logger.warning(
-            "Failed to write latest telemetry snapshot to Redis cache",
-            extra={"device_uuid": device_uuid_str, "cache_key": cache_key},
-        )
-
     return item
 
 
-# ============================================================
-# GET /telemetry/count/{device_uuid}
-# ============================================================
-@router.get(
-    "/count/{device_uuid}",
-    summary="Get total telemetry event count for a device (debug)",
-    description=(
-        "Return the total number of telemetry events stored for the given device UUID. "
-        "This endpoint is intended for debugging and operational verification. "
-        "The device must authenticate using the `X-API-Key` header."
-    ),
-    response_model=TelemetryCountItem,
-)
-async def get_telemetry_count_for_device(
-    device: DeviceRegistry = Depends(get_authenticated_device),
-    db: AsyncSession = Depends(get_db),
-) -> TelemetryCountItem:
-    """
-    Return the total telemetry event count for the authenticated device.
+# # ============================================================
+# # GET /telemetry/count/{device_uuid}
+# # ============================================================
+# @router.get(
+#     "/count/{device_uuid}",
+#     summary="Get total telemetry event count for a device (debug)",
+#     description=(
+#         "Return the total number of telemetry events stored for the given device UUID. "
+#         "This endpoint is intended for debugging and operational verification. "
+#         "The device must authenticate using the `X-API-Key` header."
+#     ),
+#     response_model=TelemetryCountItem,
+# )
+# async def get_telemetry_count_for_device(
+#     device: DeviceRegistry = Depends(get_authenticated_device),
+#     db: AsyncSession = Depends(get_db),
+# ) -> TelemetryCountItem:
+#     """
+#     Return the total telemetry event count for the authenticated device.
 
-    This is a debug/operational endpoint and is not meant for production-facing
-    client use (e.g. mobile apps). It simply performs a COUNT(*) on telemetry_event
-    filtered by device_uuid.
-    """
-    logger.debug(
-        "Fetching telemetry event count for device",
-        extra={"device_uuid": str(device.device_uuid)},
-    )
+#     This is a debug/operational endpoint and is not meant for production-facing
+#     client use (e.g. mobile apps). It simply performs a COUNT(*) on telemetry_event
+#     filtered by device_uuid.
+#     """
+#     logger.debug(
+#         "Fetching telemetry event count for device",
+#         extra={"device_uuid": str(device.device_uuid)},
+#     )
 
-    stmt = (
-        select(func.count())
-        .select_from(TelemetryEvent)
-        .where(TelemetryEvent.device_uuid == device.device_uuid)
-    )
+#     stmt = (
+#         select(func.count())
+#         .select_from(TelemetryEvent)
+#         .where(TelemetryEvent.device_uuid == device.device_uuid)
+#     )
 
-    try:
-        result = await db.execute(stmt)
-        total_events = result.scalar_one()
-    except SQLAlchemyError as exc:
-        logger.exception(
-            "Database error while counting telemetry events",
-            extra={"device_uuid": str(device.device_uuid)},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve telemetry count.",
-        ) from exc
+#     try:
+#         result = await db.execute(stmt)
+#         total_events = result.scalar_one()
+#     except SQLAlchemyError as exc:
+#         logger.exception(
+#             "Database error while counting telemetry events",
+#             extra={"device_uuid": str(device.device_uuid)},
+#         )
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="Failed to retrieve telemetry count.",
+#         ) from exc
 
-    logger.debug(
-        "Telemetry event count fetched successfully",
-        extra={
-            "device_uuid": str(device.device_uuid),
-            "total_events": total_events,
-        },
-    )
+#     logger.debug(
+#         "Telemetry event count fetched successfully",
+#         extra={
+#             "device_uuid": str(device.device_uuid),
+#             "total_events": total_events,
+#         },
+#     )
 
-    return TelemetryCountItem(
-        device_uuid=device.device_uuid,
-        total_events=total_events,
-    )
+#     return TelemetryCountItem(
+#         device_uuid=device.device_uuid,
+#         total_events=total_events,
+#     )

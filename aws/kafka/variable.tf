@@ -68,9 +68,9 @@ variable "svc_param" {
       image_suffix  = "fastapi-kafka"
       cpu           = 1024
       memory        = 2048
-      count_desired = 4
-      count_min     = 4
-      count_max     = 35
+      count_desired = 1
+      count_min     = 1
+      count_max     = 10
       container_env = {
         pool_size    = 5
         max_overflow = 0
@@ -79,16 +79,30 @@ variable "svc_param" {
     },
     kafka_consumer_svc = {
       image_suffix  = "kafka-consumer"
-      cpu           = 512
-      memory        = 1024
-      count_desired = 2
-      count_min     = 2
-      count_max     = 5
+      cpu           = 1024
+      memory        = 2048
+      count_desired = 1
+      count_min     = 1
+      count_max     = 4
       container_env = {
         pool_size    = 5
         max_overflow = 0
         worker       = 1
         group_id     = "telemetry-consumer"
+      }
+    },
+    outbox_worker_svc = {
+      image_suffix  = "outbox-worker"
+      cpu           = 1024
+      memory        = 2048
+      count_desired = 1
+      count_min     = 1
+      count_max     = 4
+      container_env = {
+        pool_size    = 5
+        max_overflow = 0
+        worker       = 1
+        group_id     = ""
       }
     }
   }

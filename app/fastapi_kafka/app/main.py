@@ -61,5 +61,5 @@ app.add_middleware(
 # ====================
 app.include_router(home.router, prefix=API_PREFIX)
 app.include_router(health.router, prefix=API_PREFIX)
-app.include_router(device.router, prefix=API_PREFIX)
+# app.include_router(device.router, prefix=API_PREFIX)
 app.include_router(telemetry.router, prefix=API_PREFIX)

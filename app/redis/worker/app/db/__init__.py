@@ -1,8 +1,8 @@
-from .postgres import get_db, async_session_maker
 from .redis import redis_client
+from .postgres import get_db, async_session_maker
 
 __all__ = [
-    "get_db",
     "redis_client",
+    "get_db",
     "async_session_maker",
 ]

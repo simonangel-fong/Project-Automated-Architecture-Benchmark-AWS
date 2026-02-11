@@ -1,0 +1,49 @@
+[
+  {
+    "name": "consumer",
+    "image": "${image}",
+
+    "cpu": ${cpu},
+    "memory": ${memory},
+    "essential": true,
+
+    "environment": [
+      { "name": "APP_NAME", "value": "${project}" },
+      { "name": "ENV", "value": "${env}" },
+      { "name": "DEBUG", "value": "${debug}" },
+      { "name": "AWS_REGION", "value": "${region}" },
+      { "name": "POOL_SIZE", "value": "${pool_size}" },
+      { "name": "MAX_OVERFLOW", "value": "${max_overflow}" },
+      { "name": "WORKER", "value": "${worker}" },
+      { "name": "POSTGRES__HOST", "value": "${pgdb_host}" },
+      { "name": "POSTGRES__PORT", "value": "5432" },
+      { "name": "POSTGRES__DB", "value": "${pgdb_db}" },
+      { "name": "POSTGRES__USER", "value": "${pgdb_user}" },
+      { "name": "POSTGRES__PASSWORD", "value": "${pgdb_pwd}" },
+      { "name": "REDIS__HOST", "value": "${redis_host}" },
+      { "name": "REDIS__PORT", "value": "${redis_port}" }
+    ],
+
+    "portMappings": [
+      {
+        "name": "consumer",
+        "containerPort": 8000,
+        "protocol": "tcp"
+      }
+    ],
+
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "true",
+        "awslogs-group": "${awslogs_group}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "ecs",
+        "awslogs-datetime-format": "%Y-%m-%dT%H:%M:%S.%f%z"
+      }
+    },
+
+    "stopTimeout": 30,
+    "readonlyRootFilesystem": false
+  }
+]

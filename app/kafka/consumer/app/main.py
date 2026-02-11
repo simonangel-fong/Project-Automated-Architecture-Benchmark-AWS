@@ -13,11 +13,14 @@ from .mq.kafka_consumer import init_consumer, close_consumer, get_consumer
 from .db import async_session_maker
 from .models import TelemetryEvent
 from .schemas import TelemetryItem
+from .config import get_settings
+
 
 BATCH_SIZE = 1000
 FLUSH_INTERVAL_SEC = 1.0
 RETRY_BACKOFF_SEC = 1.0
 
+settings = get_settings()
 logger = logging.getLogger(__name__)
 
 
@@ -89,7 +92,7 @@ async def main() -> None:
             loop.add_signal_handler(sig, request_shutdown)
         except NotImplementedError:
             signal.signal(sig, lambda *_: request_shutdown())
-    
+
     await init_consumer()
     consumer = get_consumer()
 
@@ -129,7 +132,7 @@ async def main() -> None:
                         last_offsets[msg_tp] = msg.offset
 
             now = loop.time()
-            should_flush = (len(rows) >= BATCH_SIZE) or (
+            should_flush = (len(rows) >= settings.batch_size) or (
                 rows and now >= next_flush_at)
 
             if should_flush:
