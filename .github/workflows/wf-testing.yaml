@@ -52,6 +52,12 @@ jobs:
           - image_name: kafka-consumer
             image_tag: kafka-consumer
             dir_dockerfile: app/kafka/consumer
+          - image_name: kafka-init
+            image_tag: kafka-init
+            dir_dockerfile: app/kafka/init
+          - image_name: redis-outbox
+            image_tag: redis-outbox
+            dir_dockerfile: app/redis/worker
     uses: ./.github/workflows/job_ecr_push.yaml
     with:
       image_name: ${{ matrix.image.image_name }}
