@@ -68,26 +68,26 @@ jobs:
     secrets:
       aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
 
-  # lint-check:
-  #   name: Terraform Lint Check
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       solution:
-  #         # - tf_project_name: Baseline
-  #         #   tf_path: aws/baseline
-  #         - tf_project_name: scale
-  #           tf_path: aws/scale
-  #         - tf_project_name: tune
-  #           tf_path: aws/tune
-  #         - tf_project_name: redis
-  #           tf_path: aws/redis
-  #         - tf_project_name: kafka
-  #           tf_path: aws/kafka
-  #   uses: ./.github/workflows/job_lint_check.yaml
-  #   with:
-  #     tf_project_name: ${{ matrix.solution.tf_project_name }}
-  #     tf_path: ${{ matrix.solution.tf_path }}
+  lint-check:
+    name: Terraform Lint Check
+    strategy:
+      fail-fast: false
+      matrix:
+        solution:
+          - tf_project_name: baseline
+            tf_path: aws/baseline
+          - tf_project_name: scale
+            tf_path: aws/scale
+          # - tf_project_name: tune
+          #   tf_path: aws/tune
+          - tf_project_name: redis
+            tf_path: aws/redis
+          - tf_project_name: kafka
+            tf_path: aws/kafka
+    uses: ./.github/workflows/job_lint_check.yaml
+    with:
+      tf_project_name: ${{ matrix.solution.tf_project_name }}
+      tf_path: ${{ matrix.solution.tf_path }}
 
   # deploy:
   #   name: Deploy Resources

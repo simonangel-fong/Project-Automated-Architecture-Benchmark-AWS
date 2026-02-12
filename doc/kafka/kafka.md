@@ -168,8 +168,7 @@ psql -U dbadmin -d app_db
 select * from app.device_registry;
 select * from app.telemetry_latest_outbox;
 
-
-  aws ecs run-task        --launch-type "FARGATE"       --region "ca-central-1"        --cluster iot-mgnt-telemetry-kafka-cluster       --task-definition arn:aws:ecs:ca-central-1:099139718958:task-definition/iot-mgnt-telemetry-kafka-kafka-init:9       --network-configuration "awsvpcConfiguration={subnets=[subnet-0c8487cef6c59813a,subnet-06451ab37dbd6219f,subnet-04e129977b56dab08],securityGroups=[sg-0acb77d9f342ad05b]}"       --output json
+aws ecr batch-delete-image --repository-name iot-mgnt-telemetry --image-ids imageTag=outbox-worker
 
 
 ```
