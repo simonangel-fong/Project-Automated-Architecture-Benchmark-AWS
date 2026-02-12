@@ -123,6 +123,10 @@ jobs:
               working-directory: ${{ env.TF_DIR }}
               run: terraform apply -auto-approve -no-color tfplan
 
+            - name: Sleep for minutes
+              run: sleep 10m
+              shell: bash
+
             - name: Output
               id: output_base_url
               working-directory: ${{ env.TF_DIR }}
