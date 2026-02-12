@@ -112,8 +112,8 @@ resource "aws_ecs_task_definition" "ecs_task_redis-outbox" {
     pgdb_user = aws_db_instance.postgres.username
     pgdb_pwd  = aws_db_instance.postgres.password
 
-    redis_host = aws_elasticache_replication_group.redis.primary_endpoint_address
-    redis_port = aws_elasticache_replication_group.redis.port
+    redis_host    = aws_elasticache_replication_group.redis.primary_endpoint_address
+    redis_port    = aws_elasticache_replication_group.redis.port
     poll_interval = local.redis-outbox-poll_interval
   })
 

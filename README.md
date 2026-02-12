@@ -31,7 +31,6 @@ Evaluate how multiple **system architectures** impact the performance of an IoT 
 | ---------- | -------------------------------------------------- | ------------------------------------------- |
 | `baseline` | ECS(FastAPI) + RDS(PostgreSQL)                     | Starting reference                          |
 | `scale`    | ECS Autoscaling                                    | Improved handling of stress load            |
-| `tune`     | DB connection pool tuning; optimized SQL/app logic | Higher throughput, lower latency            |
 | `redis`    | Cache read endpoints                               | Faster reads, reduced DB load               |
 | `kafka`    | Async write pipeline (producer → kafka → consumer) | Higher write throughput, smoother ingestion |
 

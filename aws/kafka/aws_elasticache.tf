@@ -27,7 +27,7 @@ resource "aws_security_group" "redis" {
     to_port     = local.redis_port
     protocol    = "tcp"
     security_groups = [
-      aws_security_group.fastapi.id,       # allow FastAPI tasks
+      aws_security_group.fastapi.id,      # allow FastAPI tasks
       aws_security_group.redis-outbox.id, # allow Outbox worker tasks
     ]
   }
