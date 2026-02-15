@@ -68,7 +68,7 @@ jobs:
         with:
           debug: true
           fail-fast: true
-          flags: cloud --project ${{ secrets.K6_CLOUD_PROJECT_ID }} --env BASE_URL=${{ env.BASE_URL }}
+          flags: cloud --env BASE_URL=${{ env.BASE_URL }}
           path: |
             ${{ env.K6_SCRIPT }}
 
