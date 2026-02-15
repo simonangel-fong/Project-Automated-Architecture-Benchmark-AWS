@@ -12,6 +12,7 @@
     - [Push ECR](#push-ecr)
   - [AWS Deployment](#aws-deployment)
   - [Remote Testing](#remote-testing)
+  - [Grafana k6 Testing](#grafana-k6-testing)
 
 ---
 
@@ -172,4 +173,19 @@ docker run --rm --name baseline_aws_write -p 5665:5665 -e SOLUTION_ID="baseline"
 # mixed
 docker run --rm --name baseline_aws_mixed -p 5665:5665 -e SOLUTION_ID="baseline" -e BASE_URL="https://iot-baseline.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/baseline_aws_mixed.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
 
+```
+
+---
+
+## Grafana k6 Testing
+
+```sh
+# smoke
+docker run --rm --name k6_baseline_aws_smoke --env-file ./k6/.env -e BASE_URL="https://iot-baseline.arguswatcher.net" -e SOLUTION_ID=baseline -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_smoke.js
+
+# read
+docker run --rm --name k6_baseline_aws_smoke --env-file ./k6/.env -e BASE_URL="https://iot-baseline.arguswatcher.net" -e SOLUTION_ID=baseline -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_hp_read.js
+
+# write
+docker run --rm --name k6_baseline_aws_write --env-file ./k6/.env -e BASE_URL="https://iot-baseline.arguswatcher.net" -e SOLUTION_ID=baseline -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_hp_write.js
 ```

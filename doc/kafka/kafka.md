@@ -10,6 +10,7 @@
     - [Terraform](#terraform)
     - [Init](#init)
   - [Remote Testing](#remote-testing)
+  - [Grafana k6 Testing](#grafana-k6-testing)
 
 ---
 
@@ -160,15 +161,16 @@ docker run --rm --name kafka_aws_write_break -p 5665:5665 -e SOLUTION_ID="kafka"
 
 ---
 
+## Grafana k6 Testing
+
 ```sh
-docker compose -f app/compose_kafka/compose.kafka.yaml down -v && docker compose --env-file app/compose_kafka/.kafka.prod.env -f app/compose_kafka/compose.kafka.yaml up -d --build
+# smoke
+docker run --rm --name k6_kafka_aws_smoke --env-file ./k6/.env -e BASE_URL="https://iot-kafka.arguswatcher.net" -e SOLUTION_ID=kafka -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_smoke.js
 
-psql -U dbadmin -d app_db
+# read
+docker run --rm --name k6_kafka_aws_read --env-file ./k6/.env -e BASE_URL="https://iot-kafka.arguswatcher.net" -e SOLUTION_ID=kafka -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_hp_read.js
 
-select * from app.device_registry;
-select * from app.telemetry_latest_outbox;
-
-aws ecr batch-delete-image --repository-name iot-mgnt-telemetry --image-ids imageTag=outbox-worker
-
+# write
+docker run --rm --name k6_kafka_aws_write --env-file ./k6/.env -e BASE_URL="https://iot-kafka.arguswatcher.net" -e SOLUTION_ID=kafka -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_hp_write.js
 
 ```

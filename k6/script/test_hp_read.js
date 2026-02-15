@@ -20,7 +20,7 @@ const RATE_TARGET = parseNumberEnv("RATE_TARGET", 1000); // peak RPS
 
 // -------- Stage --------
 const STAGE_START = parseNumberEnv("STAGE_START", 1); // minutes per start stage
-const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 20); // minutes per ramp stage
+const STAGE_RAMP = parseNumberEnv("STAGE_RAMP", 10); // minutes per ramp stage
 const STAGE_PEAK = parseNumberEnv("STAGE_PEAK", 5); // minutes to hold peak
 
 // VU pool
@@ -32,7 +32,10 @@ const MAX_VU = parseNumberEnv("MAX_VU", 200); // max VUs
 // ==============================
 export const options = {
   cloud: {
-    name: `HP Read: ${SOLUTION_ID} – ${RATE_TARGET} RPS`,
+    name: `${SOLUTION_ID}: ${PROFILE}`,
+    distribution: {
+      distributionLabel1: { loadZone: "amazon:ca:montreal", percent: 100 },
+    },
   },
   // Global tags for all metrics
   tags: {

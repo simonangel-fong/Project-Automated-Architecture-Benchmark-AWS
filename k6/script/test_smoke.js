@@ -14,6 +14,8 @@ import {
 // Environment parameters
 // ==============================
 
+const SOLUTION_ID = __ENV.SOLUTION_ID || "baseline";
+const PROFILE = "smoke-testing";
 const BASE_URL = __ENV.BASE_URL || "http://localhost:8000";
 const VU = parseNumberEnv("VU", 10); // # of devices
 const DEVICE_INTERVAL = parseNumberEnv("DEVICE_INTERVAL", 10); // interval of hub request data
@@ -25,7 +27,10 @@ const DURATION = parseNumberEnv("DURATION", 1); // minute
 // ==============================
 export const options = {
   cloud: {
-    name: "Smoke Testing",
+    name: `${SOLUTION_ID}: ${PROFILE}`,
+    distribution: {
+      distributionLabel1: { loadZone: "amazon:ca:montreal", percent: 100 },
+    },
   },
   thresholds: {
     checks: ["rate>0.99"],
