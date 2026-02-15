@@ -62,7 +62,7 @@ body::before {
 /* header Section */
 header {
   min-height: 100vh;
-  background-image: url("../img/header/bg.jpg");
+  background-image: url("../img/header/bg1.jpg");
   background-size: cover;
   /* covers the entire area */
   background-position: center;

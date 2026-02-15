@@ -23,7 +23,6 @@ jobs:
           - path: app/fastapi_baseline
           - path: app/fastapi_redis
           - path: app/fastapi_kafka
-
     uses: ./.github/workflows/job_unit_test.yaml
     with:
       dir_app: "${{matrix.fastapi.path}}"
