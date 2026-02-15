@@ -12,7 +12,11 @@ on:
         description: "Environment"
         required: true
         type: string
-
+    secrets:
+      k6_cloud_token:
+        required: true
+      k6_cloud_project_id:
+        required: true
 jobs:
   testing-smoke:
     name: Smoke Testing
@@ -65,9 +69,9 @@ jobs:
         uses: grafana/run-k6-action@v1
         id: smoke_testing
         env:
-          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
-          K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}
-          # BASE_URL: ${{ env.BASE_URL }}
+          K6_CLOUD_TOKEN: ${{ secrets.k6_cloud_token }}
+          K6_CLOUD_PROJECT_ID: ${{ secrets.k6_cloud_project_id }}
+          BASE_URL: ${{ env.BASE_URL }}
         with:
           debug: true
           # fail-fast: true
@@ -75,4 +79,3 @@ jobs:
           # cloud-run-locally: false
           path: |
             ${{ env.K6_SCRIPT }}
-

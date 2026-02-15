@@ -142,6 +142,9 @@ jobs:
     with:
       env: ${{ matrix.solution.env }}
       base_url: ${{ matrix.solution.base_url }}
+    secrets:
+      k6_cloud_token: ${{ secrets.K6_CLOUD_TOKEN }}
+      k6_cloud_project_id: ${{ secrets.K6_CLOUD_PROJECT_ID }}
 
   # performance_testing_read:
   #   name: Performance Testing-Read
