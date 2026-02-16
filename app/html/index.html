@@ -127,7 +127,9 @@
                                 <b>Objective:</b> Establish a control environment for baseline performance metrics.
                             </p>
                             <p class="arch-description">
-                                <b>Infrastructure:</b> Amazon ECS + Amazon RDS
+                                <b>Infrastructure:</b> <strong style="color: var(--color-success);">
+                                    Amazon ECS + Amazon RDS
+                                </strong>
                             </p>
                             <p class="arch-description">
                                 <b>Trade-off:</b> Limited scalability and high database dependency
@@ -152,7 +154,9 @@
                                 <b>Objective:</b> Increase throughput capacity and eliminate failures under load.
                             </p>
                             <p class="arch-description">
-                                <b>Infrastructure:</b> Amazon ECS (Auto Scaling) + Amazon RDS
+                                <b>Infrastructure:</b> <strong style="color: var(--color-success);">
+                                    Amazon ECS (Auto Scaling) + Amazon RDS
+                                </strong>
                             </p>
                             <p class="arch-description">
                                 <b>Trade-off:</b> Higher infrastructure cost and operational complexity
@@ -160,7 +164,7 @@
                         </div>
                         <!-- Diagram -->
                         <div class="col-lg-6 col-md-12">
-                            <img class="ratio ratio-16x9 col-12" src="./img/diagram/scale.gif" alt="">
+                            <img class="rounded img-fluid" src="./img/diagram/scale.gif" alt="">
                         </div>
                     </div>
                 </div>
@@ -178,7 +182,9 @@
                                 <b>Objective:</b> Improve read latency and reduce database load significantly.
                             </p>
                             <p class="arch-description">
-                                <b>Infrastructure:</b> Amazon ECS + ElastiCache (Redis) + Amazon RDS
+                                <b>Infrastructure:</b> <strong style="color: var(--color-success);">
+                                    Amazon ECS + ElastiCache (Redis) + Amazon RDS
+                                </strong>
                             </p>
                             <p class="arch-description">
                                 <b>Trade-off:</b> Cache consistency management and additional infrastructure
@@ -186,7 +192,7 @@
                         </div>
                         <!-- Diagram -->
                         <div class="col-lg-6 col-md-12">
-                            <img class="col-12 ratio-16x9" src="./img/diagram/redis.gif" alt="">
+                            <img class="rounded img-fluid" src="./img/diagram/redis.gif" alt="">
                         </div>
                     </div>
                 </div>
@@ -204,7 +210,9 @@
                                 <b>Objective:</b> Improve write reliability and handle traffic spikes gracefully.
                             </p>
                             <p class="arch-description">
-                                <b>Infrastructure:</b> Amazon ECS + Amazon MSK (Kafka) + ElastiCache + Amazon RDS
+                                <b>Infrastructure:</b> <strong style="color: var(--color-success);">
+                                    Amazon ECS + Amazon MSK (Kafka) + ElastiCache + Amazon RDS
+                                </strong>
                             </p>
                             <p class="arch-description">
                                 <b>Trade-off:</b> Increased architectural complexity and eventual consistency
@@ -213,7 +221,7 @@
                         </div>
                         <!-- Diagram -->
                         <div class="col-lg-6 col-md-12">
-                            <img class="col-12 ratio-16x9" src="./img/diagram/kafka.gif" alt="">
+                            <img class="rounded img-fluid" src="./img/diagram/kafka.gif" alt="">
                         </div>
                     </div>
                 </div>
@@ -290,7 +298,8 @@
 
                 <div class="row">
                     <div class="col-12">
-                        <h3 class="mb-4" style="font-size: 1.8rem; color: var(--color-text);">Key Results</h3>
+                        <h3 class="mb-4" style="font-size: 1.8rem; color: var(--color-text);">Key Results (Read:Write
+                            1:1)</h3>
                         <div class="table-responsive">
                             <table class="table table-dark">
                                 <thead>
@@ -305,31 +314,31 @@
                                 <tbody>
                                     <tr>
                                         <td><strong style="color: var(--color-text);">Baseline</strong></td>
-                                        <td>250–440</td>
-                                        <td>Up to 2.2%</td>
-                                        <td>~1s (write)</td>
-                                        <td>N/A (Backend Saturated)</td>
+                                        <td>320</td>
+                                        <td>~34%</td>
+                                        <td>~3s</td>
+                                        <td>19.2% (Backend Saturated)</td>
                                     </tr>
                                     <tr>
                                         <td><strong style="color: var(--color-text);">Scale</strong></td>
-                                        <td>1000 <b class="h5 ps-3">⏫ +300%</b></td>
+                                        <td>1000 <b class="h5 ps-1">⏫+300%</b></td>
                                         <td>~0%</td>
-                                        <td>~70ms (write) <b class="h5 ps-1">⏬-93%</b></td>
-                                        <td>65%</td>
+                                        <td>~70ms <b class="h5 ps-1">⏬-97.67%</b></td>
+                                        <td>48.6%</td>
                                     </tr>
                                     <tr>
                                         <td><strong style="color: var(--color-text);">Redis</strong></td>
-                                        <td>1000 <b class="h5 ps-3">⏫ +300%</b></td>
+                                        <td>1000 <b class="h5 ps-1">⏫+300%</b></td>
                                         <td>~0%</td>
-                                        <td>~29ms (reads) <b class="h5 ">⏬-97%</b> </td>
-                                        <td>55.5% <b class="h5 ps-2">⏬-15%</b> </td>
+                                        <td>~75ms <b class="h5 ps-1">⏬-97.50%</b> </td>
+                                        <td>34.9% <b class="h5 ps-1">⏬-28.19%</b> </td>
                                     </tr>
                                     <tr>
                                         <td><strong style="color: var(--color-text);">Kafka</strong></td>
-                                        <td>1000 <b class="h5 ps-3">⏫ +300%</b></td>
+                                        <td>1000 <b class="h5 ps-1">⏫+300%</b></td>
                                         <td>~0%</td>
-                                        <td>~39ms (write) <b class="h5">⏬-96.1%</b></td>
-                                        <td>18% (write) <b class="h5 ps-1">⏬-72%</b></td>
+                                        <td>~25ms <b class="h5 ps-1">⏬-99.17%</b></td>
+                                        <td>15.8% <b class="h5 ps-1">⏬-67.49%</b></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -337,34 +346,53 @@
                     </div>
                 </div>
 
-                <div class="row g-4 mt-3">
+                <div class="row g-4 py-3">
                     <div class="col-lg-3 col-md-6">
                         <div class="result-card">
                             <div class="result-metric">⏫300%</div>
                             <div class="result-label">Throughput Improvement</div>
-                            <p class="result-description">Increased from 230–400 RPS to 1000 RPS sustained</p>
+                            <p class="result-description">Increased from
+                                <strong style="color: var(--color-primary);">320 RPS</strong> to
+                                <strong style="color: var(--color-primary);">1000 RPS</strong>
+                                sustained
+                            </p>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <div class="result-card">
-                            <div class="result-metric">0%</div>
+                            <div class="result-metric">~0%</div>
                             <div class="result-label">Request Failures</div>
-                            <p class="result-description">Eliminated failures under 1000 RPS load</p>
+                            <p class="result-description">
+                                Nearly eliminated failures under
+                                <strong style="color: var(--color-primary);">1000 RPS</strong> load
+                            </p>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <div class="result-card">
-                            <div class="result-metric">⏬97%</div>
+                            <div class="result-metric">⏬99%</div>
                             <div class="result-label">Latency Reduction</div>
                             <p class="result-description">Read latency decreased through caching optimization</p>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <div class="result-card">
-                            <div class="result-metric">⏬72%</div>
+                            <div class="result-metric">⏬67%</div>
                             <div class="result-label">Database CPU Savings</div>
-                            <p class="result-description">Write CPU reduced from 65% to 18% with event-driven processing
+                            <p class="result-description">
+                                Write CPU reduced from
+                                <strong style="color: var(--color-primary);">48.6%</strong> to
+                                <strong style="color: var(--color-primary);">15.8% </strong>
+                                with event-driven processing
                             </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3 pt-5">
+                    <div class="col-8 mx-auto">
+                        <div class="diagram-placeholder ratio ratio-4x3">
+                            GitHub Capture gif
                         </div>
                     </div>
                 </div>
@@ -387,7 +415,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-lg-8 col-md-10">
+                    <div class="col-12">
                         <ol class="pipeline-list">
                             <li> Deploy selected architecture to <strong
                                     style="color: var(--color-primary);">AWS</strong> </li>
@@ -423,9 +451,9 @@
                 </div>
 
                 <div class="row mt-3">
-                    <div class="col-lg-7 col-md-12">
-                        <div class="diagram-placeholder">
-                            Architecture Diagram Placeholder
+                    <div class="col-8 mx-auto">
+                        <div class="diagram-placeholder ratio ratio-4x3">
+                            GitHub Capture gif
                         </div>
                     </div>
                 </div>

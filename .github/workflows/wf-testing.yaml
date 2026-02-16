@@ -3,10 +3,10 @@ name: Workflow-Auto Testing
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      # - "main"
-      - "testing"
+  # push:
+  #   branches:
+  #     # - "main"
+  #     - "testing"
 
 # multiple trigger
 concurrency:
@@ -340,6 +340,8 @@ jobs:
       env: ${{ matrix.solution.env }}
       test_report: ${{ matrix.solution.test_report }}
       test_script: test_hp_mixed.js
+
+# debug: remove upload s3
 
   # destroy:
   #   name: Destroy Resources
