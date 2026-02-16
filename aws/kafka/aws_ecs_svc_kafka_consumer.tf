@@ -230,21 +230,5 @@ resource "aws_appautoscaling_policy" "scaling_cpu_kafka_consumer" {
   }
 }
 
-resource "aws_appautoscaling_policy" "scaling_memory_kafka_consumer" {
-  name               = "${var.project}-scale-memory-kafka-consumer"
-  resource_id        = aws_appautoscaling_target.scaling_target_kafka_consumer.resource_id
-  scalable_dimension = aws_appautoscaling_target.scaling_target_kafka_consumer.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.scaling_target_kafka_consumer.service_namespace
-  policy_type        = "TargetTrackingScaling"
-
-  target_tracking_scaling_policy_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
-    }
-    target_value       = 40
-    scale_in_cooldown  = 60
-    scale_out_cooldown = 60
-  }
-}
 
 
