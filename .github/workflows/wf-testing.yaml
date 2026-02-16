@@ -341,43 +341,43 @@ jobs:
       test_report: ${{ matrix.solution.test_report }}
       test_script: test_hp_mixed.js
 
-  destroy:
-    name: Destroy Resources
-    needs:
-      - smoke_testing
-      - performance_testing_mixed
-    if: >-
-      ${{
-        always() &&
-        (
-          needs.smoke_testing.result != 'success' ||
-          needs.performance_testing_mixed.result != 'skipped'
-        )
-      }}
-    uses: ./.github/workflows/job_destroy.yaml
-    permissions:
-      contents: read
-      id-token: write # OIDC
-    strategy:
-      fail-fast: false
-      matrix:
-        solution:
-          # - env: baseline
-          - env: tune
-          - env: scale
-          - env: redis
-          - env: kafka
-    with:
-      project: ${{ vars.PROJECT}}
-      env: ${{ matrix.solution.env }}
-      aws_region: ${{ vars.AWS_REGION }}
-    secrets:
-      db_name: ${{ secrets.DB_NAME }}
-      db_username: ${{ secrets.DB_USERNAME }}
-      db_password: ${{ secrets.DB_PASSWORD }}
-      db_app_pwd: ${{ secrets.DB_APP_PWD }}
-      db_readonly_pwd: ${{ secrets.DB_READONLY_PWD }}
-      cf_api_token: ${{ secrets.CF_API_TOKEN }}
-      cf_zone_id: ${{ secrets.CF_ZONE_ID }}
-      aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
-      aws_backend_bucket: ${{ vars.AWS_BACKEND_BUCKET }}
+  # destroy:
+  #   name: Destroy Resources
+  #   needs:
+  #     - smoke_testing
+  #     - performance_testing_mixed
+  #   if: >-
+  #     ${{
+  #       always() &&
+  #       (
+  #         needs.smoke_testing.result != 'success' ||
+  #         needs.performance_testing_mixed.result != 'skipped'
+  #       )
+  #     }}
+  #   uses: ./.github/workflows/job_destroy.yaml
+  #   permissions:
+  #     contents: read
+  #     id-token: write # OIDC
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       solution:
+  #         # - env: baseline
+  #         - env: tune
+  #         - env: scale
+  #         - env: redis
+  #         - env: kafka
+  #   with:
+  #     project: ${{ vars.PROJECT}}
+  #     env: ${{ matrix.solution.env }}
+  #     aws_region: ${{ vars.AWS_REGION }}
+  #   secrets:
+  #     db_name: ${{ secrets.DB_NAME }}
+  #     db_username: ${{ secrets.DB_USERNAME }}
+  #     db_password: ${{ secrets.DB_PASSWORD }}
+  #     db_app_pwd: ${{ secrets.DB_APP_PWD }}
+  #     db_readonly_pwd: ${{ secrets.DB_READONLY_PWD }}
+  #     cf_api_token: ${{ secrets.CF_API_TOKEN }}
+  #     cf_zone_id: ${{ secrets.CF_ZONE_ID }}
+  #     aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
+  #     aws_backend_bucket: ${{ vars.AWS_BACKEND_BUCKET }}
