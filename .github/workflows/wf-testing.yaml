@@ -139,6 +139,40 @@ jobs:
       env: ${{ matrix.solution.env }}
       base_url: ${{ matrix.solution.base_url }}
 
+  reset_for_read:
+    name: Reset Resources for the Writing Testing
+    needs:
+      - smoke_testing
+    # only when smoke testing success
+    if: ${{ always() && needs.smoke_testing.result == 'success' }}
+    uses: ./.github/workflows/job_reset.yaml
+    permissions:
+      contents: read
+      id-token: write # OIDC
+    strategy:
+      fail-fast: false
+      matrix:
+        solution:
+          - env: baseline
+          # - env: tune
+          - env: scale
+          - env: redis
+          - env: kafka
+    with:
+      project: ${{ vars.PROJECT}}
+      env: ${{ matrix.solution.env }}
+      aws_region: ${{ vars.AWS_REGION }}
+    secrets:
+      db_name: ${{ secrets.DB_NAME }}
+      db_username: ${{ secrets.DB_USERNAME }}
+      db_password: ${{ secrets.DB_PASSWORD }}
+      db_app_pwd: ${{ secrets.DB_APP_PWD }}
+      db_readonly_pwd: ${{ secrets.DB_READONLY_PWD }}
+      cf_api_token: ${{ secrets.CF_API_TOKEN }}
+      cf_zone_id: ${{ secrets.CF_ZONE_ID }}
+      aws_tf_role_arn: ${{ secrets.AWS_TF_ROLE_ARN }}
+      aws_backend_bucket: ${{ vars.AWS_BACKEND_BUCKET }}
+
   performance_testing_read:
     name: Performance Testing-Read
     needs: smoke_testing
