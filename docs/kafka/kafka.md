@@ -1,8 +1,8 @@
-# Project: IOT Mgnt Telemetry Cloud Native - Kafka
+# Automated Architecture Benchmark - Kafka
 
 [Back](../../README.md)
 
-- [Project: IOT Mgnt Telemetry Cloud Native - Kafka](#project-iot-mgnt-telemetry-cloud-native---kafka)
+- [Automated Architecture Benchmark - Kafka](#automated-architecture-benchmark---kafka)
   - [Local - Testing](#local---testing)
   - [AWS ECR](#aws-ecr)
     - [Push ECR](#push-ecr)

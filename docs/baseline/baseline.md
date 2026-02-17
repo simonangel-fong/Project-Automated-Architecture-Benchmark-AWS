@@ -1,8 +1,8 @@
-# Project: IOT Mgnt Telemetry AWS ECS - Baseline
+# Automated Architecture Benchmark - Baseline
 
 [Back](../../README.md)
 
-- [Project: IOT Mgnt Telemetry AWS ECS - Baseline](#project-iot-mgnt-telemetry-aws-ecs---baseline)
+- [Automated Architecture Benchmark - Baseline](#automated-architecture-benchmark---baseline)
   - [Local Development](#local-development)
     - [Initialize Environment](#initialize-environment)
     - [Unit Test](#unit-test)

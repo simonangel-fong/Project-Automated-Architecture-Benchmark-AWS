@@ -3,7 +3,7 @@
 # ##############################
 variable "project" {
   type    = string
-  default = "iot-mgnt-telemetry"
+  default = "automated-architecture-benchmark"
 }
 
 variable "env" {
@@ -28,5 +28,5 @@ variable "cloudflare_zone_id" { type = string }
 variable "domain_name" { type = string }
 
 locals {
-  dns_record = var.env == "prod" ? "iot.${var.domain_name}" : "iot-${var.env}.${var.domain_name}"
+  dns_record = var.env == "prod" ? "benchmark.${var.domain_name}" : "benchmark-${var.env}.${var.domain_name}"
 }

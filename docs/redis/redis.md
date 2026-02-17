@@ -1,8 +1,8 @@
-# Project: IOT Mgnt Telemetry Cloud Native - Redis
+# Automated Architecture Benchmark - Redis
 
 [Back](../../README.md)
 
-- [Project: IOT Mgnt Telemetry Cloud Native - Redis](#project-iot-mgnt-telemetry-cloud-native---redis)
+- [Automated Architecture Benchmark - Redis](#automated-architecture-benchmark---redis)
   - [Local - Testing](#local---testing)
   - [AWS ECR](#aws-ecr)
     - [Push ECR](#push-ecr)

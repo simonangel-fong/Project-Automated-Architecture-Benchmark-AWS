@@ -1,8 +1,8 @@
-# Project: IOT Mgnt Telemetry AWS ECS - Scale
+# Automated Architecture Benchmark - Scale
 
 [Back](../../README.md)
 
-- [Project: IOT Mgnt Telemetry AWS ECS - Scale](#project-iot-mgnt-telemetry-aws-ecs---scale)
+- [Automated Architecture Benchmark - Scale](#automated-architecture-benchmark---scale)
   - [Local - Testing](#local---testing)
   - [AWS](#aws)
   - [Remote Testing](#remote-testing)
