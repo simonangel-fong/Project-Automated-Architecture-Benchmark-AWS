@@ -53,7 +53,7 @@ terraform fmt && terraform validate
 
 terraform apply -auto-approve
 
-aws ecs run-task --cluster iot-mgnt-telemetry-scale-cluster --task-definition iot-mgnt-telemetry-scale-task-flyway --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-,subnet-,subnet-],securityGroups=[sg-]}"
+aws ecs run-task --cluster auto-benchmark-scale-cluster --task-definition auto-benchmark-scale-task-flyway --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[subnet-,subnet-,subnet-],securityGroups=[sg-]}"
 
 terraform destroy -auto-approve
 
@@ -63,25 +63,25 @@ terraform destroy -auto-approve
 
 ```sh
 # smoke
-docker run --rm --name scale_aws_smoke -p 5667:5665 -e BASE_URL="https://iot-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_smoke.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js
+docker run --rm --name scale_aws_smoke -p 5667:5665 -e BASE_URL="https://benchmark-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_smoke.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_smoke.js
 
 # constant read
-docker run --rm --name scale_aws_constant_read -p 5665:5665 -e BASE_URL="https://iot-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_TARGET=1200 -e STAGE_CONSTANT=60 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/constant_read.js
+docker run --rm --name scale_aws_constant_read -p 5665:5665 -e BASE_URL="https://benchmark-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_PERIOD=3s -e RATE_TARGET=1200 -e STAGE_CONSTANT=60 -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/constant_read.js
 
 
 # Stress testing
-docker run --rm --name scale_aws_read_stress -p 5665:5665 -e BASE_URL="https://iot-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_read_stress.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/stress_testing_read.js
+docker run --rm --name scale_aws_read_stress -p 5665:5665 -e BASE_URL="https://benchmark-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_read_stress.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/stress_testing_read.js
 
 
 
 # read heavy
-docker run --rm --name scale_aws_read -p 5665:5665 -e SOLUTION_ID="scale" -e BASE_URL="https://iot-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_read.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
+docker run --rm --name scale_aws_read -p 5665:5665 -e SOLUTION_ID="scale" -e BASE_URL="https://benchmark-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_read.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_read.js
 
 # write heavy
-docker run --rm --name scale_aws_write -p 5665:5665 -e SOLUTION_ID="scale" -e BASE_URL="https://iot-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_write.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
+docker run --rm --name scale_aws_write -p 5665:5665 -e SOLUTION_ID="scale" -e BASE_URL="https://benchmark-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_write.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_write.js
 
 # mixed
-docker run --rm --name scale_aws_mixed -p 5665:5665 -e SOLUTION_ID="scale" -e BASE_URL="https://iot-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_mixed.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
+docker run --rm --name scale_aws_mixed -p 5665:5665 -e SOLUTION_ID="scale" -e BASE_URL="https://benchmark-scale.arguswatcher.net" -e K6_WEB_DASHBOARD=true -e K6_WEB_DASHBOARD_EXPORT=/report/scale_aws_mixed.html -e K6_WEB_DASHBOARD_PERIOD=3s -v ./k6/script:/script -v ./k6/report:/report/ grafana/k6 run /script/test_hp_mixed.js
 ```
 
 ---
@@ -90,11 +90,11 @@ docker run --rm --name scale_aws_mixed -p 5665:5665 -e SOLUTION_ID="scale" -e BA
 
 ```sh
 # smoke
-docker run --rm --name k6_scale_aws_smoke --env-file ./k6/.env -e BASE_URL="https://iot-scale.arguswatcher.net" -e SOLUTION_ID=scale -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_smoke.js
+docker run --rm --name k6_scale_aws_smoke --env-file ./k6/.env -e BASE_URL="https://benchmark-scale.arguswatcher.net" -e SOLUTION_ID=scale -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_smoke.js
 
 # read
-docker run --rm --name k6_scale_aws_read --env-file ./k6/.env -e BASE_URL="https://iot-scale.arguswatcher.net" -e SOLUTION_ID=scale -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_hp_read.js
+docker run --rm --name k6_scale_aws_read --env-file ./k6/.env -e BASE_URL="https://benchmark-scale.arguswatcher.net" -e SOLUTION_ID=scale -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_hp_read.js
 
 # write
-docker run --rm --name k6_scale_aws_write --env-file ./k6/.env -e BASE_URL="https://iot-scale.arguswatcher.net" -e SOLUTION_ID=scale -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_hp_write.js
+docker run --rm --name k6_scale_aws_write --env-file ./k6/.env -e BASE_URL="https://benchmark-scale.arguswatcher.net" -e SOLUTION_ID=scale -e MAX_VU=100 -v ./k6/script:/script grafana/k6 cloud run --include-system-env-vars=true /script/test_hp_write.js
 ```

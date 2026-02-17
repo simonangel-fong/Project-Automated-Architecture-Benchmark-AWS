@@ -17,7 +17,7 @@ class KafkaSettings(BaseModel):
     """Kafka configuration."""
 
     bootstrap_servers: str = Field(default="broker:9092")
-    client_id: str = Field(default="iot-mgnt-telemetry")
+    client_id: str = Field(default="auto-benchmark")
 
     # consumer settings
     group_id: str = Field(default="telemetry-consumer")

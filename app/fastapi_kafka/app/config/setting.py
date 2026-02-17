@@ -91,7 +91,7 @@ class Settings(BaseSettings):
     # General
     # ------------------------------
     project: str = Field(
-        default="iot mgnt telemetry",
+        default="auto benchmark",
         alias="PROJECT",
         description="The project name",
     )

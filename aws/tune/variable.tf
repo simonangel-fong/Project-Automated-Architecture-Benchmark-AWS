@@ -3,7 +3,7 @@
 # ##############################
 variable "project" {
   type    = string
-  default = "iot-mgnt-telemetry"
+  default = "auto-benchmark"
 }
 
 variable "env" {
@@ -135,5 +135,5 @@ variable "domain_name" {
 }
 
 locals {
-  dns_record = "iot-${var.env}.${var.domain_name}"
+  dns_record = "benchmark-${var.env}.${var.domain_name}"
 }

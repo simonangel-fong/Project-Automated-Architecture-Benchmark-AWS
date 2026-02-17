@@ -128,13 +128,13 @@ jobs:
       matrix:
         solution:
           - env: baseline
-            base_url: "https://iot-baseline.arguswatcher.net"
+            base_url: "https://benchmark-baseline.arguswatcher.net"
           - env: scale
-            base_url: "https://iot-scale.arguswatcher.net"
+            base_url: "https://benchmark-scale.arguswatcher.net"
           - env: redis
-            base_url: "https://iot-redis.arguswatcher.net"
+            base_url: "https://benchmark-redis.arguswatcher.net"
           - env: kafka
-            base_url: "https://iot-kafka.arguswatcher.net"
+            base_url: "https://benchmark-kafka.arguswatcher.net"
     with:
       env: ${{ matrix.solution.env }}
       base_url: ${{ matrix.solution.base_url }}
@@ -186,19 +186,19 @@ jobs:
   #     matrix:
   #       solution:
   #         - env: baseline
-  #           base_url: "https://iot-baseline.arguswatcher.net"
+  #           base_url: "https://benchmark-baseline.arguswatcher.net"
   #           test_report: baseline_cicd_read.html
   #         - env: scale
-  #           base_url: "https://iot-scale.arguswatcher.net"
+  #           base_url: "https://benchmark-scale.arguswatcher.net"
   #           test_report: scale_cicd_read.html
   #         # - env: tune
-  #         #   base_url: "https://iot-tune.arguswatcher.net"
+  #         #   base_url: "https://benchmark-tune.arguswatcher.net"
   #         #   test_report: tune_cicd_read.html
   #         - env: redis
-  #           base_url: "https://iot-redis.arguswatcher.net"
+  #           base_url: "https://benchmark-redis.arguswatcher.net"
   #           test_report: redis_cicd_read.html
   #         - env: kafka
-  #           base_url: "https://iot-kafka.arguswatcher.net"
+  #           base_url: "https://benchmark-kafka.arguswatcher.net"
   #           test_report: kafka_cicd_read.html
   #   with:
   #     base_url: ${{ matrix.solution.base_url }}
@@ -254,19 +254,19 @@ jobs:
   #     matrix:
   #       solution:
   #         - env: baseline
-  #           base_url: "https://iot-baseline.arguswatcher.net"
+  #           base_url: "https://benchmark-baseline.arguswatcher.net"
   #           test_report: baseline_cicd_write.html
   #         - env: scale
-  #           base_url: "https://iot-scale.arguswatcher.net"
+  #           base_url: "https://benchmark-scale.arguswatcher.net"
   #           test_report: scale_cicd_write.html
   #         # - env: tune
-  #         #   base_url: "https://iot-tune.arguswatcher.net"
+  #         #   base_url: "https://benchmark-tune.arguswatcher.net"
   #         #   test_report: tune_cicd_write.html
   #         - env: redis
-  #           base_url: "https://iot-redis.arguswatcher.net"
+  #           base_url: "https://benchmark-redis.arguswatcher.net"
   #           test_report: redis_cicd_write.html
   #         - env: kafka
-  #           base_url: "https://iot-kafka.arguswatcher.net"
+  #           base_url: "https://benchmark-kafka.arguswatcher.net"
   #           test_report: kafka_cicd_write.html
   #   with:
   #     base_url: ${{ matrix.solution.base_url }}
@@ -321,19 +321,19 @@ jobs:
       matrix:
         solution:
           - env: baseline
-            base_url: "https://iot-baseline.arguswatcher.net"
+            base_url: "https://benchmark-baseline.arguswatcher.net"
             test_report: baseline_cicd_mixed.html
           - env: scale
-            base_url: "https://iot-scale.arguswatcher.net"
+            base_url: "https://benchmark-scale.arguswatcher.net"
             test_report: scale_cicd_mixed.html
           # - env: tune
-          #   base_url: "https://iot-tune.arguswatcher.net"
+          #   base_url: "https://benchmark-tune.arguswatcher.net"
           #   test_report: tune_cicd_mixed.html
           - env: redis
-            base_url: "https://iot-redis.arguswatcher.net"
+            base_url: "https://benchmark-redis.arguswatcher.net"
             test_report: redis_cicd_mixed.html
           - env: kafka
-            base_url: "https://iot-kafka.arguswatcher.net"
+            base_url: "https://benchmark-kafka.arguswatcher.net"
             test_report: kafka_cicd_mixed.html
     with:
       base_url: ${{ matrix.solution.base_url }}

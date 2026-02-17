@@ -21,7 +21,7 @@ services:
       context: ../redis/worker
       dockerfile: Dockerfile
     environment:
-      APP_NAME: "${APP_NAME:-iot-mgnt-telemetry}"
+      APP_NAME: "${APP_NAME:-auto-benchmark}"
       ENV: "${ENV:-kafka}"
       DEBUG: "${DEBUG:-true}"
       LOG_LEVEL: "${LOG_LEVEL:-DEBUG}"

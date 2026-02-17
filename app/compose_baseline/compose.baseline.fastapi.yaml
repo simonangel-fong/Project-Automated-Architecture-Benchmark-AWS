@@ -5,7 +5,7 @@ services:
       context: ../fastapi_baseline/
       dockerfile: Dockerfile
     environment:
-      PROJECT: "${PROJECT:-iot-mgnt-telemetry}"
+      PROJECT: "${PROJECT:-auto-benchmark}"
       ENV: "${ENV:-baseline}"
       DEBUG: "${DEBUG:-true}"
       LOG_LEVEL: "${LOG_LEVEL:-DEBUG}"

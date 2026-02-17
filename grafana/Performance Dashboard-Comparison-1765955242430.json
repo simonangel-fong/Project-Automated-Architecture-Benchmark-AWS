@@ -127,7 +127,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "LoadBalancer": "app/iot-mgnt-telemetry-scale-alb/e64931d3992b1d1c"
+            "LoadBalancer": "app/auto-benchmark-scale-alb/e64931d3992b1d1c"
           },
           "expression": "",
           "id": "",
@@ -171,7 +171,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "LoadBalancer": "app/iot-mgnt-telemetry-tune-alb/07e265cc453b3a85"
+            "LoadBalancer": "app/auto-benchmark-tune-alb/07e265cc453b3a85"
           },
           "expression": "",
           "id": "",
@@ -215,7 +215,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "LoadBalancer": "app/iot-mgnt-telemetry-redis-alb/98a8e1069539a5d7"
+            "LoadBalancer": "app/auto-benchmark-redis-alb/98a8e1069539a5d7"
           },
           "expression": "",
           "id": "",
@@ -259,7 +259,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "LoadBalancer": "app/iot-mgnt-telemetry-kafka-alb/c4b304c52e9db8d2"
+            "LoadBalancer": "app/auto-benchmark-kafka-alb/c4b304c52e9db8d2"
           },
           "expression": "",
           "id": "",
@@ -450,7 +450,7 @@
                 {
                   "operator": {
                     "name": "=",
-                    "value": "iot-mgnt-telemetry-scale-cluster"
+                    "value": "auto-benchmark-scale-cluster"
                   },
                   "property": {
                     "name": "ClusterName",
@@ -461,7 +461,7 @@
                 {
                   "operator": {
                     "name": "=",
-                    "value": "iot-mgnt-telemetry-scale-service-fastapi"
+                    "value": "auto-benchmark-scale-service-fastapi"
                   },
                   "property": {
                     "name": "ServiceName",
@@ -473,7 +473,7 @@
               "type": "and"
             }
           },
-          "sqlExpression": "SELECT SUM(DesiredTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'iot-mgnt-telemetry-scale-cluster' AND ServiceName = 'iot-mgnt-telemetry-scale-service-fastapi' ORDER BY SUM() ASC",
+          "sqlExpression": "SELECT SUM(DesiredTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'auto-benchmark-scale-cluster' AND ServiceName = 'auto-benchmark-scale-service-fastapi' ORDER BY SUM() ASC",
           "statistic": "Average"
         },
         {
@@ -523,7 +523,7 @@
                 {
                   "operator": {
                     "name": "=",
-                    "value": "iot-mgnt-telemetry-tune-cluster"
+                    "value": "auto-benchmark-tune-cluster"
                   },
                   "property": {
                     "name": "ClusterName",
@@ -534,7 +534,7 @@
                 {
                   "operator": {
                     "name": "=",
-                    "value": "iot-mgnt-telemetry-tune-service-fastapi"
+                    "value": "auto-benchmark-tune-service-fastapi"
                   },
                   "property": {
                     "name": "ServiceName",
@@ -546,7 +546,7 @@
               "type": "and"
             }
           },
-          "sqlExpression": "SELECT SUM(DesiredTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'iot-mgnt-telemetry-tune-cluster' AND ServiceName = 'iot-mgnt-telemetry-tune-service-fastapi' ORDER BY SUM() ASC",
+          "sqlExpression": "SELECT SUM(DesiredTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'auto-benchmark-tune-cluster' AND ServiceName = 'auto-benchmark-tune-service-fastapi' ORDER BY SUM() ASC",
           "statistic": "Average"
         },
         {
@@ -555,8 +555,8 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "ClusterName": "iot-mgnt-telemetry-redis-cluster",
-            "ServiceName": "iot-mgnt-telemetry-redis-service-fastapi"
+            "ClusterName": "auto-benchmark-redis-cluster",
+            "ServiceName": "auto-benchmark-redis-service-fastapi"
           },
           "expression": "",
           "id": "",
@@ -581,8 +581,8 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "ClusterName": "iot-mgnt-telemetry-kafka-cluster",
-            "ServiceName": "iot-mgnt-telemetry-kafka-service-fastapi"
+            "ClusterName": "auto-benchmark-kafka-cluster",
+            "ServiceName": "auto-benchmark-kafka-service-fastapi"
           },
           "expression": "",
           "id": "",
@@ -700,8 +700,8 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "ClusterName": "iot-mgnt-telemetry-scale-cluster",
-            "ServiceName": "iot-mgnt-telemetry-scale-service-fastapi"
+            "ClusterName": "auto-benchmark-scale-cluster",
+            "ServiceName": "auto-benchmark-scale-service-fastapi"
           },
           "expression": "",
           "id": "",
@@ -726,8 +726,8 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "ClusterName": "iot-mgnt-telemetry-tune-cluster",
-            "ServiceName": "iot-mgnt-telemetry-tune-service-fastapi"
+            "ClusterName": "auto-benchmark-tune-cluster",
+            "ServiceName": "auto-benchmark-tune-service-fastapi"
           },
           "expression": "",
           "id": "",
@@ -752,8 +752,8 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "ClusterName": "iot-mgnt-telemetry-redis-cluster",
-            "ServiceName": "iot-mgnt-telemetry-redis-service-fastapi"
+            "ClusterName": "auto-benchmark-redis-cluster",
+            "ServiceName": "auto-benchmark-redis-service-fastapi"
           },
           "expression": "",
           "id": "",
@@ -778,8 +778,8 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "ClusterName": "iot-mgnt-telemetry-kafka-cluster",
-            "ServiceName": "iot-mgnt-telemetry-kafka-service-fastapi"
+            "ClusterName": "auto-benchmark-kafka-cluster",
+            "ServiceName": "auto-benchmark-kafka-service-fastapi"
           },
           "expression": "",
           "id": "",
@@ -910,7 +910,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-scale-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-scale-rds-pgdb"
           },
           "expression": "",
           "id": "",
@@ -935,7 +935,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-tune-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-tune-rds-pgdb"
           },
           "expression": "",
           "id": "",
@@ -960,7 +960,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-redis-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-redis-rds-pgdb"
           },
           "expression": "",
           "id": "",
@@ -985,7 +985,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-kafka-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-kafka-rds-pgdb"
           },
           "expression": "",
           "id": "",
@@ -1102,7 +1102,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-scale-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-scale-rds-pgdb"
           },
           "expression": "",
           "id": "",
@@ -1127,7 +1127,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-tune-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-tune-rds-pgdb"
           },
           "expression": "",
           "id": "",
@@ -1152,7 +1152,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-redis-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-redis-rds-pgdb"
           },
           "expression": "",
           "id": "",
@@ -1177,7 +1177,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-kafka-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-kafka-rds-pgdb"
           },
           "expression": "",
           "id": "",
@@ -1369,7 +1369,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "CacheClusterId": "iot-mgnt-telemetry-redis-redis-001",
+            "CacheClusterId": "auto-benchmark-redis-redis-001",
             "CacheNodeId": "0001"
           },
           "expression": "",
@@ -1395,7 +1395,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "CacheClusterId": "iot-mgnt-telemetry-kafka-redis-001",
+            "CacheClusterId": "auto-benchmark-kafka-redis-001",
             "CacheNodeId": "0001"
           },
           "expression": "",
@@ -1575,7 +1575,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "CacheClusterId": "iot-mgnt-telemetry-redis-redis-001",
+            "CacheClusterId": "auto-benchmark-redis-redis-001",
             "CacheNodeId": "0001"
           },
           "expression": "",
@@ -1601,7 +1601,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "CacheClusterId": "iot-mgnt-telemetry-kafka-redis-001",
+            "CacheClusterId": "auto-benchmark-kafka-redis-001",
             "CacheNodeId": "0001"
           },
           "expression": "",
@@ -1765,7 +1765,7 @@
           },
           "dimensions": {
             "Broker ID": "*",
-            "Cluster Name": "iot-mgnt-telemetry-kafka-msk"
+            "Cluster Name": "auto-benchmark-kafka-msk"
           },
           "expression": "",
           "id": "",
@@ -1914,7 +1914,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "Cluster Name": "iot-mgnt-telemetry-kafka-msk"
+            "Cluster Name": "auto-benchmark-kafka-msk"
           },
           "expression": "",
           "id": "",
@@ -2104,7 +2104,7 @@
                 {
                   "operator": {
                     "name": "=",
-                    "value": "iot-mgnt-telemetry-kafka-cluster"
+                    "value": "auto-benchmark-kafka-cluster"
                   },
                   "property": {
                     "name": "ClusterName",
@@ -2115,7 +2115,7 @@
                 {
                   "operator": {
                     "name": "=",
-                    "value": "iot-mgnt-telemetry-kafka-service-consumer"
+                    "value": "auto-benchmark-kafka-service-consumer"
                   },
                   "property": {
                     "name": "ServiceName",
@@ -2127,7 +2127,7 @@
               "type": "and"
             }
           },
-          "sqlExpression": "SELECT SUM(DesiredTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'iot-mgnt-telemetry-kafka-cluster' AND ServiceName = 'iot-mgnt-telemetry-kafka-service-consumer' ORDER BY SUM() ASC",
+          "sqlExpression": "SELECT SUM(DesiredTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'auto-benchmark-kafka-cluster' AND ServiceName = 'auto-benchmark-kafka-service-consumer' ORDER BY SUM() ASC",
           "statistic": "Average"
         }
       ],
@@ -2260,8 +2260,8 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "ClusterName": "iot-mgnt-telemetry-kafka-cluster",
-            "ServiceName": "iot-mgnt-telemetry-kafka-service-consumer"
+            "ClusterName": "auto-benchmark-kafka-cluster",
+            "ServiceName": "auto-benchmark-kafka-service-consumer"
           },
           "expression": "",
           "id": "",

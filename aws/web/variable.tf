@@ -3,7 +3,7 @@
 # ##############################
 variable "project" {
   type    = string
-  default = "automated-architecture-benchmark"
+  default = "auto-benchmark"
 }
 
 variable "env" {

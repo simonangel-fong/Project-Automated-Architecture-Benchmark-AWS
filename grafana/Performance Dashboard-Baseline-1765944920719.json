@@ -127,7 +127,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "LoadBalancer": "app/iot-mgnt-telemetry-baseline-alb/24cd8a5e7a24137a"
+            "LoadBalancer": "app/auto-benchmark-baseline-alb/24cd8a5e7a24137a"
           },
           "expression": "",
           "id": "",
@@ -318,7 +318,7 @@
                 {
                   "operator": {
                     "name": "=",
-                    "value": "iot-mgnt-telemetry-baseline-cluster"
+                    "value": "auto-benchmark-baseline-cluster"
                   },
                   "property": {
                     "name": "ClusterName",
@@ -329,7 +329,7 @@
                 {
                   "operator": {
                     "name": "=",
-                    "value": "iot-mgnt-telemetry-baseline-service-fastapi"
+                    "value": "auto-benchmark-baseline-service-fastapi"
                   },
                   "property": {
                     "name": "ServiceName",
@@ -341,7 +341,7 @@
               "type": "and"
             }
           },
-          "sqlExpression": "SELECT SUM(RunningTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'iot-mgnt-telemetry-baseline-cluster' AND ServiceName = 'iot-mgnt-telemetry-baseline-service-fastapi' ORDER BY SUM() ASC",
+          "sqlExpression": "SELECT SUM(RunningTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'auto-benchmark-baseline-cluster' AND ServiceName = 'auto-benchmark-baseline-service-fastapi' ORDER BY SUM() ASC",
           "statistic": "Average"
         }
       ],
@@ -443,8 +443,8 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "ClusterName": "iot-mgnt-telemetry-baseline-cluster",
-            "ServiceName": "iot-mgnt-telemetry-baseline-service-fastapi"
+            "ClusterName": "auto-benchmark-baseline-cluster",
+            "ServiceName": "auto-benchmark-baseline-service-fastapi"
           },
           "expression": "",
           "id": "",
@@ -575,7 +575,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-baseline-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-baseline-rds-pgdb"
           },
           "expression": "",
           "id": "",
@@ -692,7 +692,7 @@
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "iot-mgnt-telemetry-baseline-rds-pgdb"
+            "DBInstanceIdentifier": "auto-benchmark-baseline-rds-pgdb"
           },
           "expression": "",
           "id": "",
