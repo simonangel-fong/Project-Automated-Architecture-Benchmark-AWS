@@ -18,170 +18,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 0,
   "links": [],
   "panels": [
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 21,
-      "panels": [],
-      "title": "Application Load Balancer",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "cloudwatch",
-        "uid": "eewwgkgzccc1sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 1
-      },
-      "id": 20,
-      "options": {
-        "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.4.0-20160616057",
-      "targets": [
-        {
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "eewwgkgzccc1sf"
-          },
-          "dimensions": {
-            "LoadBalancer": "app/auto-benchmark-baseline-alb/24cd8a5e7a24137a"
-          },
-          "expression": "",
-          "id": "",
-          "label": "Baseline",
-          "logGroups": [],
-          "matchExact": true,
-          "metricEditorMode": 0,
-          "metricName": "HTTPCode_Target_2XX_Count",
-          "metricQueryType": 0,
-          "namespace": "AWS/ApplicationELB",
-          "period": "1s",
-          "queryLanguage": "CWLI",
-          "queryMode": "Metrics",
-          "refId": "Baseline",
-          "region": "default",
-          "sql": {
-            "from": {
-              "property": {
-                "name": "AWS/ApplicationELB",
-                "type": "string"
-              },
-              "type": "property"
-            },
-            "select": {
-              "name": "SUM",
-              "parameters": [
-                {
-                  "name": "HTTPCode_Target_2XX_Count",
-                  "type": "functionParameter"
-                }
-              ],
-              "type": "function"
-            }
-          },
-          "sqlExpression": "SELECT SUM(HTTPCode_Target_2XX_Count) FROM \"AWS/ApplicationELB\"",
-          "statistic": "Sum"
-        }
-      ],
-      "title": "HTTP Request",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 8
-      },
-      "id": 9,
-      "panels": [],
-      "title": "ECS Service",
-      "type": "row"
-    },
     {
       "datasource": {
         "type": "cloudwatch",
@@ -246,10 +84,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 12,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 0
       },
       "id": 6,
       "options": {
@@ -269,22 +107,25 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.4.0-20160616057",
+      "pluginVersion": "12.4.0-21966731219",
       "targets": [
         {
           "datasource": {
             "type": "cloudwatch",
             "uid": "eewwgkgzccc1sf"
           },
-          "dimensions": {},
+          "dimensions": {
+            "ClusterName": "auto-benchmark-baseline-cluster",
+            "ServiceName": "auto-benchmark-baseline-service-fastapi"
+          },
           "expression": "",
           "id": "",
           "label": "Baseline",
           "logGroups": [],
-          "matchExact": false,
+          "matchExact": true,
           "metricEditorMode": 0,
           "metricName": "RunningTaskCount",
-          "metricQueryType": 1,
+          "metricQueryType": 0,
           "namespace": "ECS/ContainerInsights",
           "period": "1s",
           "queryLanguage": "CWLI",
@@ -342,260 +183,238 @@
             }
           },
           "sqlExpression": "SELECT SUM(RunningTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'auto-benchmark-baseline-cluster' AND ServiceName = 'auto-benchmark-baseline-service-fastapi' ORDER BY SUM() ASC",
-          "statistic": "Average"
-        }
-      ],
-      "title": "Task Count - FastAPI",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "cloudwatch",
-        "uid": "eewwgkgzccc1sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line"
-            }
-          },
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "yellow",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 40
-              }
-            ]
-          },
-          "unit": "percent"
+          "statistic": "Sum"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 9
-      },
-      "id": 2,
-      "options": {
-        "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.4.0-20160616057",
-      "targets": [
         {
           "datasource": {
             "type": "cloudwatch",
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "ClusterName": "auto-benchmark-baseline-cluster",
-            "ServiceName": "auto-benchmark-baseline-service-fastapi"
+            "ClusterName": "auto-benchmark-scale-cluster",
+            "ServiceName": "auto-benchmark-scale-service-fastapi"
           },
           "expression": "",
           "id": "",
-          "label": "Baseline",
+          "label": "Scale",
           "logGroups": [],
-          "matchExact": false,
+          "matchExact": true,
           "metricEditorMode": 0,
-          "metricName": "CPUUtilization",
+          "metricName": "RunningTaskCount",
           "metricQueryType": 0,
-          "namespace": "AWS/ECS",
-          "period": "",
+          "namespace": "ECS/ContainerInsights",
+          "period": "1s",
           "queryLanguage": "CWLI",
           "queryMode": "Metrics",
-          "refId": "Baseline",
-          "region": "ca-central-1",
-          "sqlExpression": "",
-          "statistic": "Average"
-        }
-      ],
-      "title": "CPU Utilization(%) - FastAPI",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 17
-      },
-      "id": 8,
-      "panels": [],
-      "title": "RDS",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "cloudwatch",
-        "uid": "eewwgkgzccc1sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+          "refId": "Scale",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "ECS/ContainerInsights",
+                "type": "string"
+              },
+              "type": "property"
             },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "orderBy": {
+              "name": "SUM",
+              "type": "function"
             },
-            "showPoints": "never",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "RunningTaskCount",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
             },
-            "thresholdsStyle": {
-              "mode": "off"
+            "where": {
+              "expressions": [
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "auto-benchmark-baseline-cluster"
+                  },
+                  "property": {
+                    "name": "ClusterName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                },
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "auto-benchmark-baseline-service-fastapi"
+                  },
+                  "property": {
+                    "name": "ServiceName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                }
+              ],
+              "type": "and"
             }
           },
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
+          "sqlExpression": "SELECT SUM(RunningTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'auto-benchmark-baseline-cluster' AND ServiceName = 'auto-benchmark-baseline-service-fastapi' ORDER BY SUM() ASC",
+          "statistic": "Sum"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 18
-      },
-      "id": 4,
-      "options": {
-        "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.4.0-20160616057",
-      "targets": [
         {
           "datasource": {
             "type": "cloudwatch",
             "uid": "eewwgkgzccc1sf"
           },
           "dimensions": {
-            "DBInstanceIdentifier": "auto-benchmark-baseline-rds-pgdb"
+            "ClusterName": "auto-benchmark-redis-cluster",
+            "ServiceName": "auto-benchmark-redis-service-fastapi"
           },
           "expression": "",
           "id": "",
-          "label": "Baseline",
+          "label": "Redis",
           "logGroups": [],
           "matchExact": false,
           "metricEditorMode": 0,
-          "metricName": "DatabaseConnections",
+          "metricName": "RunningTaskCount",
           "metricQueryType": 0,
-          "namespace": "AWS/RDS",
-          "period": "",
+          "namespace": "ECS/ContainerInsights",
+          "period": "1s",
           "queryLanguage": "CWLI",
           "queryMode": "Metrics",
-          "refId": "Baseline",
-          "region": "ca-central-1",
-          "sqlExpression": "",
+          "refId": "Redis",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "ECS/ContainerInsights",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderBy": {
+              "name": "SUM",
+              "type": "function"
+            },
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "RunningTaskCount",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            "where": {
+              "expressions": [
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "auto-benchmark-baseline-cluster"
+                  },
+                  "property": {
+                    "name": "ClusterName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                },
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "auto-benchmark-baseline-service-fastapi"
+                  },
+                  "property": {
+                    "name": "ServiceName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                }
+              ],
+              "type": "and"
+            }
+          },
+          "sqlExpression": "SELECT SUM(RunningTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'auto-benchmark-baseline-cluster' AND ServiceName = 'auto-benchmark-baseline-service-fastapi' ORDER BY SUM() ASC",
+          "statistic": "Sum"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "ClusterName": "auto-benchmark-kafka-cluster",
+            "ServiceName": "auto-benchmark-kafka-service-fastapi"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "RunningTaskCount",
+          "metricQueryType": 0,
+          "namespace": "ECS/ContainerInsights",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "default",
+          "sql": {
+            "from": {
+              "property": {
+                "name": "ECS/ContainerInsights",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderBy": {
+              "name": "SUM",
+              "type": "function"
+            },
+            "select": {
+              "name": "SUM",
+              "parameters": [
+                {
+                  "name": "RunningTaskCount",
+                  "type": "functionParameter"
+                }
+              ],
+              "type": "function"
+            },
+            "where": {
+              "expressions": [
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "auto-benchmark-baseline-cluster"
+                  },
+                  "property": {
+                    "name": "ClusterName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                },
+                {
+                  "operator": {
+                    "name": "=",
+                    "value": "auto-benchmark-baseline-service-fastapi"
+                  },
+                  "property": {
+                    "name": "ServiceName",
+                    "type": "string"
+                  },
+                  "type": "operator"
+                }
+              ],
+              "type": "and"
+            }
+          },
+          "sqlExpression": "SELECT SUM(RunningTaskCount) FROM \"ECS/ContainerInsights\" WHERE ClusterName = 'auto-benchmark-baseline-cluster' AND ServiceName = 'auto-benchmark-baseline-service-fastapi' ORDER BY SUM() ASC",
           "statistic": "Sum"
         }
       ],
-      "title": "Connections - PostgreSQL",
+      "title": "Backend - Instance Count",
       "type": "timeseries"
     },
     {
@@ -639,7 +458,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "dashed+area"
             }
           },
           "mappings": [],
@@ -649,6 +468,10 @@
               {
                 "color": "green",
                 "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 40
               },
               {
                 "color": "red",
@@ -661,10 +484,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 12,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 0
       },
       "id": 3,
       "options": {
@@ -684,7 +507,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.4.0-20160616057",
+      "pluginVersion": "12.4.0-21966731219",
       "targets": [
         {
           "datasource": {
@@ -698,21 +521,96 @@
           "id": "",
           "label": "Baseline",
           "logGroups": [],
-          "matchExact": false,
+          "matchExact": true,
           "metricEditorMode": 0,
           "metricName": "CPUUtilization",
           "metricQueryType": 0,
           "namespace": "AWS/RDS",
-          "period": "",
+          "period": "1s",
           "queryLanguage": "CWLI",
           "queryMode": "Metrics",
           "refId": "Baseline",
           "region": "ca-central-1",
           "sqlExpression": "",
-          "statistic": "Maximum"
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "auto-benchmark-scale-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Scale",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Scale",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "auto-benchmark-redis-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Redis",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Redis",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "eewwgkgzccc1sf"
+          },
+          "dimensions": {
+            "DBInstanceIdentifier": "auto-benchmark-kafka-rds-pgdb"
+          },
+          "expression": "",
+          "id": "",
+          "label": "Kafka",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/RDS",
+          "period": "1s",
+          "queryLanguage": "CWLI",
+          "queryMode": "Metrics",
+          "refId": "Kafka",
+          "region": "ca-central-1",
+          "sqlExpression": "",
+          "statistic": "Average"
         }
       ],
-      "title": "CPU Utilization(%) - PostgreSQL",
+      "title": "Database - CPU Utilization(%)",
       "type": "timeseries"
     }
   ],
@@ -728,13 +626,13 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Performance Dashboard-Baseline",
+  "title": "Load Testing",
   "uid": "siv9pb2",
-  "version": 9,
+  "version": 27,
   "weekStart": ""
 }

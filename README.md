@@ -19,7 +19,7 @@
 
 ## Project Overview
 
-- [Project Website](benchmark.arguswatcher.net)
+- [Project Website](https://benchmark.arguswatcher.net/)
 
 An project to **automate deployment and load testing**, and **compare 4 cloud architecture patterns** under identical traffic conditions:
 
